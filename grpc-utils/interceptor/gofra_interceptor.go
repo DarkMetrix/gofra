@@ -20,7 +20,7 @@ func GofraClientInterceptorFunc(ctx context.Context, method string, req, reply i
 	log.Infof("req:%v", req)
 
 	//Monitor method enter total
-	monitor.GetStatsd().Increment(method + "|Client.Total")
+	monitor.GetStatsd().Increment(method + ",type=Client.Total")
 
 	// Invoke remote
 	err := invoker(ctx, method, req, reply, cc, opts...)
@@ -29,12 +29,12 @@ func GofraClientInterceptorFunc(ctx context.Context, method string, req, reply i
 		log.Infof("invoke failed!!! error:%v", err)
 
 		//Monitor method fail total
-		monitor.GetStatsd().Increment(method + "|Client.Fail")
+		monitor.GetStatsd().Increment(method + ",type=Client.Fail")
 	} else {
 		log.Infof("reply:%v", reply)
 
 		//Monitor method success total
-		monitor.GetStatsd().Increment(method + "|Client.Success")
+		monitor.GetStatsd().Increment(method + ",type=Client.Success")
 	}
 
 	log.Infof("====== Leave std client interceptor ======")
@@ -53,7 +53,7 @@ func GofraServerInterceptorFunc(ctx context.Context, req interface{}, info *grpc
 	log.Infof("req:%v", req)
 
 	//Monitor method enter total
-	monitor.GetStatsd().Increment(info.FullMethod + "|Server.Total")
+	monitor.GetStatsd().Increment(info.FullMethod + ",type=Server.Total")
 
 	// Process
 	reply, err = handler(ctx, req)
@@ -62,12 +62,12 @@ func GofraServerInterceptorFunc(ctx context.Context, req interface{}, info *grpc
 		log.Infof("handle failed!!! error:%v", err)
 
 		//Monitor method fail total
-		monitor.GetStatsd().Increment(info.FullMethod + "|Server.Fail")
+		monitor.GetStatsd().Increment(info.FullMethod + ",type=Server.Fail")
 	} else {
 		log.Infof("reply:%v", reply)
 
 		//Monitor method success total
-		monitor.GetStatsd().Increment(info.FullMethod + "|Server.Success")
+		monitor.GetStatsd().Increment(info.FullMethod + ",type=Server.Success")
 	}
 
 	log.Infof("====== Leave std server interceptor ======")

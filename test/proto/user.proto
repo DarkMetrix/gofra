@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package tencent.user;
+
+// The greeting service definition.
+service UserService {
+  // Sends a greeting
+  rpc AddUser (AddUserRequest) returns (AddUserResponse) {}
+}
+
+// The request session
+message Session {
+    string seq = 1;
+}
+
+// The response result
+message Result {
+    int32 code = 1;
+    string message = 2;
+}
+
+message User {
+  string name = 1;
+  int32 sex = 2;
+}
+
+message AddUserRequest {
+    Session session = 1;
+    User user = 2;
+}
+
+message AddUserResponse {
+    Session session = 1;
+    Result result = 2;
+}
+
