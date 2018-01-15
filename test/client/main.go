@@ -6,6 +6,7 @@ import (
 
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/status"
 
 	pb "learn/test_grpc/basic/proto"
 
@@ -44,13 +45,21 @@ func main() {
 		resp, err := c.AddUser(context.Background(), req)
 
 		if err != nil {
-			fmt.Println(err)
+			stat, ok := status.FromError(err)
+
+			if ok {
+				fmt.Printf("AddUser failed! code:%d, message:%v\r\n",
+					stat.Code(), stat.Message())
+			} else {
+				fmt.Printf("AddUser failed! err:%v\r\n", err.Error())
+			}
+
 			return
 		}
 
 		fmt.Println(resp.String())
 
-		time.Sleep(time.Microsecond * 10)
+		time.Sleep(time.Second * 5)
 	}
 
 	time.Sleep(time.Second * 1)

@@ -39,7 +39,7 @@ func GofraClientInterceptorFunc(ctx context.Context, method string, req, reply i
 
 	log.Infof("====== Leave std client interceptor ======")
 
-	return nil
+	return err
 }
 
 // gofra server interceptor

@@ -29,7 +29,7 @@ func StdClientInterceptorFunc(ctx context.Context, method string, req, reply int
 
 	fmt.Println("====== Leave std client interceptor ======")
 
-	return nil
+	return err
 }
 
 // std server interceptor
