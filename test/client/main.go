@@ -5,13 +5,13 @@ import (
 	"time"
 
 	"golang.org/x/net/context"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 
 	pb "learn/test_grpc/basic/proto"
 
 	"github.com/DarkMetrix/gofra/grpc-utils/interceptor"
 	"github.com/DarkMetrix/gofra/grpc-utils/monitor"
+	"github.com/DarkMetrix/gofra/grpc-utils/pool"
 )
 
 func main() {
@@ -19,18 +19,7 @@ func main() {
 	monitor.InitStatsd("172.16.101.128:8125")
 
 	// dial remote server
-	conn, err := grpc.Dial(":58888", grpc.WithInsecure(),
-		grpc.WithUnaryInterceptor(interceptor.GofraClientInterceptor))
-
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-
-	defer conn.Close()
-
-	// new client
-	c := pb.NewUserServiceClient(conn)
+	pool.GetConnectionPool().Init(interceptor.GofraClientInterceptor, 5, 10, time.Second * 10)
 
 	// RPC call
 	req := new(pb.AddUserRequest)
@@ -42,6 +31,17 @@ func main() {
 	req.User.Sex = 1
 
 	for index := 0; index < 10000; index++ {
+		// get remote server connection
+		conn, err := pool.GetConnectionPool().GetConnection(context.Background(),":58888")
+
+		// new client
+		c := pb.NewUserServiceClient(conn.ClientConn)
+
+		if err != nil {
+			fmt.Printf("Get connection failed! error%v", err.Error())
+			continue
+		}
+
 		resp, err := c.AddUser(context.Background(), req)
 
 		if err != nil {
@@ -54,8 +54,12 @@ func main() {
 				fmt.Printf("AddUser failed! err:%v\r\n", err.Error())
 			}
 
+			conn.Unhealhty()
+
 			return
 		}
+
+		conn.Close()
 
 		fmt.Println(resp.String())
 
