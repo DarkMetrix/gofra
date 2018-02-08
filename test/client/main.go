@@ -3,15 +3,13 @@ package main
 import (
 	"fmt"
 	"time"
-
 	"golang.org/x/net/context"
 	"google.golang.org/grpc/status"
-
 	pb "learn/test_grpc/basic/proto"
 
-	"github.com/DarkMetrix/gofra/grpc-utils/interceptor"
-	"github.com/DarkMetrix/gofra/grpc-utils/monitor"
-	"github.com/DarkMetrix/gofra/grpc-utils/pool"
+	interceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/gofra"
+	monitor "github.com/DarkMetrix/gofra/grpc-utils/monitor/statsd"
+	pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
 )
 
 func main() {

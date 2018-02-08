@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc"
 	grpcPool "github.com/processout/grpc-go-pool"
 
-	"github.com/DarkMetrix/gofra/grpc-utils/interceptor"
+	interceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/std"
 )
 
 //Global connection pool instance
