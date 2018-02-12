@@ -104,7 +104,7 @@ var initCmd = &cobra.Command{
 }
 
 var templatePath string
-var destPath string
+var override bool
 
 type TemplateInfo struct {
 	Project string
@@ -119,6 +119,7 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	initCmd.PersistentFlags().StringVar(&templatePath, "template_path", "./template.json", "A template file in json to tell how to generate codes")
+	initCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
@@ -250,7 +251,7 @@ func GenerateCommonFile(workingPath string, info *TemplateInfo) error {
 		return err
 	}
 
-	if isExist {
+	if isExist && !override {
 		filePathRel, err := filepath.Rel(workingPath, filePath)
 
 		if err != nil {
