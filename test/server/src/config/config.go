@@ -9,31 +9,25 @@ var globalConfig *Config
 
 //Server config
 type ServerInfo struct {
-	Addr string `mapstructure:"addr" json:"addr"`
+	Addr string "mapstructure:\"addr\" json:\"addr\""
 }
 
 //Client config
 type ClientInfo struct {
-	Pool PoolInfo `mapstructure:"pool" json:"pool"`
+	Pool PoolInfo "mapstructure:\"pool\" json:\"pool\""
 }
 
 //Pool config
 type PoolInfo struct {
-	InitConns int `mapstructure:"init_conns" json:"init_conns"`
-	MaxConns int `mapstructure:"max_conns" json:"max_conns"`
-	IdleTime int `mapstructure:"idle_time" json:"idle_time"`
-}
-
-//Monitor config
-type MonitorInfo struct {
-	Addr string `mapstructure:"addr" json:"addr"`
+	InitConns int "mapstructure:\"init_conns\" json:\"init_conns\""
+	MaxConns int "mapstructure:\"max_conns\" json:\"max_conns\""
+	IdleTime int "mapstructure:\"idle_time\" json:\"idle_time\""
 }
 
 //Config sturcture
 type Config struct {
-	Server ServerInfo `mapstructure:"server" json:"server"`
-	Client ClientInfo `mapstructure:"client" json:"client"`
-	Monitor MonitorInfo `mapstructure:"server" json:"server"`
+	Server ServerInfo "mapstructure:\"server\" json:\"server\""
+	Client ClientInfo "mapstructure:\"client\" json:\"client\""
 }
 
 //New Config

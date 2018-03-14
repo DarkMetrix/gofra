@@ -1,7 +1,7 @@
 package UserService
 
 import (
-	"context"
+	context "golang.org/x/net/context"
 
 	pb "github.com/DarkMetrix/gofra/test/proto"
 )

@@ -1,6 +1,16 @@
 package template
 
+type ConfigInfo struct {
+	Author string
+	Time string
+}
+
 var ConfigTemplate string = `
+/**********************************
+ * Author : {{.Author}}
+ * Time : {{.Time}}
+ **********************************/
+
 package config
 
 import (

@@ -27,7 +27,7 @@ func (app *Application) Init(conf *config.Config) error {
 	logger.Init("../conf/log.config")
 
 	// init statsd
-	monitor.InitStatsd(conf.Monitor.Addr)
+	monitor.Init("127.0.0.1:8125")
 
 	// set server interceptor
 	app.ServerOpts = append(app.ServerOpts, grpc.UnaryInterceptor(interceptor.GofraServerInterceptor))

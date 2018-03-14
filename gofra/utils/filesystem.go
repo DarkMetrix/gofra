@@ -23,6 +23,12 @@ func CreatePath(path string) error {
 		return err
 	}
 
+	err = os.Chmod(path, os.ModePerm)
+
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

@@ -22,7 +22,6 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"path/filepath"
-	"text/template"
 
 	"github.com/spf13/cobra"
 
@@ -79,7 +78,7 @@ var initCmd = &cobra.Command{
 
 		//Init all files
 		fmt.Printf("\r\nInitializing all files ......")
-		err = InitAllFiles(workingPath, templateInfo)
+		err = InitAllFiles(workingPath, goPath, templateInfo)
 
 		if err != nil {
 			fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
@@ -106,9 +105,43 @@ var initCmd = &cobra.Command{
 var templatePath string
 var override bool
 
+//Server config
+type ServerInfo struct {
+	Addr string `json:"addr"`
+}
+
+//Client config
+type ClientInfo struct {
+	Pool PoolInfo `json:"pool"`
+}
+
+//Pool config
+type PoolInfo struct {
+	InitConns int `json:"init_conns"`
+	MaxConns int `json:"max_conns"`
+	IdleTime int `json:"idle_time"`
+}
+
+//Monitor package
+type MonitorPackageInfo struct {
+	Package string `json:"package"`
+	InitParam string `json:"init_param"`
+}
+
+//Interceptor package
+type InterceptorPackageInfo struct {
+	Package string `json:"package"`
+}
+
+//Template info
 type TemplateInfo struct {
-	Project string
-	Version string
+	Author string `json:"author"`
+	Project string `json:"project"`
+	Version string `json:"version"`
+	Server ServerInfo `json:"server"`
+	Client ClientInfo `json:"client"`
+	MonitorPackage MonitorPackageInfo `json:"monitor_package"`
+	InterceptorPackage InterceptorPackageInfo `json:"interceptor_package"`
 }
 
 func init() {
@@ -150,7 +183,7 @@ func CheckPath() (string, string, error) {
 }
 
 //Read template json file to ge information about how to generate the application
-func ReadTemplate(templatePath string) (*TemplateInfo, string, error) {
+func ReadTemplate(templatePath string) (*gofraTemplate.TemplateInfo, string, error) {
 	templateFile, err := os.Open(templatePath)
 
 	if err != nil {
@@ -165,7 +198,7 @@ func ReadTemplate(templatePath string) (*TemplateInfo, string, error) {
 		return nil, "", err
 	}
 
-	var info *TemplateInfo = new(TemplateInfo)
+	var info *gofraTemplate.TemplateInfo = new(gofraTemplate.TemplateInfo)
 
 	err = json.Unmarshal(data, info)
 
@@ -177,7 +210,7 @@ func ReadTemplate(templatePath string) (*TemplateInfo, string, error) {
 }
 
 //Init application directory structure
-func InitDirectoryStructure(workingPath string, info *TemplateInfo) error {
+func InitDirectoryStructure(workingPath string, info *gofraTemplate.TemplateInfo) error {
 	binPath := filepath.Join(workingPath, "bin")
 	confPath := filepath.Join(workingPath, "conf")
 	logPath := filepath.Join(workingPath, "log")
@@ -187,6 +220,9 @@ func InitDirectoryStructure(workingPath string, info *TemplateInfo) error {
 	commonPath := filepath.Join(workingPath, "src", "common")
 	configPath := filepath.Join(workingPath, "src",  "config")
 	handlerPath := filepath.Join(workingPath, "src", "handler")
+	protoPath := filepath.Join(workingPath, "src", "proto")
+
+	healthCheckServicePath := filepath.Join(workingPath, "src", "proto", "health_check")
 
 	//Create root directories
 	err := gofraUtils.CreatePaths(binPath, confPath, logPath, srcPath)
@@ -196,7 +232,14 @@ func InitDirectoryStructure(workingPath string, info *TemplateInfo) error {
 	}
 
 	//Create src sub directories
-	err = gofraUtils.CreatePaths(applicationPath, commonPath, configPath, handlerPath)
+	err = gofraUtils.CreatePaths(applicationPath, commonPath, configPath, handlerPath, protoPath)
+
+	if err != nil {
+		return err
+	}
+
+	//Create proto sub directories
+	err = gofraUtils.CreatePaths(healthCheckServicePath)
 
 	if err != nil {
 		return err
@@ -206,105 +249,48 @@ func InitDirectoryStructure(workingPath string, info *TemplateInfo) error {
 }
 
 //Init all go file with template
-func InitAllFiles(workingPath string, info *TemplateInfo) error {
-	err := GenerateCommonFile(workingPath, info)
+func InitAllFiles(workingPath, goPath string, info *gofraTemplate.TemplateInfo) error {
+	err := gofraTemplate.GenerateCommonFile(workingPath, goPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	err = GenerateConfigFile(workingPath, info)
+	err = gofraTemplate.GenerateConfigFile(workingPath, goPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	err = GenerateApplicationFile(workingPath, info)
+	err = gofraTemplate.GenerateConfigJsonFile(workingPath, goPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	err = GenerateMainFile(workingPath, info)
+	err = gofraTemplate.GenerateConfigLogFile(workingPath, goPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	err = GenerateHandler(workingPath, info)
+	err = gofraTemplate.GenerateApplicationFile(workingPath, goPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	return nil
-}
-
-//Generate common.go
-func GenerateCommonFile(workingPath string, info *TemplateInfo) error {
-	filePath := filepath.Join(workingPath, "src", "common", "common.go")
-
-	//Check file is exist or not
-	isExist, err := gofraUtils.CheckPathExists(filePath)
+	err = gofraTemplate.GenerateMainFile(workingPath, goPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	if isExist && !override {
-		filePathRel, err := filepath.Rel(workingPath, filePath)
-
-		if err != nil {
-			return err
-		}
-
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
-	}
-
-	//Parse template
-	commonTemplate, err := template.New("common").Parse(gofraTemplate.CommonTemplate)
+	err = gofraTemplate.GenerateHealthCheckHandler(workingPath, goPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	commonInfo := &gofraTemplate.CommonInfo{
-		Project: info.Project,
-		Version: info.Version,
-	}
-
-	file, err := os.OpenFile(filePath, os.O_RDWR | os.O_CREATE, 0755)
-
-	if err != nil {
-		return err
-	}
-
-	//Render template to file
-	err = commonTemplate.Execute(file, commonInfo)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-//Generate config.go
-func GenerateConfigFile(workingPath string, info *TemplateInfo) error {
-	return nil
-}
-
-//Generate application.go
-func GenerateApplicationFile(workingPath string, info *TemplateInfo) error {
-	return nil
-}
-
-//Generate main.go
-func GenerateMainFile(workingPath string, info *TemplateInfo) error {
-	return nil
-}
-
-//Generate handler
-func GenerateHandler(workingPath string, info *TemplateInfo) error {
 	return nil
 }

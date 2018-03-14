@@ -1,8 +1,9 @@
-package src
+package main
 
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	config "github.com/DarkMetrix/gofra/test/server/src/config"
 	application "github.com/DarkMetrix/gofra/test/server/src/application"
@@ -11,6 +12,13 @@ import (
 func main() {
 	// start
 	fmt.Println("====== Test grpc server ======")
+
+	a := "/york/gopath/src/github.com/dk/gofra"
+	b := "/york/gopath/src/"
+
+	fmt.Println(strings.TrimPrefix(a, b))
+
+	return
 
 	// init config
 	conf := config.GetConfig()
