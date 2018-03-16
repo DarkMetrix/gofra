@@ -10,8 +10,6 @@ type ApplicationInfo struct {
 	MonitorInitParam string
 
 	InterceptorPackage string
-
-	Services []string
 }
 
 var ApplicationTemplate string = `
@@ -34,11 +32,6 @@ import (
 	interceptor "{{.InterceptorPackage}}"
 
 	"{{.WorkingPathRelative}}/src/config"
-
-	{{range $Service := .Services}}
-	proto{{$Service}} "{{$.WorkingPathRelative}}/proto/{{$Service}}"
-	{{$Service}}Handler "{{$.WorkingPathRelative}}/src/handler/{{$Service}}"
-	{{end}}
 
 	//!!!DO NOT EDIT!!!
 	/*@PROTO_STUB*/
@@ -83,10 +76,6 @@ func (app *Application) Run(address string) error {
 	s := grpc.NewServer(app.ServerOpts ...)
 
 	// register services
-	{{range $Service := .Services}}
-	pb.Register{{$Service}}Server(s, {{$Service}}Handler.{{$Service}}Impl{})
-	{{end}}
-
 	//!!!DO NOT EDIT!!!
 	/*@REGISTER_STUB*/
 

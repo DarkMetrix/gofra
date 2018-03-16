@@ -2,6 +2,7 @@ package template
 
 import (
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -285,9 +286,6 @@ func GenerateApplicationFile(workingPath, goPath string, info *TemplateInfo, ove
 		return err
 	}
 
-	allServices := make([]string, 0)
-	allServices = append(allServices, "HealthCheckService")
-
 	applicationInfo := &ApplicationInfo{
 		Author: info.Author,
 		Time: time.Now().Format("2006-01-02 15:04:05"),
@@ -295,7 +293,6 @@ func GenerateApplicationFile(workingPath, goPath string, info *TemplateInfo, ove
 		MonitorPackage: info.MonitorPackage.Package,
 		MonitorInitParam: info.MonitorPackage.InitParam,
 		InterceptorPackage: info.InterceptorPackage.Package,
-		Services: allServices,
 	}
 
 	file, err := os.OpenFile(filePath, os.O_RDWR | os.O_CREATE, 0755)
@@ -370,67 +367,19 @@ func GenerateMainFile(workingPath, goPath string, info *TemplateInfo, override b
 
 //Generate health check handler
 func GenerateHealthCheckHandler(workingPath, goPath string, info *TemplateInfo, override bool) error {
+	//Generate health check proto file
 	err := GenerateHealthCheckProto(workingPath, goPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	// invoke ParseFile() API to parse the file
 	filePath := filepath.Join(workingPath, "src", "proto", "health_check", "health_check.proto")
 
-	pf, err := pbparser.ParseFile(filePath)
+	err = GenerateService(workingPath, goPath, info, filePath, override)
 
 	if err != nil {
-		return errors.New(fmt.Sprintf("Unable to parse proto file! error:%v", err.Error()))
-	}
-
-	workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "src") + "/")
-
-	// print attributes of the returned datastructure
-	for _, elem := range pf.Services {
-		//Create path
-		handlerPath := filepath.Join(workingPath, "src", "handler", elem.Name)
-
-		err := gofraUtils.CreatePath(handlerPath)
-
-		if err != nil {
-			return err
-		}
-
-		service := &ServiceInfo{
-			Author: info.Author,
-			Time: time.Now().Format("2006-01-02 15:04:05"),
-			ServiceName: elem.Name}
-
-		//Create implementation file
-		err = GenerateServiceImplementation(workingPath, goPath, info, service, override)
-
-		if err != nil {
-			return err
-		}
-
-		//Create handlers
-		for _, rpc := range elem.RPCs {
-			fmt.Printf("  Name:%v\r\n  Doc:%v\r\n  Opt:%v\r\n  ReqType:%v\r\n  RspType:%v\r\n",
-				rpc.Name, rpc.Documentation, rpc.Options, rpc.RequestType, rpc.ResponseType)
-
-
-			rpc := &RpcInfo{
-				Author: info.Author,
-				Time: time.Now().Format("2006-01-02 15:04:05"),
-				WorkingPathRelative: workingPathRelative,
-				ServiceName: service.ServiceName,
-				RpcName: rpc.Name,
-				Request: rpc.RequestType.Name(),
-				Response: rpc.ResponseType.Name(),}
-
-				err = GenerateServiceHandler(workingPath, goPath, info, rpc, override)
-
-				if err != nil {
-					return err
-				}
-		}
+		return err
 	}
 
 	return nil
@@ -485,9 +434,163 @@ func GenerateHealthCheckProto(workingPath, goPath string, info *TemplateInfo, ov
 
 	//Execute protoc to generate .pb.go file
 	cmd := exec.Command("protoc", "--go_out=plugins=grpc:.", filePathRelative)
-	fmt.Println(filePath)
 
 	err = cmd.Run()
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+//Generate service
+func GenerateService(workingPath, goPath string, info *TemplateInfo, protoPath string, override bool) error {
+	//Parse proto file
+	pf, err := pbparser.ParseFile(protoPath)
+
+	if err != nil {
+		return errors.New(fmt.Sprintf("Unable to parse proto file! error:%v", err.Error()))
+	}
+
+	workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "src") + "/")
+	protoFileNamePrefix := strings.TrimSuffix(filepath.Base(protoPath), filepath.Ext(protoPath))
+
+	//Generate service and handler
+	for _, elem := range pf.Services {
+		//Create path
+		handlerPath := filepath.Join(workingPath, "src", "handler", elem.Name)
+
+		err := gofraUtils.CreatePath(handlerPath)
+
+		if err != nil {
+			return err
+		}
+
+		service := &ServiceInfo{
+			Author: info.Author,
+			Time: time.Now().Format("2006-01-02 15:04:05"),
+			ServiceName: elem.Name}
+
+		//Create implementation file
+		err = GenerateServiceImplementation(workingPath, goPath, info, service, override)
+
+		if err != nil {
+			return err
+		}
+
+		//Add service handler import to application
+		err = AddServiceHandlerToApplicationFileImport(workingPath, goPath, info, service.ServiceName)
+
+		if err != nil {
+			return err
+		}
+
+		//Add service register to application
+		err = AddServiceRegisterToApplicationFile(workingPath, goPath, info, protoPath, service.ServiceName)
+
+		if err != nil {
+			return err
+		}
+
+		//Create handlers
+		for _, rpc := range elem.RPCs {
+			rpc := &RpcInfo{
+				Author: info.Author,
+				Time: time.Now().Format("2006-01-02 15:04:05"),
+				WorkingPathRelative: workingPathRelative,
+				ServiceName: service.ServiceName,
+				FileNamePrefix: protoFileNamePrefix,
+				RpcName: rpc.Name,
+				Request: rpc.RequestType.Name(),
+				Response: rpc.ResponseType.Name(),}
+
+				err = GenerateServiceHandler(workingPath, goPath, info, rpc, override)
+
+				if err != nil {
+					return err
+				}
+		}
+	}
+
+	//Add service proto import to application
+	err = AddServiceProtoToApplicationFileImport(workingPath, goPath, info, protoPath)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+//Add service proto import to application file
+func AddServiceProtoToApplicationFileImport(workingPath, goPath string, info *TemplateInfo, protoPath string) error {
+	applicationFilePath := filepath.Join(workingPath, "src", "application", "application.go")
+
+	applicationContent, err := ioutil.ReadFile(applicationFilePath)
+
+	if err != nil {
+		return err
+	}
+
+	workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "src") + "/")
+	protoFileNamePrefix := strings.TrimSuffix(filepath.Base(protoPath), filepath.Ext(protoPath))
+
+	protoImport := fmt.Sprintf("%v \"%v/src/proto/%v\"\r\n	/*@PROTO_STUB*/", protoFileNamePrefix, workingPathRelative, protoFileNamePrefix)
+
+	applicationContent = []byte(strings.Replace(string(applicationContent), "/*@PROTO_STUB*/", protoImport, 1))
+
+	err = ioutil.WriteFile(applicationFilePath, applicationContent, os.ModePerm)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+//Add service handler import to application file
+func AddServiceHandlerToApplicationFileImport(workingPath, goPath string, info *TemplateInfo, serviceName string) error {
+	applicationFilePath := filepath.Join(workingPath, "src", "application", "application.go")
+
+	applicationContent, err := ioutil.ReadFile(applicationFilePath)
+
+	if err != nil {
+		return err
+	}
+
+	workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "src") + "/")
+
+	protoImport := fmt.Sprintf("%vHandler \"%v/src/handler/%v\"\r\n	/*@HANDLER_STUB*/", serviceName, workingPathRelative, serviceName)
+
+	applicationContent = []byte(strings.Replace(string(applicationContent), "/*@HANDLER_STUB*/", protoImport, 1))
+
+	err = ioutil.WriteFile(applicationFilePath, applicationContent, os.ModePerm)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+//Add service handler import to application file
+func AddServiceRegisterToApplicationFile(workingPath, goPath string, info *TemplateInfo, protoPath, serviceName string) error {
+	applicationFilePath := filepath.Join(workingPath, "src", "application", "application.go")
+
+	applicationContent, err := ioutil.ReadFile(applicationFilePath)
+
+	if err != nil {
+		return err
+	}
+
+	protoFileNamePrefix := strings.TrimSuffix(filepath.Base(protoPath), filepath.Ext(protoPath))
+
+	protoImport := fmt.Sprintf("%v.Register%vServer(s, %vHandler.%vImpl{})\r\n	/*@REGISTER_STUB*/", protoFileNamePrefix, serviceName, serviceName, serviceName)
+
+	applicationContent = []byte(strings.Replace(string(applicationContent), "/*@REGISTER_STUB*/", protoImport, 1))
+
+	err = ioutil.WriteFile(applicationFilePath, applicationContent, os.ModePerm)
 
 	if err != nil {
 		return err

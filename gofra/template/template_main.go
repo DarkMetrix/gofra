@@ -14,7 +14,7 @@ var MainTemplate string = `
  * Time : {{.Time}}
  **********************************/
 
-package src
+package main
 
 import (
 	"fmt"
@@ -47,6 +47,8 @@ func main() {
 		fmt.Printf("Application init failed! error:%v\r\n", err.Error())
 		os.Exit(-2)
 	}
+
+	fmt.Printf("Listen on port [{{.Addr}}]\r\n")
 
 	err = application.Run("{{.Addr}}")
 

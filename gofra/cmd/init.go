@@ -184,15 +184,7 @@ func CheckPath() (string, string, error) {
 
 //Read template json file to ge information about how to generate the application
 func ReadTemplate(templatePath string) (*gofraTemplate.TemplateInfo, string, error) {
-	templateFile, err := os.Open(templatePath)
-
-	if err != nil {
-		return nil, "", err
-	}
-
-	defer templateFile.Close()
-
-	data, err := ioutil.ReadAll(templateFile)
+	data, err := ioutil.ReadFile(templatePath)
 
 	if err != nil {
 		return nil, "", err
