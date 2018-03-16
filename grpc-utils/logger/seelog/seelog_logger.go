@@ -1,4 +1,4 @@
-package logger
+package seelog
 
 import (
 	log "github.com/cihub/seelog"
@@ -17,10 +17,16 @@ var defaultSetting string = `
 	`
 
 //Init seelog using config file path, if empty using default setting
-func InitSeelog(path string) {
+func Init(args ... string) {
 	//If path is empty, use default setting
 	var logger log.LoggerInterface
 	var err error
+
+	if len(args) < 1 {
+		panic("Init args length < 1")
+	}
+
+	path := args[0]
 
 	if len(path) == 0 {
 		logger, err = log.LoggerFromConfigAsString(defaultSetting)

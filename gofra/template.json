@@ -1,0 +1,27 @@
+{
+    "author":"techie",
+    "project":"TestGofra",
+    "version":"0.0.1",
+    "server":
+    {
+        "addr":":58888"
+    },
+    "client":
+    {
+        "pool":
+        {
+            "init_conns":5,
+            "max_conns":10,
+            "idle_time":30
+        }
+    },
+    "monitor_package":
+    {
+        "package":"github.com/DarkMetrix/gofra/grpc-utils/monitor/statsd",
+        "init_param":"127.0.0.1:8125"
+    },
+    "interceptor_package":
+    {
+        "package":"github.com/DarkMetrix/gofra/grpc-utils/interceptor/gofra"
+    }
+}

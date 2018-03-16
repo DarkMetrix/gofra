@@ -1,0 +1,15 @@
+{
+  "server":
+  {
+    "addr":":58888"
+  },
+  "client":
+  {
+    "pool":
+    {
+      "init_conns":5,
+      "max_conns":10,
+      "idle_time":30
+    }
+  }
+}

@@ -1,12 +1,20 @@
-package interceptor
+package gofra
 
 import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
-	"github.com/DarkMetrix/gofra/grpc-utils/monitor"
+	monitor "github.com/DarkMetrix/gofra/grpc-utils/monitor/statsd"
 	log "github.com/cihub/seelog"
 )
+
+func GetClientInterceptor() grpc.UnaryClientInterceptor {
+	return GofraClientInterceptor
+}
+
+func GetServerInterceptor() grpc.UnaryServerInterceptor {
+	return GofraServerInterceptor
+}
 
 // gofra client interceptor
 var GofraClientInterceptor grpc.UnaryClientInterceptor = GofraClientInterceptorFunc
@@ -20,7 +28,7 @@ func GofraClientInterceptorFunc(ctx context.Context, method string, req, reply i
 	log.Infof("req:%v", req)
 
 	//Monitor method enter total
-	monitor.GetStatsd().Increment(method + ",type=Client.Total")
+	monitor.Increment(method + ",type=Client.Total")
 
 	// Invoke remote
 	err := invoker(ctx, method, req, reply, cc, opts...)
@@ -29,12 +37,12 @@ func GofraClientInterceptorFunc(ctx context.Context, method string, req, reply i
 		log.Infof("invoke failed!!! error:%v", err)
 
 		//Monitor method fail total
-		monitor.GetStatsd().Increment(method + ",type=Client.Fail")
+		monitor.Increment(method + ",type=Client.Fail")
 	} else {
 		log.Infof("reply:%v", reply)
 
 		//Monitor method success total
-		monitor.GetStatsd().Increment(method + ",type=Client.Success")
+		monitor.Increment(method + ",type=Client.Success")
 	}
 
 	log.Infof("====== Leave std client interceptor ======")
@@ -53,7 +61,7 @@ func GofraServerInterceptorFunc(ctx context.Context, req interface{}, info *grpc
 	log.Infof("req:%v", req)
 
 	//Monitor method enter total
-	monitor.GetStatsd().Increment(info.FullMethod + ",type=Server.Total")
+	monitor.Increment(info.FullMethod + ",type=Server.Total")
 
 	// Process
 	reply, err = handler(ctx, req)
@@ -62,12 +70,12 @@ func GofraServerInterceptorFunc(ctx context.Context, req interface{}, info *grpc
 		log.Infof("handle failed!!! error:%v", err)
 
 		//Monitor method fail total
-		monitor.GetStatsd().Increment(info.FullMethod + ",type=Server.Fail")
+		monitor.Increment(info.FullMethod + ",type=Server.Fail")
 	} else {
 		log.Infof("reply:%v", reply)
 
 		//Monitor method success total
-		monitor.GetStatsd().Increment(info.FullMethod + ",type=Server.Success")
+		monitor.Increment(info.FullMethod + ",type=Server.Success")
 	}
 
 	log.Infof("====== Leave std server interceptor ======")

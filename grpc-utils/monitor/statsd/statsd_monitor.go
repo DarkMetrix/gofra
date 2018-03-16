@@ -1,4 +1,4 @@
-package monitor
+package statsd
 
 import (
 	"github.com/alexcesaro/statsd"
@@ -29,4 +29,20 @@ func GetStatsd() *statsd.Client{
 	}
 
 	return client
+}
+
+//Init
+func Init(args... string) {
+	if len(args) < 1 {
+		panic("Init args length < 1")
+	}
+
+	addr := args[0]
+
+	InitStatsd(addr)
+}
+
+//Increment
+func Increment(bucket string) {
+	GetStatsd().Increment(bucket)
 }

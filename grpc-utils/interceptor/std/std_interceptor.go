@@ -1,4 +1,4 @@
-package interceptor
+package std
 
 import (
 	"fmt"
@@ -6,6 +6,14 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 )
+
+func GetClientInterceptor() grpc.UnaryClientInterceptor {
+	return StdClientInterceptor
+}
+
+func GetServerInterceptor() grpc.UnaryServerInterceptor {
+	return StdServerInterceptor
+}
 
 // std client interceptor
 var StdClientInterceptor grpc.UnaryClientInterceptor = StdClientInterceptorFunc

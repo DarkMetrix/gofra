@@ -1,67 +1,68 @@
 package main
 
 import (
-	"fmt"
-	"time"
+    "fmt"
+    "time"
+    "golang.org/x/net/context"
+    "google.golang.org/grpc/status"
+    pb "learn/test_grpc/basic/proto"
 
-	"golang.org/x/net/context"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/status"
-
-	pb "learn/test_grpc/basic/proto"
-
-	"github.com/DarkMetrix/gofra/grpc-utils/interceptor"
-	"github.com/DarkMetrix/gofra/grpc-utils/monitor"
+    interceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/gofra"
+    monitor "github.com/DarkMetrix/gofra/grpc-utils/monitor/statsd"
+    pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
 )
 
 func main() {
-	// init statsd
-	//monitor.InitStatsd("172.16.101.128:8125")
-	monitor.InitStatsd("127.0.0.1:8125")
+    // init statsd
+    monitor.InitStatsd("172.16.101.128:8125")
 
-	// dial remote server
-	conn, err := grpc.Dial(":58888", grpc.WithInsecure(),
-		grpc.WithUnaryInterceptor(interceptor.GofraClientInterceptor))
+    // dial remote server
+    pool.GetConnectionPool().Init(interceptor.GofraClientInterceptor, 5, 10, time.Second * 10)
 
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+    // RPC call
+    req := new(pb.AddUserRequest)
+    req.Session = new(pb.Session)
+    req.User = new(pb.User)
 
-	defer conn.Close()
+    req.Session.Seq = "12345678"
+    req.User.Name = "techieliu"
+    req.User.Sex = 1
 
-	// new client
-	c := pb.NewUserServiceClient(conn)
+    for index := 0; index < 10000; index++ {
+        // get remote server connection
+        conn, err := pool.GetConnectionPool().GetConnection(context.Background(),":58888")
 
-	// RPC call
-	req := new(pb.AddUserRequest)
-	req.Session = new(pb.Session)
-	req.User = new(pb.User)
+        // new client
+        c := pb.NewUserServiceClient(conn.ClientConn)
 
-	req.Session.Seq = "12345678"
-	req.User.Name = "techieliu"
-	req.User.Sex = 1
+        if err != nil {
+            fmt.Printf("Get connection failed! error%v", err.Error())
+            continue
+        }
 
-	for index := 0; index < 1000; index++ {
-		resp, err := c.AddUser(context.Background(), req)
+        resp, err := c.AddUser(context.Background(), req)
 
-		if err != nil {
-			stat, ok := status.FromError(err)
+        if err != nil {
+            stat, ok := status.FromError(err)
 
-			if ok {
-				fmt.Printf("AddUser failed! code:%d, message:%v\r\n",
-					stat.Code(), stat.Message())
-			} else {
-				fmt.Printf("AddUser failed! err:%v\r\n", err.Error())
-			}
+            if ok {
+                    fmt.Printf("AddUser failed! code:%d, message:%v\r\n",
+                                    stat.Code(), stat.Message())
+            } else {
+                    fmt.Printf("AddUser failed! err:%v\r\n", err.Error())
+            }
 
-			return
-		}
+            conn.Unhealhty()
 
-		fmt.Println(resp.String())
+            return
+        }
 
-		time.Sleep(time.Second * 1)
-	}
+        conn.Close()
 
-	time.Sleep(time.Second * 1)
+        fmt.Println(resp.String())
+
+        time.Sleep(time.Second * 5)
+    }
+
+    time.Sleep(time.Second * 1)
 }

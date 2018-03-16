@@ -1,16 +1,3 @@
-package template
-
-type ConfigInfo struct {
-	Author string
-	Time string
-}
-
-var ConfigTemplate string = `
-/**********************************
- * Author : {{.Author}}
- * Time : {{.Time}}
- **********************************/
-
 package config
 
 import (
@@ -80,30 +67,3 @@ func (config *Config) Init (path string) error {
 
 	return nil
 }
-`
-
-type ConfigJsonInfo struct {
-	Addr string
-	InitConns int
-	MaxConns int
-	IdleTime int
-}
-
-var ConfigJsonTemplate string = `
-{
-  "server":
-  {
-    "addr":"{{.Addr}}"
-  },
-  "client":
-  {
-    "pool":
-    {
-      "init_conns":{{.InitConns}},
-      "max_conns":{{.MaxConns}},
-      "idle_time":{{.IdleTime}}
-    }
-  }
-}
-`
-
