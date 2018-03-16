@@ -10,6 +10,8 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/tallstoat/pbparser"
+
 	gofraUtils "github.com/DarkMetrix/gofra/gofra/utils"
 )
 
@@ -368,6 +370,74 @@ func GenerateMainFile(workingPath, goPath string, info *TemplateInfo, override b
 
 //Generate health check handler
 func GenerateHealthCheckHandler(workingPath, goPath string, info *TemplateInfo, override bool) error {
+	err := GenerateHealthCheckProto(workingPath, goPath, info, override)
+
+	if err != nil {
+		return err
+	}
+
+	// invoke ParseFile() API to parse the file
+	filePath := filepath.Join(workingPath, "src", "proto", "health_check", "health_check.proto")
+
+	pf, err := pbparser.ParseFile(filePath)
+
+	if err != nil {
+		return errors.New(fmt.Sprintf("Unable to parse proto file! error:%v", err.Error()))
+	}
+
+	workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "src") + "/")
+
+	// print attributes of the returned datastructure
+	for _, elem := range pf.Services {
+		//Create path
+		handlerPath := filepath.Join(workingPath, "src", "handler", elem.Name)
+
+		err := gofraUtils.CreatePath(handlerPath)
+
+		if err != nil {
+			return err
+		}
+
+		service := &ServiceInfo{
+			Author: info.Author,
+			Time: time.Now().Format("2006-01-02 15:04:05"),
+			ServiceName: elem.Name}
+
+		//Create implementation file
+		err = GenerateServiceImplementation(workingPath, goPath, info, service, override)
+
+		if err != nil {
+			return err
+		}
+
+		//Create handlers
+		for _, rpc := range elem.RPCs {
+			fmt.Printf("  Name:%v\r\n  Doc:%v\r\n  Opt:%v\r\n  ReqType:%v\r\n  RspType:%v\r\n",
+				rpc.Name, rpc.Documentation, rpc.Options, rpc.RequestType, rpc.ResponseType)
+
+
+			rpc := &RpcInfo{
+				Author: info.Author,
+				Time: time.Now().Format("2006-01-02 15:04:05"),
+				WorkingPathRelative: workingPathRelative,
+				ServiceName: service.ServiceName,
+				RpcName: rpc.Name,
+				Request: rpc.RequestType.Name(),
+				Response: rpc.ResponseType.Name(),}
+
+				err = GenerateServiceHandler(workingPath, goPath, info, rpc, override)
+
+				if err != nil {
+					return err
+				}
+		}
+	}
+
+	return nil
+}
+
+//Generate health check service proto
+func GenerateHealthCheckProto(workingPath, goPath string, info *TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "src", "proto", "health_check", "health_check.proto")
 	filePathRelative := filepath.Join(".", "src", "proto", "health_check", "health_check.proto")
 
@@ -426,8 +496,90 @@ func GenerateHealthCheckHandler(workingPath, goPath string, info *TemplateInfo, 
 	return nil
 }
 
-//Generate service proto
+//Generate service implementation
+func GenerateServiceImplementation(workingPath, goPath string, info *TemplateInfo, service *ServiceInfo, override bool) error {
+	filePath := filepath.Join(workingPath, "src", "handler", service.ServiceName, service.ServiceName + ".go")
 
-//Generate service implement
+	//Check file is exist or not
+	isExist, err := gofraUtils.CheckPathExists(filePath)
+
+	if err != nil {
+		return err
+	}
+
+	if isExist && !override {
+		filePathRel, err := filepath.Rel(workingPath, filePath)
+
+		if err != nil {
+			return err
+		}
+
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+	}
+
+	//Parse template
+	serviceTemplate, err := template.New("implementation").Parse(ServiceTemplate)
+
+	if err != nil {
+		return err
+	}
+
+	file, err := os.OpenFile(filePath, os.O_RDWR | os.O_CREATE, 0755)
+
+	if err != nil {
+		return err
+	}
+
+	//Render template to file
+	err = serviceTemplate.Execute(file, service)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 //Generate service handler
+func GenerateServiceHandler(workingPath, goPath string, info *TemplateInfo, rpc *RpcInfo, override bool) error {
+	filePath := filepath.Join(workingPath, "src", "handler", rpc.ServiceName, rpc.RpcName + ".go")
+
+	//Check file is exist or not
+	isExist, err := gofraUtils.CheckPathExists(filePath)
+
+	if err != nil {
+		return err
+	}
+
+	if isExist && !override {
+		filePathRel, err := filepath.Rel(workingPath, filePath)
+
+		if err != nil {
+			return err
+		}
+
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+	}
+
+	//Parse template
+	serviceRpcTemplate, err := template.New("handler").Parse(ServiceRpcTemplate)
+
+	if err != nil {
+		return err
+	}
+
+	file, err := os.OpenFile(filePath, os.O_RDWR | os.O_CREATE, 0755)
+
+	if err != nil {
+		return err
+	}
+
+	//Render template to file
+	err = serviceRpcTemplate.Execute(file, rpc)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
