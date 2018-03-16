@@ -36,7 +36,8 @@ func (h UserService) AddUser (ctx context.Context, req *pb.AddUserRequest) (*pb.
 
 func main() {
 	// init statsd
-	monitor.InitStatsd("172.16.101.128:8125")
+	//monitor.InitStatsd("172.16.101.128:8125")
+	monitor.InitStatsd("127.0.0.1:8125")
 
 	// start
 	fmt.Println("====== Test grpc server ======")

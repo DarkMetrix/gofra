@@ -16,7 +16,8 @@ import (
 
 func main() {
 	// init statsd
-	monitor.InitStatsd("172.16.101.128:8125")
+	//monitor.InitStatsd("172.16.101.128:8125")
+	monitor.InitStatsd("127.0.0.1:8125")
 
 	// dial remote server
 	conn, err := grpc.Dial(":58888", grpc.WithInsecure(),
@@ -41,7 +42,7 @@ func main() {
 	req.User.Name = "techieliu"
 	req.User.Sex = 1
 
-	for index := 0; index < 10000; index++ {
+	for index := 0; index < 1000; index++ {
 		resp, err := c.AddUser(context.Background(), req)
 
 		if err != nil {
@@ -59,7 +60,7 @@ func main() {
 
 		fmt.Println(resp.String())
 
-		time.Sleep(time.Second * 5)
+		time.Sleep(time.Second * 1)
 	}
 
 	time.Sleep(time.Second * 1)
