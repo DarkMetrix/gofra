@@ -7,9 +7,10 @@ type LogInfo struct {
 }
 
 var LogTemplate string = `
-<seelog>
+<seelog minlevel="debug" maxlevel="critical">
 	<outputs formatid="main">
 		<rollingfile type="size" filename="{{.Path}}" maxsize="{{.MaxSize}}" maxrolls="{{.MaxRolls}}"/>
+		<console/>
 	</outputs>
 	<formats>
 	    <format id="main" format="[%LEVEL][%DateT%Time][%File:%Line][%FuncShort] => %Msg%n"/>

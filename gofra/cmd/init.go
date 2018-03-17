@@ -207,6 +207,7 @@ func InitDirectoryStructure(workingPath string, info *gofraTemplate.TemplateInfo
 	confPath := filepath.Join(workingPath, "conf")
 	logPath := filepath.Join(workingPath, "log")
 	srcPath := filepath.Join(workingPath, "src")
+	testPath := filepath.Join(workingPath, "test")
 
 	applicationPath := filepath.Join(workingPath, "src", "application")
 	commonPath := filepath.Join(workingPath, "src", "common")
@@ -217,7 +218,7 @@ func InitDirectoryStructure(workingPath string, info *gofraTemplate.TemplateInfo
 	healthCheckServicePath := filepath.Join(workingPath, "src", "proto", "health_check")
 
 	//Create root directories
-	err := gofraUtils.CreatePaths(binPath, confPath, logPath, srcPath)
+	err := gofraUtils.CreatePaths(binPath, confPath, logPath, srcPath, testPath)
 
 	if err != nil {
 		return err
@@ -279,6 +280,12 @@ func InitAllFiles(workingPath, goPath string, info *gofraTemplate.TemplateInfo) 
 	}
 
 	err = gofraTemplate.GenerateHealthCheckHandler(workingPath, goPath, info, override)
+
+	if err != nil {
+		return err
+	}
+
+	err = gofraTemplate.GenerateTestClient(workingPath, goPath, info, override)
 
 	if err != nil {
 		return err

@@ -686,3 +686,60 @@ func GenerateServiceHandler(workingPath, goPath string, info *TemplateInfo, rpc 
 
 	return nil
 }
+
+//Generate test client
+func GenerateTestClient(workingPath, goPath string, info *TemplateInfo, override bool) error {
+	filePath := filepath.Join(workingPath, "test", "main.go")
+
+	//Check file is exist or not
+	isExist, err := gofraUtils.CheckPathExists(filePath)
+
+	if err != nil {
+		return err
+	}
+
+	if isExist && !override {
+		filePathRel, err := filepath.Rel(workingPath, filePath)
+
+		if err != nil {
+			return err
+		}
+
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+	}
+
+	workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "src") + "/")
+
+	//Parse template
+	testClientTemplate, err := template.New("test_client").Parse(TestClientTemplate)
+
+	if err != nil {
+		return err
+	}
+
+	testClientInfo := &TestClientInfo{
+		Author: info.Author,
+		Time: time.Now().Format("2006-01-02 15:04:05"),
+		Project: info.Project,
+		Addr: info.Server.Addr,
+		WorkingPathRelative: workingPathRelative,
+		MonitorPackage: info.MonitorPackage.Package,
+		MonitorInitParam: info.MonitorPackage.InitParam,
+		InterceptorPackage: info.InterceptorPackage.Package,
+	}
+
+	file, err := os.OpenFile(filePath, os.O_RDWR | os.O_CREATE, 0755)
+
+	if err != nil {
+		return err
+	}
+
+	//Render template to file
+	err = testClientTemplate.Execute(file, testClientInfo)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
