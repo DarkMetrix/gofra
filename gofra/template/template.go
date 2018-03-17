@@ -289,6 +289,7 @@ func GenerateApplicationFile(workingPath, goPath string, info *TemplateInfo, ove
 	applicationInfo := &ApplicationInfo{
 		Author: info.Author,
 		Time: time.Now().Format("2006-01-02 15:04:05"),
+		Project: info.Project,
 		WorkingPathRelative: workingPathRelative,
 		MonitorPackage: info.MonitorPackage.Package,
 		MonitorInitParam: info.MonitorPackage.InitParam,

@@ -3,6 +3,7 @@ package template
 type ApplicationInfo struct {
 	Author string
 	Time string
+	Project string
 
 	WorkingPathRelative string
 
@@ -31,6 +32,7 @@ import (
 	monitor "{{.MonitorPackage}}"
 	interceptor "{{.InterceptorPackage}}"
 
+	"{{.WorkingPathRelative}}/src/common"
 	"{{.WorkingPathRelative}}/src/config"
 
 	//!!!DO NOT EDIT!!!
@@ -45,7 +47,7 @@ type Application struct {
 //Init application
 func (app *Application) Init(conf *config.Config) error {
 	// init log
-	logger.Init("../conf/log.config")
+	logger.Init("../conf/log.config", common.ProjectName)
 
 	// init monitor
 	monitor.Init("{{.MonitorInitParam}}")
