@@ -2,7 +2,24 @@ package utils
 
 import (
 	"os"
+	"io/ioutil"
 )
+
+func CopyFile(src, dest string) error {
+	data, err := ioutil.ReadFile(src)
+
+	if err != nil {
+		return err
+	}
+
+	err = ioutil.WriteFile(dest, data, os.ModePerm)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
 
 func CheckPathExists(path string) (bool, error) {
 	_, err := os.Stat(path)

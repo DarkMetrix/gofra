@@ -562,9 +562,9 @@ func GenerateHealthCheckProto(workingPath, goPath string, info *TemplateInfo, ov
 	}
 
 	//Execute protoc to generate .pb.go file
-	cmd := exec.Command("protoc", "--go_out=plugins=grpc:.", filePathRelative)
+	shellCmd := exec.Command("protoc", "--go_out=plugins=grpc:.", filePathRelative)
 
-	err = cmd.Run()
+	err = shellCmd.Run()
 
 	if err != nil {
 		return err

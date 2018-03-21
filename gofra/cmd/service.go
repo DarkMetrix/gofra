@@ -16,10 +16,14 @@ package cmd
 
 import (
 	"fmt"
+	"os/exec"
+	"path/filepath"
+	"strings"
 
 	"github.com/spf13/cobra"
 
 	gofraTemplate "github.com/DarkMetrix/gofra/gofra/template"
+	gofraUtils "github.com/DarkMetrix/gofra/gofra/utils"
 )
 
 // serviceCmd represents the service command
@@ -67,9 +71,49 @@ var addServiceCmd = &cobra.Command{
 			fmt.Printf(" success! \r\n")
 		}
 
-		//Generate service
-		//filePath := filepath.Join(workingPath, "src", "proto", "health_check", "health_check.proto")
+		//Mkdir
+		fmt.Printf("\r\nMake dir ......")
+		filename := filepath.Base(servicePath)
+		protoPath := filepath.Join(workingPath, "src", "proto", strings.TrimSuffix(filename, ".proto"))
 
+		gofraUtils.CreatePath(protoPath, override)
+
+		if err != nil {
+			fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
+			return
+		} else {
+			fmt.Printf(" success! \r\n")
+		}
+
+		//Copy proto file path & generate .pb.go file
+		fmt.Printf("\r\nCopy proto file ......")
+		protoFilePath := filepath.Join(workingPath, "src", "proto", strings.TrimSuffix(filename, ".proto"), filename)
+		protoFilePathRelative := filepath.Join(".", "src", "proto", strings.TrimSuffix(filename, ".proto"), filename)
+
+		err = gofraUtils.CopyFile(servicePath, protoFilePath)
+
+		if err != nil {
+			fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
+			return
+		} else {
+			fmt.Printf(" success! \r\n")
+		}
+
+		//Execute protoc to generate .pb.go file
+		fmt.Printf("\r\nCompile proto file ......")
+		shellCmd := exec.Command("protoc", "--go_out=plugins=grpc:.", protoFilePathRelative)
+
+		err = shellCmd.Run()
+
+		if err != nil {
+			fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
+			return
+		} else {
+			fmt.Printf(" success! \r\n")
+		}
+
+
+		//Generate service
 		fmt.Printf("\r\nGenerating service code ......")
 		err = gofraTemplate.GenerateService(workingPath, goPath, templateInfo, servicePath, override)
 
