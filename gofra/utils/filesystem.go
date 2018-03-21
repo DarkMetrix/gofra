@@ -18,8 +18,22 @@ func CheckPathExists(path string) (bool, error) {
 	return false, err
 }
 
-func CreatePath(path string) error {
-	err := os.MkdirAll(path, os.ModeDir)
+func CreatePath(path string, override bool) error {
+	isExist, err := CheckPathExists(path)
+
+	if err != nil {
+		return err
+	}
+
+	if isExist && override {
+		err = os.RemoveAll(path)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	err = os.MkdirAll(path, os.ModeDir)
 
 	if err != nil {
 		return err
@@ -34,9 +48,9 @@ func CreatePath(path string) error {
 	return nil
 }
 
-func CreatePaths(paths... string) error {
+func CreatePaths(override bool, paths... string) error {
 	for _, path := range paths {
-		err := CreatePath(path)
+		err := CreatePath(path, override)
 
 		if err != nil {
 			return err

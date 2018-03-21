@@ -66,6 +66,64 @@ type TemplateInfo struct {
 	InterceptorPackage InterceptorPackageInfo `json:"interceptor_package"`
 }
 
+//Generate template.json
+func GenerateTemplateJsonFile(workingPath string, override bool) error {
+	filePath := filepath.Join(workingPath, "template.json.default")
+
+	//Check file is exist or not
+	isExist, err := gofraUtils.CheckPathExists(filePath)
+
+	if err != nil {
+		return err
+	}
+
+	if isExist && !override {
+		filePathRel, err := filepath.Rel(workingPath, filePath)
+
+		if err != nil {
+			return err
+		}
+
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+	}
+
+	if isExist && override {
+		err := os.RemoveAll(filePath)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	//Parse template
+	jsonTemplate, err := template.New("template_json").Parse(JsonTemplate)
+
+	if err != nil {
+		return err
+	}
+
+	jsonInfo := &JsonInfo{
+		Author: "Author Name",
+		Project: "Project Name",
+		Addr: "localhost:58888",
+	}
+
+	file, err := os.OpenFile(filePath, os.O_RDWR | os.O_CREATE, 0666)
+
+	if err != nil {
+		return err
+	}
+
+	//Render template to file
+	err = jsonTemplate.Execute(file, jsonInfo)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 //Generate common.go
 func GenerateCommonFile(workingPath, goPath string, info *TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "src", "common", "common.go")
@@ -85,6 +143,14 @@ func GenerateCommonFile(workingPath, goPath string, info *TemplateInfo, override
 		}
 
 		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+	}
+
+	if isExist && override {
+		err := os.RemoveAll(filePath)
+
+		if err != nil {
+			return err
+		}
 	}
 
 	//Parse template
@@ -138,6 +204,14 @@ func GenerateConfigFile(workingPath, goPath string, info *TemplateInfo, override
 		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
 	}
 
+	if isExist && override {
+		err := os.RemoveAll(filePath)
+
+		if err != nil {
+			return err
+		}
+	}
+
 	//Parse template
 	configTemplate, err := template.New("config").Parse(ConfigTemplate)
 
@@ -185,6 +259,14 @@ func GenerateConfigJsonFile(workingPath, goPath string, info *TemplateInfo, over
 		}
 
 		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+	}
+
+	if isExist && override {
+		err := os.RemoveAll(filePath)
+
+		if err != nil {
+			return err
+		}
 	}
 
 	//Parse template
@@ -238,6 +320,14 @@ func GenerateConfigLogFile(workingPath, goPath string, info *TemplateInfo, overr
 		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
 	}
 
+	if isExist && override {
+		err := os.RemoveAll(filePath)
+
+		if err != nil {
+			return err
+		}
+	}
+
 	//Parse template
 	configLogTemplate, err := template.New("config_log").Parse(LogTemplate)
 
@@ -286,6 +376,14 @@ func GenerateApplicationFile(workingPath, goPath string, info *TemplateInfo, ove
 		}
 
 		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+	}
+
+	if isExist && override {
+		err := os.RemoveAll(filePath)
+
+		if err != nil {
+			return err
+		}
 	}
 
 	workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "src") + "/")
@@ -345,6 +443,14 @@ func GenerateMainFile(workingPath, goPath string, info *TemplateInfo, override b
 		}
 
 		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+	}
+
+	if isExist && override {
+		err := os.RemoveAll(filePath)
+
+		if err != nil {
+			return err
+		}
 	}
 
 	workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "src") + "/")
@@ -422,6 +528,14 @@ func GenerateHealthCheckProto(workingPath, goPath string, info *TemplateInfo, ov
 		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
 	}
 
+	if isExist && override {
+		err := os.RemoveAll(filePath)
+
+		if err != nil {
+			return err
+		}
+	}
+
 	//Parse template
 	healthCheckServiceProtoTemplate, err := template.New("health_check").Parse(HealthCheckServiceProtoTemplate)
 
@@ -476,7 +590,7 @@ func GenerateService(workingPath, goPath string, info *TemplateInfo, protoPath s
 		//Create path
 		handlerPath := filepath.Join(workingPath, "src", "handler", elem.Name)
 
-		err := gofraUtils.CreatePath(handlerPath)
+		err := gofraUtils.CreatePath(handlerPath, override)
 
 		if err != nil {
 			return err
@@ -635,6 +749,14 @@ func GenerateServiceImplementation(workingPath, goPath string, info *TemplateInf
 		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
 	}
 
+	if isExist && override {
+		err := os.RemoveAll(filePath)
+
+		if err != nil {
+			return err
+		}
+	}
+
 	//Parse template
 	serviceTemplate, err := template.New("implementation").Parse(ServiceTemplate)
 
@@ -679,6 +801,14 @@ func GenerateServiceHandler(workingPath, goPath string, info *TemplateInfo, rpc 
 		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
 	}
 
+	if isExist && override {
+		err := os.RemoveAll(filePath)
+
+		if err != nil {
+			return err
+		}
+	}
+
 	//Parse template
 	serviceRpcTemplate, err := template.New("handler").Parse(ServiceRpcTemplate)
 
@@ -721,6 +851,14 @@ func GenerateTestClient(workingPath, goPath string, info *TemplateInfo, override
 		}
 
 		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+	}
+
+	if isExist && override {
+		err := os.RemoveAll(filePath)
+
+		if err != nil {
+			return err
+		}
 	}
 
 	workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "src") + "/")

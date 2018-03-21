@@ -33,8 +33,7 @@ import (
 var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialize gofra application",
-	Long: `Gofra is a framework using gRPC as the communication layer.
-		   init command will create basic framework structure.`,
+	Long: `Gofra is a framework using gRPC as the communication layer.\r\ninit command will create basic framework structure.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("====== Gofra init ======")
 
@@ -218,21 +217,21 @@ func InitDirectoryStructure(workingPath string, info *gofraTemplate.TemplateInfo
 	healthCheckServicePath := filepath.Join(workingPath, "src", "proto", "health_check")
 
 	//Create root directories
-	err := gofraUtils.CreatePaths(binPath, confPath, logPath, srcPath, testPath)
+	err := gofraUtils.CreatePaths(override, binPath, confPath, logPath, srcPath, testPath)
 
 	if err != nil {
 		return err
 	}
 
 	//Create src sub directories
-	err = gofraUtils.CreatePaths(applicationPath, commonPath, configPath, handlerPath, protoPath)
+	err = gofraUtils.CreatePaths(override, applicationPath, commonPath, configPath, handlerPath, protoPath)
 
 	if err != nil {
 		return err
 	}
 
 	//Create proto sub directories
-	err = gofraUtils.CreatePaths(healthCheckServicePath)
+	err = gofraUtils.CreatePaths(override, healthCheckServicePath)
 
 	if err != nil {
 		return err
