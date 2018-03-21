@@ -18,10 +18,16 @@
     "monitor_package":
     {
         "package":"github.com/DarkMetrix/gofra/grpc-utils/monitor/statsd",
-        "init_param":"127.0.0.1:8125"
+        "init_param":"\"127.0.0.1:8125\""
+    },
+    "tracing_package":
+    {
+        "package":"github.com/DarkMetrix/gofra/grpc-utils/tracing/zipkin",
+        "init_param":"\"127.0.0.1:9411\", \"false\", \":58888\", \"test_server\""
     },
     "interceptor_package":
     {
-        "package":"github.com/DarkMetrix/gofra/grpc-utils/interceptor/gofra"
+        "monitor_package":"github.com/DarkMetrix/gofra/grpc-utils/interceptor/statsd_interceptor",
+        "tracing_package":"github.com/DarkMetrix/gofra/grpc-utils/interceptor/zipkin_interceptor"
     }
 }

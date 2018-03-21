@@ -1,23 +1,41 @@
 package main
 
 import (
-    "fmt"
-    "time"
-    "golang.org/x/net/context"
-    "google.golang.org/grpc/status"
-    pb "learn/test_grpc/basic/proto"
+	"fmt"
+	"time"
+	"golang.org/x/net/context"
+	"google.golang.org/grpc/status"
+	pb "learn/test_grpc/basic/proto"
 
-    interceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/gofra"
-    monitor "github.com/DarkMetrix/gofra/grpc-utils/monitor/statsd"
-    pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
+	"google.golang.org/grpc"
+	"github.com/grpc-ecosystem/go-grpc-middleware"
+
+	log_interceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/seelog_interceptor"
+	monitor_interceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/statsd_interceptor"
+	tracing_interceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/zipkin_interceptor"
+
+	monitor "github.com/DarkMetrix/gofra/grpc-utils/monitor/statsd"
+	tracing "github.com/DarkMetrix/gofra/grpc-utils/tracing/zipkin"
+	pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
 )
 
 func main() {
     // init statsd
     monitor.InitStatsd("172.16.101.128:8125")
 
-    // dial remote server
-    pool.GetConnectionPool().Init(interceptor.GofraClientInterceptor, 5, 10, time.Second * 10)
+	// init tracing
+	tracing.Init("127.0.0.1", "false", "0.0.0.0:0", "test_client")
+
+	// dial remote server
+	clientOpts := make([]grpc.DialOption, 0)
+
+	clientOpts = append(clientOpts, grpc.WithUnaryInterceptor(
+		grpc_middleware.ChainUnaryClient(
+			log_interceptor.GetClientInterceptor(),
+			monitor_interceptor.GetClientInterceptor(),
+			tracing_interceptor.GetClientInterceptor())))
+
+	pool.GetConnectionPool().Init(clientOpts, 5, 10, time.Second * 10)
 
     // RPC call
     req := new(pb.AddUserRequest)

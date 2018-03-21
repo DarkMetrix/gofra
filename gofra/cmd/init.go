@@ -184,15 +184,7 @@ func CheckPath() (string, string, error) {
 
 //Read template json file to ge information about how to generate the application
 func ReadTemplate(templatePath string) (*gofraTemplate.TemplateInfo, string, error) {
-	templateFile, err := os.Open(templatePath)
-
-	if err != nil {
-		return nil, "", err
-	}
-
-	defer templateFile.Close()
-
-	data, err := ioutil.ReadAll(templateFile)
+	data, err := ioutil.ReadFile(templatePath)
 
 	if err != nil {
 		return nil, "", err
@@ -215,6 +207,7 @@ func InitDirectoryStructure(workingPath string, info *gofraTemplate.TemplateInfo
 	confPath := filepath.Join(workingPath, "conf")
 	logPath := filepath.Join(workingPath, "log")
 	srcPath := filepath.Join(workingPath, "src")
+	testPath := filepath.Join(workingPath, "test")
 
 	applicationPath := filepath.Join(workingPath, "src", "application")
 	commonPath := filepath.Join(workingPath, "src", "common")
@@ -225,7 +218,7 @@ func InitDirectoryStructure(workingPath string, info *gofraTemplate.TemplateInfo
 	healthCheckServicePath := filepath.Join(workingPath, "src", "proto", "health_check")
 
 	//Create root directories
-	err := gofraUtils.CreatePaths(binPath, confPath, logPath, srcPath)
+	err := gofraUtils.CreatePaths(binPath, confPath, logPath, srcPath, testPath)
 
 	if err != nil {
 		return err
@@ -287,6 +280,12 @@ func InitAllFiles(workingPath, goPath string, info *gofraTemplate.TemplateInfo) 
 	}
 
 	err = gofraTemplate.GenerateHealthCheckHandler(workingPath, goPath, info, override)
+
+	if err != nil {
+		return err
+	}
+
+	err = gofraTemplate.GenerateTestClient(workingPath, goPath, info, override)
 
 	if err != nil {
 		return err

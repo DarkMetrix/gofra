@@ -25,6 +25,7 @@ type RpcInfo struct {
 	WorkingPathRelative string
 
 	ServiceName string
+	FileNamePrefix string
 	RpcName string
 	Request string
 	Response string
@@ -41,10 +42,10 @@ package {{.ServiceName}}
 import (
 	context "golang.org/x/net/context"
 
-	pb "{{.WorkingPathRelative}}/src/proto/{{.ServiceName}}"
+	pb "{{.WorkingPathRelative}}/src/proto/{{.FileNamePrefix}}"
 )
 
-func (h {{.ServiceName}}Impl) {{.RpcName}} (ctx context.Context, req *pb.{{.Request}}) (*pb.{{.Response}}, error) {
+func (this {{.ServiceName}}Impl) {{.RpcName}} (ctx context.Context, req *pb.{{.Request}}) (*pb.{{.Response}}, error) {
 	resp := new(pb.{{.Response}})
 
 	return resp, nil
@@ -57,10 +58,8 @@ type HealthCheckServiceProtoInfo struct {
 }
 
 var HealthCheckServiceProtoTemplate string = `
-/**********************************
- * Author : {{.Author}}
- * Time : {{.Time}}
- **********************************/
+// Author : {{.Author}}
+// Time : {{.Time}}
 
 syntax = "proto3";
 

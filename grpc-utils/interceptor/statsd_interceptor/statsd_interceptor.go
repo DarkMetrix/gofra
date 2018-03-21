@@ -1,11 +1,10 @@
-package gofra
+package statsd_interceptor
 
 import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
 	monitor "github.com/DarkMetrix/gofra/grpc-utils/monitor/statsd"
-	log "github.com/cihub/seelog"
 )
 
 func GetClientInterceptor() grpc.UnaryClientInterceptor {
@@ -16,16 +15,11 @@ func GetServerInterceptor() grpc.UnaryServerInterceptor {
 	return GofraServerInterceptor
 }
 
-// gofra client interceptor
+// statsd client interceptor
 var GofraClientInterceptor grpc.UnaryClientInterceptor = GofraClientInterceptorFunc
 
 func GofraClientInterceptorFunc(ctx context.Context, method string, req, reply interface{},
 	cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-	log.Infof("====== Enter std client interceptor ======")
-	log.Infof("context:%v", ctx)
-	log.Infof("method:%v", method)
-	log.Infof("options:%v", opts)
-	log.Infof("req:%v", req)
 
 	//Monitor method enter total
 	monitor.Increment(method + ",type=Client.Total")
@@ -34,32 +28,20 @@ func GofraClientInterceptorFunc(ctx context.Context, method string, req, reply i
 	err := invoker(ctx, method, req, reply, cc, opts...)
 
 	if err != nil {
-		log.Infof("invoke failed!!! error:%v", err)
-
 		//Monitor method fail total
 		monitor.Increment(method + ",type=Client.Fail")
 	} else {
-		log.Infof("reply:%v", reply)
-
 		//Monitor method success total
 		monitor.Increment(method + ",type=Client.Success")
 	}
 
-	log.Infof("====== Leave std client interceptor ======")
-
 	return err
 }
 
-// gofra server interceptor
+// statsd server interceptor
 var GofraServerInterceptor grpc.UnaryServerInterceptor = GofraServerInterceptorFunc
 
 func GofraServerInterceptorFunc(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (reply interface{}, err error) {
-	log.Infof("====== Enter std server interceptor ======")
-	log.Infof("context:%v", ctx)
-	log.Infof("method:%v", info.FullMethod)
-	log.Infof("server:%v", info.Server)
-	log.Infof("req:%v", req)
-
 	//Monitor method enter total
 	monitor.Increment(info.FullMethod + ",type=Server.Total")
 
@@ -67,18 +49,12 @@ func GofraServerInterceptorFunc(ctx context.Context, req interface{}, info *grpc
 	reply, err = handler(ctx, req)
 
 	if err != nil {
-		log.Infof("handle failed!!! error:%v", err)
-
 		//Monitor method fail total
 		monitor.Increment(info.FullMethod + ",type=Server.Fail")
 	} else {
-		log.Infof("reply:%v", reply)
-
 		//Monitor method success total
 		monitor.Increment(info.FullMethod + ",type=Server.Success")
 	}
-
-	log.Infof("====== Leave std server interceptor ======")
 
 	return reply, err
 }

@@ -25,7 +25,7 @@ func InitStatsd(addr string) {
 //Get statsd client
 func GetStatsd() *statsd.Client{
 	if client == nil {
-		InitStatsd("")
+		InitStatsd("localhost:8125")
 	}
 
 	return client
