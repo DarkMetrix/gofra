@@ -39,9 +39,16 @@ type MonitorPackageInfo struct {
 	InitParam string `json:"init_param"`
 }
 
+//Tracing package
+type TracingPackageInfo struct {
+	Package string `json:"package"`
+	InitParam string `json:"init_param"`
+}
+
 //Interceptor package
 type InterceptorPackageInfo struct {
-	Package string `json:"package"`
+	MonitorPackage string `json:"monitor_package"`
+	TracingPackage string `json:"tracing_package"`
 }
 
 //Template info
@@ -49,9 +56,13 @@ type TemplateInfo struct {
 	Author string `json:"author"`
 	Project string `json:"project"`
 	Version string `json:"version"`
+
 	Server ServerInfo `json:"server"`
 	Client ClientInfo `json:"client"`
+
 	MonitorPackage MonitorPackageInfo `json:"monitor_package"`
+	TracingPackage TracingPackageInfo `json:"tracing_package"`
+
 	InterceptorPackage InterceptorPackageInfo `json:"interceptor_package"`
 }
 
@@ -293,7 +304,8 @@ func GenerateApplicationFile(workingPath, goPath string, info *TemplateInfo, ove
 		WorkingPathRelative: workingPathRelative,
 		MonitorPackage: info.MonitorPackage.Package,
 		MonitorInitParam: info.MonitorPackage.InitParam,
-		InterceptorPackage: info.InterceptorPackage.Package,
+		MonitorInterceptorPackage: info.InterceptorPackage.MonitorPackage,
+		TracingInterceptorPackage: info.InterceptorPackage.TracingPackage,
 	}
 
 	file, err := os.OpenFile(filePath, os.O_RDWR | os.O_CREATE, 0755)
@@ -726,7 +738,6 @@ func GenerateTestClient(workingPath, goPath string, info *TemplateInfo, override
 		WorkingPathRelative: workingPathRelative,
 		MonitorPackage: info.MonitorPackage.Package,
 		MonitorInitParam: info.MonitorPackage.InitParam,
-		InterceptorPackage: info.InterceptorPackage.Package,
 	}
 
 	file, err := os.OpenFile(filePath, os.O_RDWR | os.O_CREATE, 0755)

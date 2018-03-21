@@ -10,7 +10,8 @@ type ApplicationInfo struct {
 	MonitorPackage string
 	MonitorInitParam string
 
-	InterceptorPackage string
+	MonitorInterceptorPackage string
+	TracingInterceptorPackage string
 }
 
 var ApplicationTemplate string = `
@@ -26,11 +27,15 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+	"github.com/grpc-ecosystem/go-grpc-middleware"
 
 	pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
 	logger "github.com/DarkMetrix/gofra/grpc-utils/logger/seelog"
 	monitor "{{.MonitorPackage}}"
-	interceptor "{{.InterceptorPackage}}"
+	tracing "{{.TracingPackage}}"
+	log_interceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/seelog_interceptor"
+	monitor_interceptor "{{.MonitorInterceptorPackage}}"
+	tracing_interceptor "{{.TracingInterceptorPackage}}"
 
 	"{{.WorkingPathRelative}}/src/common"
 	"{{.WorkingPathRelative}}/src/config"
@@ -42,6 +47,7 @@ import (
 
 type Application struct {
 	ServerOpts []grpc.ServerOption
+	ClientOpts []grpc.DialOption
 }
 
 //Init application
@@ -50,14 +56,29 @@ func (app *Application) Init(conf *config.Config) error {
 	logger.Init("../conf/log.config", common.ProjectName)
 
 	// init monitor
-	monitor.Init("{{.MonitorInitParam}}")
+	monitor.Init({{.MonitorInitParam}})
+
+	// init tracing
+	tracing.Init({{.TracingInitParam}})
 
 	// set server interceptor
-	app.ServerOpts = append(app.ServerOpts, grpc.UnaryInterceptor(interceptor.GetServerInterceptor()))
+	app.ServerOpts = append(app.ServerOpts, grpc.UnaryInterceptor(
+		grpc_middleware.ChainUnaryServer(
+			log_interceptor.GetServerInterceptor(),
+			monitor_interceptor.GetServerInterceptor(),
+			tracing_interceptor.GetServerInterceptor())))
 
 	// set client interceptor
-	err := pool.GetConnectionPool().Init(interceptor.GetClientInterceptor(),
-		conf.Client.Pool.InitConns, conf.Client.Pool.MaxConns, time.Second * time.Duration(conf.Client.Pool.IdleTime))
+	app.ClientOpts = append(app.ClientOpts, grpc.WithUnaryInterceptor(
+		grpc_middleware.ChainUnaryClient(
+			log_interceptor.GetClientInterceptor(),
+			monitor_interceptor.GetClientInterceptor(),
+			tracing_interceptor.GetClientInterceptor())))
+
+	err := pool.GetConnectionPool().Init(app.ClientOpts,
+		conf.Client.Pool.InitConns,
+		conf.Client.Pool.MaxConns,
+		time.Second * time.Duration(conf.Client.Pool.IdleTime))
 
 	if err != nil {
 		return err

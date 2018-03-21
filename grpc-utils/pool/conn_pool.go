@@ -9,8 +9,6 @@ import (
 
 	"google.golang.org/grpc"
 	grpcPool "github.com/processout/grpc-go-pool"
-
-	interceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/std"
 )
 
 //Global connection pool instance
@@ -30,7 +28,7 @@ type ConnectionPool struct {
 	mtx sync.Mutex									//Mutex to protect from race condition
 
 	pools map[string]*grpcPool.Pool					//Pool map to save all connections
-	clientInterceptor grpc.UnaryClientInterceptor	//GRPC client interceptor
+	clientOpts []grpc.DialOption
 
 	initConnections int								//Initial connection count per addr
 	maxConnections int								//Max connection count per addr
@@ -40,7 +38,7 @@ type ConnectionPool struct {
 func NewConnectionPool() *ConnectionPool {
 	return &ConnectionPool {
 		pools: make(map[string]*grpcPool.Pool),
-		clientInterceptor: interceptor.StdClientInterceptor,
+		clientOpts: make([]grpc.DialOption, 0),
 		initConnections: 10,
 		maxConnections: 500,
 		idleTimeout: time.Second * 30,
@@ -48,12 +46,12 @@ func NewConnectionPool() *ConnectionPool {
 }
 
 //Init connection pool
-func (connPool *ConnectionPool) Init(clientInterceptor grpc.UnaryClientInterceptor,
+func (connPool *ConnectionPool) Init(clientOpts []grpc.DialOption,
 	initConnections, maxConnections int, idleTimeout time.Duration) error {
 	connPool.mtx.Lock()
 	defer connPool.mtx.Unlock()
 
-	connPool.clientInterceptor = clientInterceptor
+	connPool.clientOpts = clientOpts
 	connPool.initConnections = initConnections
 	connPool.maxConnections = maxConnections
 	connPool.idleTimeout = idleTimeout
@@ -70,7 +68,7 @@ func (connPool *ConnectionPool) GetConnection(ctx context.Context, addr string) 
 	pool, ok := connPool.pools[addr]
 
 	if !ok {
-		pool, err = grpcPool.New(getFactory(addr, connPool.clientInterceptor), connPool.initConnections, connPool.maxConnections, connPool.idleTimeout)
+		pool, err = grpcPool.New(getFactory(addr, connPool.clientOpts), connPool.initConnections, connPool.maxConnections, connPool.idleTimeout)
 
 		if err != nil {
 			return nil, err
@@ -88,10 +86,12 @@ func (connPool *ConnectionPool) GetConnection(ctx context.Context, addr string) 
 	return conn, nil
 }
 
-func getFactory(addr string, clientInterceptor grpc.UnaryClientInterceptor) grpcPool.Factory {
+func getFactory(addr string, clientOpts []grpc.DialOption) grpcPool.Factory {
 	return func() (*grpc.ClientConn, error) {
 		// dial remote server
-		conn, err := grpc.Dial(addr, grpc.WithInsecure(), grpc.WithUnaryInterceptor(clientInterceptor))
+		clientOpts := append(clientOpts, grpc.WithInsecure())
+
+		conn, err := grpc.Dial(addr, clientOpts ...)
 
 		if err != nil {
 			fmt.Println(err)

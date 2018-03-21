@@ -13,7 +13,8 @@ type TestClientInfo struct {
 	MonitorPackage string
 	MonitorInitParam string
 
-	InterceptorPackage string
+	MonitorInterceptorPackage string
+	TracingInterceptorPackage string
 }
 
 var TestClientTemplate string = `
@@ -27,7 +28,10 @@ import (
 
 	health_check "{{.WorkingPathRelative}}/src/proto/health_check"
 
-	interceptor "{{.InterceptorPackage}}"
+	log_interceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/seelog_interceptor"
+	monitor_interceptor "{{.MonitorInterceptorPackage}}"
+	tracing_interceptor "{{.TracingInterceptorPackage}}"
+
 	monitor "{{.MonitorPackage}}"
 	pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
 )
@@ -40,7 +44,15 @@ func main() {
 	monitor.Init("{{.MonitorInitParam}}")
 
 	// dial remote server
-	pool.GetConnectionPool().Init(interceptor.GetClientInterceptor(), 5, 10, time.Second * 10)
+	clientOpts := make([]grpc.DialOption, 0)
+
+	clientOpts = append(clientOpts, grpc.WithUnaryInterceptor(
+		grpc_middleware.ChainUnaryClient(
+			log_interceptor.GetClientInterceptor(),
+			monitor_interceptor.GetClientInterceptor(),
+			tracing_interceptor.GetClientInterceptor())))
+
+	pool.GetConnectionPool().Init(clientOpts, 5, 10, time.Second * 10)
 
 	// RPC call
 	req := new(health_check.HealthCheckRequest)
