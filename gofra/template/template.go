@@ -497,7 +497,7 @@ func GenerateHealthCheckHandler(workingPath, goPath string, info *TemplateInfo, 
 
 	filePath := filepath.Join(workingPath, "src", "proto", "health_check", "health_check.proto")
 
-	err = GenerateService(workingPath, goPath, info, filePath, override)
+	err = GenerateService(workingPath, goPath, info, filePath, override, false)
 
 	if err != nil {
 		return err
@@ -574,7 +574,7 @@ func GenerateHealthCheckProto(workingPath, goPath string, info *TemplateInfo, ov
 }
 
 //Generate service
-func GenerateService(workingPath, goPath string, info *TemplateInfo, protoPath string, override bool) error {
+func GenerateService(workingPath, goPath string, info *TemplateInfo, protoPath string, override bool, update bool) error {
 	//Parse proto file
 	pf, err := pbparser.ParseFile(protoPath)
 
@@ -602,7 +602,7 @@ func GenerateService(workingPath, goPath string, info *TemplateInfo, protoPath s
 			ServiceName: elem.Name}
 
 		//Create implementation file
-		err = GenerateServiceImplementation(workingPath, goPath, info, service, override)
+		err = GenerateServiceImplementation(workingPath, goPath, info, service, override, update)
 
 		if err != nil {
 			return err
@@ -634,7 +634,7 @@ func GenerateService(workingPath, goPath string, info *TemplateInfo, protoPath s
 				Request: rpc.RequestType.Name(),
 				Response: rpc.ResponseType.Name(),}
 
-				err = GenerateServiceHandler(workingPath, goPath, info, rpc, override)
+				err = GenerateServiceHandler(workingPath, goPath, info, rpc, override, update)
 
 				if err != nil {
 					return err
@@ -665,9 +665,14 @@ func AddServiceProtoToApplicationFileImport(workingPath, goPath string, info *Te
 	workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "src") + "/")
 	protoFileNamePrefix := strings.TrimSuffix(filepath.Base(protoPath), filepath.Ext(protoPath))
 
-	protoImport := fmt.Sprintf("%v \"%v/src/proto/%v\"\r\n	/*@PROTO_STUB*/", protoFileNamePrefix, workingPathRelative, protoFileNamePrefix)
+	protoImport := fmt.Sprintf("%v \"%v/src/proto/%v\"", protoFileNamePrefix, workingPathRelative, protoFileNamePrefix)
+	protoImportStub := fmt.Sprintf("%v\r\n	/*@PROTO_STUB*/", protoImport)
 
-	applicationContent = []byte(strings.Replace(string(applicationContent), "/*@PROTO_STUB*/", protoImport, 1))
+	if strings.Contains(string(applicationContent), protoImport) {
+		return nil
+	}
+
+	applicationContent = []byte(strings.Replace(string(applicationContent), "/*@PROTO_STUB*/", protoImportStub, 1))
 
 	err = ioutil.WriteFile(applicationFilePath, applicationContent, os.ModePerm)
 
@@ -690,9 +695,14 @@ func AddServiceHandlerToApplicationFileImport(workingPath, goPath string, info *
 
 	workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "src") + "/")
 
-	protoImport := fmt.Sprintf("%vHandler \"%v/src/handler/%v\"\r\n	/*@HANDLER_STUB*/", serviceName, workingPathRelative, serviceName)
+	protoImport := fmt.Sprintf("%vHandler \"%v/src/handler/%v\"", serviceName, workingPathRelative, serviceName)
+	protoImportStub := fmt.Sprintf("%v\r\n	/*@HANDLER_STUB*/", protoImport)
 
-	applicationContent = []byte(strings.Replace(string(applicationContent), "/*@HANDLER_STUB*/", protoImport, 1))
+	if strings.Contains(string(applicationContent), protoImport) {
+		return nil
+	}
+
+	applicationContent = []byte(strings.Replace(string(applicationContent), "/*@HANDLER_STUB*/", protoImportStub, 1))
 
 	err = ioutil.WriteFile(applicationFilePath, applicationContent, os.ModePerm)
 
@@ -715,9 +725,14 @@ func AddServiceRegisterToApplicationFile(workingPath, goPath string, info *Templ
 
 	protoFileNamePrefix := strings.TrimSuffix(filepath.Base(protoPath), filepath.Ext(protoPath))
 
-	protoImport := fmt.Sprintf("%v.Register%vServer(s, %vHandler.%vImpl{})\r\n	/*@REGISTER_STUB*/", protoFileNamePrefix, serviceName, serviceName, serviceName)
+	protoImport := fmt.Sprintf("%v.Register%vServer(s, %vHandler.%vImpl{})", protoFileNamePrefix, serviceName, serviceName, serviceName)
+	protoImportStub := fmt.Sprintf("%v\r\n	/*@REGISTER_STUB*/", protoImport)
 
-	applicationContent = []byte(strings.Replace(string(applicationContent), "/*@REGISTER_STUB*/", protoImport, 1))
+	if strings.Contains(string(applicationContent), protoImport) {
+		return nil
+	}
+
+	applicationContent = []byte(strings.Replace(string(applicationContent), "/*@REGISTER_STUB*/", protoImportStub, 1))
 
 	err = ioutil.WriteFile(applicationFilePath, applicationContent, os.ModePerm)
 
@@ -729,7 +744,7 @@ func AddServiceRegisterToApplicationFile(workingPath, goPath string, info *Templ
 }
 
 //Generate service implementation
-func GenerateServiceImplementation(workingPath, goPath string, info *TemplateInfo, service *ServiceInfo, override bool) error {
+func GenerateServiceImplementation(workingPath, goPath string, info *TemplateInfo, service *ServiceInfo, override bool, update bool) error {
 	filePath := filepath.Join(workingPath, "src", "handler", service.ServiceName, service.ServiceName + ".go")
 
 	//Check file is exist or not
@@ -740,6 +755,10 @@ func GenerateServiceImplementation(workingPath, goPath string, info *TemplateInf
 	}
 
 	if isExist && !override {
+		if update {
+			return nil
+		}
+
 		filePathRel, err := filepath.Rel(workingPath, filePath)
 
 		if err != nil {
@@ -781,7 +800,7 @@ func GenerateServiceImplementation(workingPath, goPath string, info *TemplateInf
 }
 
 //Generate service handler
-func GenerateServiceHandler(workingPath, goPath string, info *TemplateInfo, rpc *RpcInfo, override bool) error {
+func GenerateServiceHandler(workingPath, goPath string, info *TemplateInfo, rpc *RpcInfo, override bool, update bool) error {
 	filePath := filepath.Join(workingPath, "src", "handler", rpc.ServiceName, rpc.RpcName + ".go")
 
 	//Check file is exist or not
@@ -792,6 +811,10 @@ func GenerateServiceHandler(workingPath, goPath string, info *TemplateInfo, rpc 
 	}
 
 	if isExist && !override {
+		if update {
+			return nil
+		}
+
 		filePathRel, err := filepath.Rel(workingPath, filePath)
 
 		if err != nil {

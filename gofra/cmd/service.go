@@ -115,7 +115,7 @@ var addServiceCmd = &cobra.Command{
 
 		//Generate service
 		fmt.Printf("\r\nGenerating service code ......")
-		err = gofraTemplate.GenerateService(workingPath, goPath, templateInfo, servicePath, override)
+		err = gofraTemplate.GenerateService(workingPath, goPath, templateInfo, servicePath, override, update)
 
 		if err != nil {
 			fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
@@ -127,6 +127,7 @@ var addServiceCmd = &cobra.Command{
 }
 
 var servicePath string
+var update bool
 
 func init() {
 	rootCmd.AddCommand(serviceCmd)
@@ -139,6 +140,7 @@ func init() {
 	// serviceCmd.PersistentFlags().String("foo", "", "A help for foo")
 	addServiceCmd.PersistentFlags().StringVar(&servicePath, "service_path", "", "A .proto file to generate codes")
 	addServiceCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
+	addServiceCmd.PersistentFlags().BoolVar(&update, "update", false,"If override is true & file exists, then if update is true, the file will be passed")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:

@@ -67,16 +67,16 @@ func (app *Application) Init(conf *config.Config) error {
 	// set server interceptor
 	app.ServerOpts = append(app.ServerOpts, grpc.UnaryInterceptor(
 		grpc_middleware.ChainUnaryServer(
+			tracing_interceptor.GetServerInterceptor(),
 			log_interceptor.GetServerInterceptor(),
-			monitor_interceptor.GetServerInterceptor(),
-			tracing_interceptor.GetServerInterceptor())))
+			monitor_interceptor.GetServerInterceptor())))
 
 	// set client interceptor
 	app.ClientOpts = append(app.ClientOpts, grpc.WithUnaryInterceptor(
 		grpc_middleware.ChainUnaryClient(
+			tracing_interceptor.GetClientInterceptor(),
 			log_interceptor.GetClientInterceptor(),
-			monitor_interceptor.GetClientInterceptor(),
-			tracing_interceptor.GetClientInterceptor())))
+			monitor_interceptor.GetClientInterceptor())))
 
 	err := pool.GetConnectionPool().Init(app.ClientOpts,
 		conf.Client.Pool.InitConns,
