@@ -1,4 +1,4 @@
-package std
+package std_interceptor
 
 import (
 	"fmt"

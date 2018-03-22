@@ -31,9 +31,9 @@ func main() {
 
 	clientOpts = append(clientOpts, grpc.WithUnaryInterceptor(
 		grpc_middleware.ChainUnaryClient(
+			tracing_interceptor.GetClientInterceptor(),
 			log_interceptor.GetClientInterceptor(),
-			monitor_interceptor.GetClientInterceptor(),
-			tracing_interceptor.GetClientInterceptor())))
+			monitor_interceptor.GetClientInterceptor())))
 
 	pool.GetConnectionPool().Init(clientOpts, 5, 10, time.Second * 10)
 
