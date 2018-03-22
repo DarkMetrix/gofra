@@ -29,7 +29,7 @@ import (
 // serviceCmd represents the service command
 var serviceCmd = &cobra.Command{
 	Use:   "service",
-	Short: "Service operations",
+	Short: "Service operations [add, update]",
 	Long: `Gofra is a framework using gRPC as the communication layer.\r\nservice command will help to manipulate .proto file to generate service frame & handler.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
@@ -39,90 +39,20 @@ var serviceCmd = &cobra.Command{
 // addServiceCmd represents the service command
 var addServiceCmd = &cobra.Command{
 	Use:   "add",
-	Short: "A brief description of your command",
+	Short: "Add service (*.proto) to project",
 	Long: `Gofra is a framework using gRPC as the communication layer.\r\nservice add command will help to manipulate .proto file to add service frame & handler.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("====== Gofra service add ======")
+		addService(servicePath, false, false)
+	},
+}
 
-		//Check path
-		fmt.Printf("\r\nChecking Path ......")
-		goPath, workingPath, err := CheckPath()
-
-		if err != nil {
-			fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-			return
-		} else {
-			fmt.Printf(" success! \r\nGOPATH:%v\r\nWorking path:%v\r\n", goPath, workingPath)
-		}
-
-		//Read template
-		fmt.Printf("\r\nReading template ......")
-		if len(templatePath) == 0 {
-			fmt.Printf(" failed! \r\nerror:Template file path is empty!\r\n")
-			return
-		}
-
-		templateInfo, _, err := ReadTemplate(templatePath)
-
-		if err != nil {
-			fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-			return
-		} else {
-			fmt.Printf(" success! \r\n")
-		}
-
-		//Mkdir
-		fmt.Printf("\r\nMake dir ......")
-		filename := filepath.Base(servicePath)
-		protoPath := filepath.Join(workingPath, "src", "proto", strings.TrimSuffix(filename, ".proto"))
-
-		gofraUtils.CreatePath(protoPath, override)
-
-		if err != nil {
-			fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-			return
-		} else {
-			fmt.Printf(" success! \r\n")
-		}
-
-		//Copy proto file path & generate .pb.go file
-		fmt.Printf("\r\nCopy proto file ......")
-		protoFilePath := filepath.Join(workingPath, "src", "proto", strings.TrimSuffix(filename, ".proto"), filename)
-		protoFilePathRelative := filepath.Join(".", "src", "proto", strings.TrimSuffix(filename, ".proto"), filename)
-
-		err = gofraUtils.CopyFile(servicePath, protoFilePath)
-
-		if err != nil {
-			fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-			return
-		} else {
-			fmt.Printf(" success! \r\n")
-		}
-
-		//Execute protoc to generate .pb.go file
-		fmt.Printf("\r\nCompile proto file ......")
-		shellCmd := exec.Command("protoc", "--go_out=plugins=grpc:.", protoFilePathRelative)
-
-		err = shellCmd.Run()
-
-		if err != nil {
-			fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-			return
-		} else {
-			fmt.Printf(" success! \r\n")
-		}
-
-
-		//Generate service
-		fmt.Printf("\r\nGenerating service code ......")
-		err = gofraTemplate.GenerateService(workingPath, goPath, templateInfo, servicePath, override, update)
-
-		if err != nil {
-			fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-			return
-		} else {
-			fmt.Printf(" success! \r\n")
-		}
+// updateServiceCmd represents the service command
+var updateServiceCmd = &cobra.Command{
+	Use:   "update",
+	Short: "Update service (*.proto) to project",
+	Long: `Gofra is a framework using gRPC as the communication layer.\r\nservice add command will help to manipulate .proto file to update service frame & handler.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		addService(servicePath, override, true)
 	},
 }
 
@@ -132,18 +62,105 @@ var update bool
 func init() {
 	rootCmd.AddCommand(serviceCmd)
 	serviceCmd.AddCommand(addServiceCmd)
+	serviceCmd.AddCommand(updateServiceCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// serviceCmd.PersistentFlags().String("foo", "", "A help for foo")
-	addServiceCmd.PersistentFlags().StringVar(&servicePath, "service_path", "", "A .proto file to generate codes")
-	addServiceCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
-	addServiceCmd.PersistentFlags().BoolVar(&update, "update", false,"If override is true & file exists, then if update is true, the file will be passed")
+	addServiceCmd.PersistentFlags().StringVar(&servicePath, "path", "", "A .proto file to generate codes")
+
+	updateServiceCmd.PersistentFlags().StringVar(&servicePath, "path", "", "A .proto file to generate codes")
+	updateServiceCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// serviceCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
+}
+
+func addService(path string, override, update bool) error {
+	fmt.Println("====== Gofra service add ======")
+
+	//Check path
+	fmt.Printf("\r\nChecking Path ......")
+	goPath, workingPath, err := CheckPath()
+
+	if err != nil {
+		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
+		return err
+	} else {
+		fmt.Printf(" success! \r\nGOPATH:%v\r\nWorking path:%v\r\n", goPath, workingPath)
+	}
+
+	//Read template
+	fmt.Printf("\r\nReading template ......")
+	if len(templatePath) == 0 {
+		fmt.Printf(" failed! \r\nerror:Template file path is empty!\r\n")
+		return err
+	}
+
+	templateInfo, _, err := ReadTemplate(templatePath)
+
+	if err != nil {
+		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
+		return err
+	} else {
+		fmt.Printf(" success! \r\n")
+	}
+
+	//Mkdir
+	fmt.Printf("\r\nMake dir ......")
+	filename := filepath.Base(path)
+	protoPath := filepath.Join(workingPath, "src", "proto", strings.TrimSuffix(filename, ".proto"))
+
+	gofraUtils.CreatePath(protoPath, override)
+
+	if err != nil {
+		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
+		return err
+	} else {
+		fmt.Printf(" success! \r\n")
+	}
+
+	//Copy proto file path & generate .pb.go file
+	fmt.Printf("\r\nCopy proto file ......")
+	protoFilePath := filepath.Join(workingPath, "src", "proto", strings.TrimSuffix(filename, ".proto"), filename)
+	protoFilePathRelative := filepath.Join(".", "src", "proto", strings.TrimSuffix(filename, ".proto"), filename)
+
+	err = gofraUtils.CopyFile(path, protoFilePath)
+
+	if err != nil {
+		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
+		return err
+	} else {
+		fmt.Printf(" success! \r\n")
+	}
+
+	//Execute protoc to generate .pb.go file
+	fmt.Printf("\r\nCompile proto file ......")
+	shellCmd := exec.Command("protoc", "--go_out=plugins=grpc:.", protoFilePathRelative)
+
+	err = shellCmd.Run()
+
+	if err != nil {
+		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
+		return err
+	} else {
+		fmt.Printf(" success! \r\n")
+	}
+
+	//Generate service
+	fmt.Printf("\r\nGenerating service code ......")
+	err = gofraTemplate.GenerateService(workingPath, goPath, templateInfo, path, override, update)
+
+	if err != nil {
+		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
+		return err
+	} else {
+		fmt.Printf(" success! \r\n")
+	}
+
+	return nil
 }

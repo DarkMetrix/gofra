@@ -32,7 +32,7 @@ import (
 // initCmd represents the init command
 var initCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Initialize gofra application",
+	Short: "Initialize gofra application using template.json",
 	Long: `Gofra is a framework using gRPC as the communication layer.\r\ninit command will create basic framework structure.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("====== Gofra init ======")
@@ -150,7 +150,7 @@ func init() {
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	initCmd.PersistentFlags().StringVar(&templatePath, "template_path", "./template.json", "A template file in json to tell how to generate codes")
+	initCmd.PersistentFlags().StringVar(&templatePath, "path", "./template.json", "A template file in json to tell how to generate codes")
 	initCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
 
 	// Cobra supports local flags which will only run when this command
