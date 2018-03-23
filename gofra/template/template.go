@@ -567,7 +567,8 @@ func GenerateHealthCheckProto(workingPath, goPath string, info *TemplateInfo, ov
 	err = shellCmd.Run()
 
 	if err != nil {
-		return err
+		return errors.New(fmt.Sprintf("protoc --go_out=plugins=grpc:. %v failed! error:%v",
+			filePathRelative, err.Error()))
 	}
 
 	return nil
