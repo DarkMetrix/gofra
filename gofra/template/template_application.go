@@ -36,6 +36,8 @@ import (
 	logger "github.com/DarkMetrix/gofra/grpc-utils/logger/seelog"
 	monitor "{{.MonitorPackage}}"
 	tracing "{{.TracingPackage}}"
+
+	recover_interceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/recover_interceptor"
 	log_interceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/seelog_interceptor"
 	monitor_interceptor "{{.MonitorInterceptorPackage}}"
 	tracing_interceptor "{{.TracingInterceptorPackage}}"
@@ -67,6 +69,7 @@ func (app *Application) Init(conf *config.Config) error {
 	// set server interceptor
 	app.ServerOpts = append(app.ServerOpts, grpc.UnaryInterceptor(
 		grpc_middleware.ChainUnaryServer(
+			recover_interceptor.GetServerInterceptor(),
 			tracing_interceptor.GetServerInterceptor(),
 			log_interceptor.GetServerInterceptor(),
 			monitor_interceptor.GetServerInterceptor())))
