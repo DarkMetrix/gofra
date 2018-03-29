@@ -40,7 +40,7 @@ var ServiceRpcTemplate string = `
 package {{.ServiceName}} 
 
 import (
-	context "golang.org/x/net/context"
+	"context"
 
 	pb "{{.WorkingPathRelative}}/src/proto/{{.FileNamePrefix}}"
 )
