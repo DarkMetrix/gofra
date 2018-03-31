@@ -61,7 +61,7 @@ func (app *Application) Init(conf *config.Config) error {
 	logger.Init("../conf/log.config", common.ProjectName)
 
 	// init monitor
-	monitor.Init({{.MonitorInitParam}})
+	monitor.Init({{.MonitorInitParam}}, common.ProjectName)
 
 	// init tracing
 	tracing.Init({{.TracingInitParam}})

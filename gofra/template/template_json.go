@@ -28,7 +28,7 @@ var JsonTemplate string = `
     "monitor_package":
     {
         "package":"github.com/DarkMetrix/gofra/grpc-utils/monitor/statsd",
-        "init_param":"\"127.0.0.1:8125\""
+        "init_param":"\"127.0.0.1:8125\", \"{{.Project}}\""
     },
     "tracing_package":
     {

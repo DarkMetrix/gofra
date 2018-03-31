@@ -21,6 +21,8 @@ var GofraClientInterceptor grpc.UnaryClientInterceptor = GofraClientInterceptorF
 func GofraClientInterceptorFunc(ctx context.Context, method string, req, reply interface{},
 	cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 
+	defer monitor.GetStatsd().NewTiming().Send(method + "|Time,type=Client.Time")
+
 	//Monitor method enter total
 	monitor.Increment(method + ",type=Client.Total")
 
@@ -42,6 +44,8 @@ func GofraClientInterceptorFunc(ctx context.Context, method string, req, reply i
 var GofraServerInterceptor grpc.UnaryServerInterceptor = GofraServerInterceptorFunc
 
 func GofraServerInterceptorFunc(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (reply interface{}, err error) {
+	defer monitor.GetStatsd().NewTiming().Send(info.FullMethod + "|Time,type=Server.Time")
+
 	//Monitor method enter total
 	monitor.Increment(info.FullMethod + ",type=Server.Total")
 
