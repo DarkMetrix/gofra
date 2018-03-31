@@ -633,7 +633,9 @@ func GenerateService(workingPath, goPath string, info *TemplateInfo, protoPath s
 				FileNamePrefix: protoFileNamePrefix,
 				RpcName: rpc.Name,
 				Request: rpc.RequestType.Name(),
-				Response: rpc.ResponseType.Name(),}
+				Response: rpc.ResponseType.Name(),
+				MonitorPackage: info.MonitorPackage.Package,
+				TracingPackage: info.TracingPackage.Package,}
 
 				err = GenerateServiceHandler(workingPath, goPath, info, rpc, override, update)
 

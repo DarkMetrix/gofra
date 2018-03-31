@@ -29,6 +29,9 @@ type RpcInfo struct {
 	RpcName string
 	Request string
 	Response string
+
+	MonitorPackage string
+	TracingPackage string
 }
 
 var ServiceRpcTemplate string = `
@@ -42,10 +45,22 @@ package {{.ServiceName}}
 import (
 	"context"
 
+	//Log package
+	//log "github.com/cihub/seelog"
+
+	//Monitor package
+	//monitor "{{.MonitorPackage}}"
+
+	//Tracing package
+	//tracing "{{.TracingPackage}}"
+
 	pb "{{.WorkingPathRelative}}/src/proto/{{.FileNamePrefix}}"
 )
 
 func (this {{.ServiceName}}Impl) {{.RpcName}} (ctx context.Context, req *pb.{{.Request}}) (*pb.{{.Response}}, error) {
+	//Log Example:traceid must be logged
+	//log.Infof("{{.RpcName}} begin, traceid=%v, req=%v", tracing.GetTracingId(ctx), req)
+
 	resp := new(pb.{{.Response}})
 
 	return resp, nil

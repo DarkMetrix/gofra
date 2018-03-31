@@ -48,9 +48,9 @@ func main() {
 		os.Exit(-2)
 	}
 
-	fmt.Printf("Listen on port [{{.Addr}}]\r\n")
+	fmt.Printf("Listen on port [%v]\r\n", conf.Server.Addr)
 
-	err = application.Run("{{.Addr}}")
+	err = application.Run(conf.Server.Addr)
 
 	if err != nil {
 		fmt.Printf("Application run failed! error:%v\r\n", err.Error())

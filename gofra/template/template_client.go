@@ -26,7 +26,7 @@ package main
 import (
 	"fmt"
 	"time"
-	"golang.org/x/net/context"
+	"context"
 
     "google.golang.org/grpc"
 	"google.golang.org/grpc/status"
@@ -44,6 +44,7 @@ import (
     tracing "{{.TracingPackage}}"
 
 	pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
+	helper "github.com/DarkMetrix/gofra/grpc-utils/helper"
 )
 
 func main() {
@@ -70,13 +71,15 @@ func main() {
 
 	pool.GetConnectionPool().Init(clientOpts, 5, 10, time.Second * 10)
 
+	addr := helper.GetRealAddrByNetwork("{{.Addr}}")
+
 	// RPC call
 	req := new(health_check.HealthCheckRequest)
 	req.Message = "ping"
 
 	for index := 0; index < 1; index++ {
 		// get remote server connection
-		conn, err := pool.GetConnectionPool().GetConnection(context.Background(),"{{.Addr}}")
+		conn, err := pool.GetConnectionPool().GetConnection(context.Background(), addr)
 		defer conn.Close()
 
 		// new client
@@ -106,4 +109,5 @@ func main() {
 	}
 
 	time.Sleep(time.Second * 1)
-}`
+}
+`

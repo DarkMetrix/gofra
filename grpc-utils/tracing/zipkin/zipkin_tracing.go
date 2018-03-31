@@ -2,9 +2,13 @@ package zipkin
 
 import (
 	"context"
+
+	"google.golang.org/grpc/metadata"
+
 	"github.com/opentracing/opentracing-go"
 	zipkin "github.com/openzipkin/zipkin-go-opentracing"
-	"google.golang.org/grpc/metadata"
+
+	helper "github.com/DarkMetrix/gofra/grpc-utils/helper"
 )
 
 var tracer opentracing.Tracer
@@ -37,6 +41,8 @@ func InitZipkin(addr string, debug bool, hostPort string, serviceName string) {
 	if err != nil {
 		panic(err)
 	}
+
+	hostPort = helper.GetRealAddrByNetwork(hostPort)
 
 	// create recorder.
 	recorder := zipkin.NewRecorder(collector, debug, hostPort, serviceName)

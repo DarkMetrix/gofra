@@ -42,6 +42,8 @@ import (
 	monitor_interceptor "{{.MonitorInterceptorPackage}}"
 	tracing_interceptor "{{.TracingInterceptorPackage}}"
 
+	helper "github.com/DarkMetrix/gofra/grpc-utils/helper"
+
 	"{{.WorkingPathRelative}}/src/common"
 	"{{.WorkingPathRelative}}/src/config"
 
@@ -57,6 +59,9 @@ type Application struct {
 
 //Init application
 func (app *Application) Init(conf *config.Config) error {
+	//Process conf.Server.Addr
+	conf.Server.Addr = helper.GetRealAddrByNetwork(conf.Server.Addr)
+
 	// init log
 	logger.Init("../conf/log.config", common.ProjectName)
 
