@@ -70,8 +70,10 @@ func init() {
 	// and all subcommands, e.g.:
 	// serviceCmd.PersistentFlags().String("foo", "", "A help for foo")
 	addServiceCmd.PersistentFlags().StringVar(&servicePath, "path", "", "A .proto file to generate codes")
+	addServiceCmd.PersistentFlags().StringVar(&protocPath, "protoc_path", "protoc", "protoc binary path, in case user has multi versions of protoc")
 
 	updateServiceCmd.PersistentFlags().StringVar(&servicePath, "path", "", "A .proto file to generate codes")
+	updateServiceCmd.PersistentFlags().StringVar(&protocPath, "protoc_path", "protoc", "protoc binary path, in case user has multi versions of protoc")
 	updateServiceCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
 
 	// Cobra supports local flags which will only run when this command
@@ -82,6 +84,11 @@ func init() {
 
 func addService(path string, override, update bool) error {
 	fmt.Println("====== Gofra service add ======")
+
+	//Set protoc binary path
+	if len(protocPath) != 0 {
+		gofraTemplate.ProtocPath = protocPath
+	}
 
 	//Check path
 	fmt.Printf("\r\nChecking Path ......")

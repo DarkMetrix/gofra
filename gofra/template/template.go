@@ -16,6 +16,9 @@ import (
 	gofraUtils "github.com/DarkMetrix/gofra/gofra/utils"
 )
 
+//protoc command path
+var ProtocPath string = "protoc"
+
 //Server config
 type ServerInfo struct {
 	Addr string `json:"addr"`
@@ -562,13 +565,13 @@ func GenerateHealthCheckProto(workingPath, goPath string, info *TemplateInfo, ov
 	}
 
 	//Execute protoc to generate .pb.go file
-	shellCmd := exec.Command("protoc", "--go_out=plugins=grpc:.", filePathRelative)
+	shellCmd := exec.Command(ProtocPath, "--go_out=plugins=grpc:.", filePathRelative)
 
 	err = shellCmd.Run()
 
 	if err != nil {
-		return errors.New(fmt.Sprintf("protoc --go_out=plugins=grpc:. %v failed! error:%v",
-			filePathRelative, err.Error()))
+		return errors.New(fmt.Sprintf("%v --go_out=plugins=grpc:. %v failed! error:%v",
+			ProtocPath, filePathRelative, err.Error()))
 	}
 
 	return nil

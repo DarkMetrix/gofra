@@ -102,6 +102,7 @@ var initCmd = &cobra.Command{
 }
 
 var templatePath string
+var protocPath string
 var override bool
 
 //Server config
@@ -151,6 +152,7 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	initCmd.PersistentFlags().StringVar(&templatePath, "path", "./template.json", "A template file in json to tell how to generate codes")
+	initCmd.PersistentFlags().StringVar(&protocPath, "protoc_path", "protoc", "protoc binary path, in case user has multi versions of protoc")
 	initCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
 
 	// Cobra supports local flags which will only run when this command
@@ -242,6 +244,11 @@ func InitDirectoryStructure(workingPath string, info *gofraTemplate.TemplateInfo
 
 //Init all go file with template
 func InitAllFiles(workingPath, goPath string, info *gofraTemplate.TemplateInfo) error {
+	//Set protoc binary path
+	if len(protocPath) != 0 {
+		gofraTemplate.ProtocPath = protocPath
+	}
+
 	err := gofraTemplate.GenerateCommonFile(workingPath, goPath, info, override)
 
 	if err != nil {
