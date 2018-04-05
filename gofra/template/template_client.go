@@ -35,16 +35,16 @@ import (
 
 	health_check "{{.WorkingPathRelative}}/src/proto/health_check"
 
-	log_interceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/seelog_interceptor"
-	monitor_interceptor "{{.MonitorInterceptorPackage}}"
-	tracing_interceptor "{{.TracingInterceptorPackage}}"
+	logInterceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/seelog_interceptor"
+	monitorInterceptor "{{.MonitorInterceptorPackage}}"
+	tracingInterceptor "{{.TracingInterceptorPackage}}"
 
-    logger "github.com/DarkMetrix/gofra/grpc-utils/logger/seelog"
+    logger "github.com/DarkMetrix/gofra/common/logger/seelog"
 	monitor "{{.MonitorPackage}}"
     tracing "{{.TracingPackage}}"
 
 	pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
-	helper "github.com/DarkMetrix/gofra/grpc-utils/helper"
+	commonUtils "github.com/DarkMetrix/gofra/common/utils"
 )
 
 func main() {
@@ -65,25 +65,32 @@ func main() {
 
 	clientOpts = append(clientOpts, grpc.WithUnaryInterceptor(
 		grpc_middleware.ChainUnaryClient(
-			tracing_interceptor.GetClientInterceptor(),
-			log_interceptor.GetClientInterceptor(),
-			monitor_interceptor.GetClientInterceptor())))
+			tracingInterceptor.GetClientInterceptor(),
+			logInterceptor.GetClientInterceptor(),
+			monitorInterceptor.GetClientInterceptor())))
 
 	pool.GetConnectionPool().Init(clientOpts, 5, 10, time.Second * 10)
 
-	addr := helper.GetRealAddrByNetwork("{{.Addr}}")
+	addr := commonUtils.GetRealAddrByNetwork("{{.Addr}}")
 
-	// RPC call
+	// begin test
+	testHealthCheck(addr)
+
+	time.Sleep(time.Second * 1)
+}
+
+func testHealthCheck(addr string) {
+	// rpc call
 	req := new(health_check.HealthCheckRequest)
 	req.Message = "ping"
 
 	for index := 0; index < 1; index++ {
 		// get remote server connection
 		conn, err := pool.GetConnectionPool().GetConnection(context.Background(), addr)
-		defer conn.Close()
+		defer conn.Recycle()
 
 		// new client
-		c := health_check.NewHealthCheckServiceClient(conn.ClientConn)
+		c := health_check.NewHealthCheckServiceClient(conn.Get())
 
 		if err != nil {
 			fmt.Printf("HealthCheck get connection failed! error%v", err.Error())
@@ -107,7 +114,5 @@ func main() {
 			return
 		}
 	}
-
-	time.Sleep(time.Second * 1)
 }
 `

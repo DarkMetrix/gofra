@@ -23,7 +23,7 @@ import (
 	"github.com/spf13/cobra"
 
 	gofraTemplate "github.com/DarkMetrix/gofra/gofra/template"
-	gofraUtils "github.com/DarkMetrix/gofra/gofra/utils"
+	commonUtils "github.com/DarkMetrix/gofra/common/utils"
 )
 
 // serviceCmd represents the service command
@@ -122,7 +122,7 @@ func addService(path string, override, update bool) error {
 	filename := filepath.Base(path)
 	protoPath := filepath.Join(workingPath, "src", "proto", strings.TrimSuffix(filename, ".proto"))
 
-	gofraUtils.CreatePath(protoPath, override)
+	commonUtils.CreatePath(protoPath, override)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
@@ -136,7 +136,7 @@ func addService(path string, override, update bool) error {
 	protoFilePath := filepath.Join(workingPath, "src", "proto", strings.TrimSuffix(filename, ".proto"), filename)
 	protoFilePathRelative := filepath.Join(".", "src", "proto", strings.TrimSuffix(filename, ".proto"), filename)
 
-	err = gofraUtils.CopyFile(path, protoFilePath)
+	err = commonUtils.CopyFile(path, protoFilePath)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())

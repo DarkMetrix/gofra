@@ -8,7 +8,7 @@ import (
 	"github.com/opentracing/opentracing-go"
 	zipkin "github.com/openzipkin/zipkin-go-opentracing"
 
-	helper "github.com/DarkMetrix/gofra/grpc-utils/helper"
+	commonUtils "github.com/DarkMetrix/gofra/common/utils"
 )
 
 var tracer opentracing.Tracer
@@ -42,7 +42,7 @@ func InitZipkin(addr string, debug bool, hostPort string, serviceName string) {
 		panic(err)
 	}
 
-	hostPort = helper.GetRealAddrByNetwork(hostPort)
+	hostPort = commonUtils.GetRealAddrByNetwork(hostPort)
 
 	// create recorder.
 	recorder := zipkin.NewRecorder(collector, debug, hostPort, serviceName)

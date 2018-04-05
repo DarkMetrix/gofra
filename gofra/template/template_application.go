@@ -33,16 +33,16 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 
 	pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
-	logger "github.com/DarkMetrix/gofra/grpc-utils/logger/seelog"
+	logger "github.com/DarkMetrix/gofra/common/logger/seelog"
 	monitor "{{.MonitorPackage}}"
 	tracing "{{.TracingPackage}}"
 
-	recover_interceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/recover_interceptor"
-	log_interceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/seelog_interceptor"
-	monitor_interceptor "{{.MonitorInterceptorPackage}}"
-	tracing_interceptor "{{.TracingInterceptorPackage}}"
+	recoverInterceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/recover_interceptor"
+	logInterceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/seelog_interceptor"
+	monitorInterceptor "{{.MonitorInterceptorPackage}}"
+	tracingInterceptor "{{.TracingInterceptorPackage}}"
 
-	helper "github.com/DarkMetrix/gofra/grpc-utils/helper"
+	commonUtils "github.com/DarkMetrix/gofra/common/utils"
 
 	"{{.WorkingPathRelative}}/src/common"
 	"{{.WorkingPathRelative}}/src/config"
@@ -59,8 +59,8 @@ type Application struct {
 
 //Init application
 func (app *Application) Init(conf *config.Config) error {
-	//Process conf.Server.Addr
-	conf.Server.Addr = helper.GetRealAddrByNetwork(conf.Server.Addr)
+	// process conf.Server.Addr
+	conf.Server.Addr = commonUtils.GetRealAddrByNetwork(conf.Server.Addr)
 
 	// init log
 	logger.Init("../conf/log.config", common.ProjectName)
@@ -74,17 +74,17 @@ func (app *Application) Init(conf *config.Config) error {
 	// set server interceptor
 	app.ServerOpts = append(app.ServerOpts, grpc.UnaryInterceptor(
 		grpc_middleware.ChainUnaryServer(
-			recover_interceptor.GetServerInterceptor(),
-			tracing_interceptor.GetServerInterceptor(),
-			log_interceptor.GetServerInterceptor(),
-			monitor_interceptor.GetServerInterceptor())))
+			recoverInterceptor.GetServerInterceptor(),
+			tracingInterceptor.GetServerInterceptor(),
+			logInterceptor.GetServerInterceptor(),
+			monitorInterceptor.GetServerInterceptor())))
 
 	// set client interceptor
 	app.ClientOpts = append(app.ClientOpts, grpc.WithUnaryInterceptor(
 		grpc_middleware.ChainUnaryClient(
-			tracing_interceptor.GetClientInterceptor(),
-			log_interceptor.GetClientInterceptor(),
-			monitor_interceptor.GetClientInterceptor())))
+			tracingInterceptor.GetClientInterceptor(),
+			logInterceptor.GetClientInterceptor(),
+			monitorInterceptor.GetClientInterceptor())))
 
 	err := pool.GetConnectionPool().Init(app.ClientOpts,
 		conf.Client.Pool.InitConns,

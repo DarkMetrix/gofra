@@ -4,7 +4,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
-	monitor "github.com/DarkMetrix/gofra/grpc-utils/monitor/statsd"
+	monitor "github.com/DarkMetrix/gofra/common/monitor/statsd"
 )
 
 func GetClientInterceptor() grpc.UnaryClientInterceptor {

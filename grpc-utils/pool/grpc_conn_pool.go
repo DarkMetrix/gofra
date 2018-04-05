@@ -1,13 +1,14 @@
 package pool
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"sync"
 	"time"
-	"errors"
-	"context"
 
 	"google.golang.org/grpc"
+
 	grpcPool "github.com/processout/grpc-go-pool"
 )
 
@@ -35,6 +36,22 @@ type ConnectionPool struct {
 	idleTimeout time.Duration						//Idle timeout for connection
 }
 
+//ClientConn is the wrapper for a grpc-go-pool.ClientConn
+type ClientConn struct {
+	*grpcPool.ClientConn
+}
+
+//Get returns the real connection to use
+func (conn *ClientConn) Get() *grpc.ClientConn {
+	return conn.ClientConn.ClientConn
+}
+
+//Recycle returns the connection to the pool
+//If the unhealthy mark is set, close and it won't be put back to the pool
+func (conn *ClientConn) Recycle() error {
+	return conn.Close()
+}
+
 func NewConnectionPool() *ConnectionPool {
 	return &ConnectionPool {
 		pools: make(map[string]*grpcPool.Pool),
@@ -60,7 +77,7 @@ func (connPool *ConnectionPool) Init(clientOpts []grpc.DialOption,
 }
 
 //Get connection from pool
-func (connPool *ConnectionPool) GetConnection(ctx context.Context, addr string) (*grpcPool.ClientConn, error) {
+func (connPool *ConnectionPool) GetConnection(ctx context.Context, addr string) (*ClientConn, error) {
 	connPool.mtx.Lock()
 	defer connPool.mtx.Unlock()
 
@@ -83,7 +100,11 @@ func (connPool *ConnectionPool) GetConnection(ctx context.Context, addr string) 
 		return nil, err
 	}
 
-	return conn, nil
+	wrapper := &ClientConn{
+		ClientConn:	conn,
+	}
+
+	return wrapper, nil
 }
 
 func getFactory(addr string, clientOpts []grpc.DialOption) grpcPool.Factory {

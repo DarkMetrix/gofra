@@ -13,7 +13,7 @@ import (
 
 	"github.com/tallstoat/pbparser"
 
-	gofraUtils "github.com/DarkMetrix/gofra/gofra/utils"
+	commonUtils "github.com/DarkMetrix/gofra/common/utils"
 )
 
 //protoc command path
@@ -74,7 +74,7 @@ func GenerateTemplateJsonFile(workingPath string, override bool) error {
 	filePath := filepath.Join(workingPath, "template.json.default")
 
 	//Check file is exist or not
-	isExist, err := gofraUtils.CheckPathExists(filePath)
+	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
 		return err
@@ -132,7 +132,7 @@ func GenerateCommonFile(workingPath, goPath string, info *TemplateInfo, override
 	filePath := filepath.Join(workingPath, "src", "common", "common.go")
 
 	//Check file is exist or not
-	isExist, err := gofraUtils.CheckPathExists(filePath)
+	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
 		return err
@@ -191,7 +191,7 @@ func GenerateConfigFile(workingPath, goPath string, info *TemplateInfo, override
 	filePath := filepath.Join(workingPath, "src", "config", "config.go")
 
 	//Check file is exist or not
-	isExist, err := gofraUtils.CheckPathExists(filePath)
+	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
 		return err
@@ -248,7 +248,7 @@ func GenerateConfigJsonFile(workingPath, goPath string, info *TemplateInfo, over
 	filePath := filepath.Join(workingPath, "conf", "config.json")
 
 	//Check file is exist or not
-	isExist, err := gofraUtils.CheckPathExists(filePath)
+	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
 		return err
@@ -307,7 +307,7 @@ func GenerateConfigLogFile(workingPath, goPath string, info *TemplateInfo, overr
 	filePath := filepath.Join(workingPath, "conf", "log.config")
 
 	//Check file is exist or not
-	isExist, err := gofraUtils.CheckPathExists(filePath)
+	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
 		return err
@@ -365,7 +365,7 @@ func GenerateApplicationFile(workingPath, goPath string, info *TemplateInfo, ove
 	filePath := filepath.Join(workingPath, "src", "application", "application.go")
 
 	//Check file is exist or not
-	isExist, err := gofraUtils.CheckPathExists(filePath)
+	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
 		return err
@@ -432,7 +432,7 @@ func GenerateMainFile(workingPath, goPath string, info *TemplateInfo, override b
 	filePath := filepath.Join(workingPath, "src", "main.go")
 
 	//Check file is exist or not
-	isExist, err := gofraUtils.CheckPathExists(filePath)
+	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
 		return err
@@ -515,7 +515,7 @@ func GenerateHealthCheckProto(workingPath, goPath string, info *TemplateInfo, ov
 	filePathRelative := filepath.Join(".", "src", "proto", "health_check", "health_check.proto")
 
 	//Check file is exist or not
-	isExist, err := gofraUtils.CheckPathExists(filePath)
+	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
 		return err
@@ -594,7 +594,7 @@ func GenerateService(workingPath, goPath string, info *TemplateInfo, protoPath s
 		//Create path
 		handlerPath := filepath.Join(workingPath, "src", "handler", elem.Name)
 
-		err := gofraUtils.CreatePath(handlerPath, override)
+		err := commonUtils.CreatePath(handlerPath, override)
 
 		if err != nil {
 			return err
@@ -754,7 +754,7 @@ func GenerateServiceImplementation(workingPath, goPath string, info *TemplateInf
 	filePath := filepath.Join(workingPath, "src", "handler", service.ServiceName, service.ServiceName + ".go")
 
 	//Check file is exist or not
-	isExist, err := gofraUtils.CheckPathExists(filePath)
+	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
 		return err
@@ -810,7 +810,7 @@ func GenerateServiceHandler(workingPath, goPath string, info *TemplateInfo, rpc 
 	filePath := filepath.Join(workingPath, "src", "handler", rpc.ServiceName, rpc.RpcName + ".go")
 
 	//Check file is exist or not
-	isExist, err := gofraUtils.CheckPathExists(filePath)
+	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
 		return err
@@ -866,7 +866,7 @@ func GenerateTestClient(workingPath, goPath string, info *TemplateInfo, override
 	filePath := filepath.Join(workingPath, "test", "main.go")
 
 	//Check file is exist or not
-	isExist, err := gofraUtils.CheckPathExists(filePath)
+	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
 		return err

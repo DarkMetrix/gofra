@@ -25,7 +25,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	gofraUtils "github.com/DarkMetrix/gofra/gofra/utils"
+	commonUtils "github.com/DarkMetrix/gofra/common/utils"
 	gofraTemplate "github.com/DarkMetrix/gofra/gofra/template"
 )
 
@@ -219,21 +219,21 @@ func InitDirectoryStructure(workingPath string, info *gofraTemplate.TemplateInfo
 	healthCheckServicePath := filepath.Join(workingPath, "src", "proto", "health_check")
 
 	//Create root directories
-	err := gofraUtils.CreatePaths(override, binPath, confPath, logPath, srcPath, testPath)
+	err := commonUtils.CreatePaths(override, binPath, confPath, logPath, srcPath, testPath)
 
 	if err != nil {
 		return err
 	}
 
 	//Create src sub directories
-	err = gofraUtils.CreatePaths(override, applicationPath, commonPath, configPath, handlerPath, protoPath)
+	err = commonUtils.CreatePaths(override, applicationPath, commonPath, configPath, handlerPath, protoPath)
 
 	if err != nil {
 		return err
 	}
 
 	//Create proto sub directories
-	err = gofraUtils.CreatePaths(override, healthCheckServicePath)
+	err = commonUtils.CreatePaths(override, healthCheckServicePath)
 
 	if err != nil {
 		return err
