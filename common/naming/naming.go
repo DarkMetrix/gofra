@@ -10,7 +10,7 @@ import (
 )
 
 type NamingResovler interface {
-	GetAddr(addrAlias string) (string, error)
+	Lookup(addrAlias string) (string, error)
 }
 
 type NamingConfig struct {
@@ -108,7 +108,7 @@ func GetAddr(service string) (string, error) {
 		return "", errors.New(fmt.Sprintf("GetAddr - Resolver not found! resolver:%v", name))
 	}
 
-	addr, err := resolver.GetAddr(addrAlias)
+	addr, err := resolver.Lookup(addrAlias)
 
 	if err != nil {
 		return "", err

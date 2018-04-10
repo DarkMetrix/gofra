@@ -12,7 +12,7 @@ import (
 type LocalNamingResolver struct {
 }
 
-func (resolver *LocalNamingResolver) GetAddr(addrAlias string) (string, error) {
+func (resolver *LocalNamingResolver) Lookup(addrAlias string) (string, error) {
 	addrs := strings.Split(addrAlias, ",")
 
 	if len(addrs) < 1 {
