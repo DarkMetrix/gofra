@@ -14,28 +14,14 @@ type NamingResovler interface {
 }
 
 type NamingConfig struct {
-	Locations map[string]LocationConfig `mapstructure:locations`    //Locations, eg:"user_service":"local|127.0.0.1:8088"
+	Locations map[string]string `mapstructure:locations`    //Locations, eg:"user_service":"local|127.0.0.1:8088"
 }
 
-type LocationConfig struct {
-	IsTest bool `mapstructure:is_test`                   //Flag to indicate which location to use
-	LocationReal string `mapstructure:location_real`     //Real location in production
-	LocationTest string `mapstructure:location_test`     //Test location
-}
-
-func (config *LocationConfig) GetLocation() (string, string, error) {
-	realLocation := ""
-
-	if config.IsTest {
-		realLocation = config.LocationTest
-	} else {
-		realLocation = config.LocationReal
-	}
-
-	parts := strings.Split(realLocation, "|")
+func getLocation(location string) (string, string, error) {
+	parts := strings.Split(location, "|")
 
 	if len(parts) != 2 {
-		return "", "", errors.New(fmt.Sprintf("Addr is not valid! addr:%v", realLocation))
+		return "", "", errors.New(fmt.Sprintf("Addr is not valid! addr:%v", location))
 	}
 
 	name := parts[0]
@@ -67,7 +53,7 @@ func Init(args... string) {
 	naming = &Naming{
 		Resolvers: make(map[string]NamingResovler),
 		Config: NamingConfig{
-			Locations: make(map[string]LocationConfig),
+			Locations: make(map[string]string),
 		},
 	}
 
@@ -110,7 +96,7 @@ func GetAddr(service string) (string, error) {
 	}
 
 	//Get service addr
-	name, addrAlias, err := location.GetLocation()
+	name, addrAlias, err := getLocation(location)
 
 	if err != nil {
 		return "", err
