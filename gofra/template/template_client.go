@@ -77,11 +77,11 @@ func main() {
 
 	// init naming
 	naming.Init("../conf/naming.json")
-	naming.AddResolver("local", &LocalNamingResolver{})
-	addr, err := naming.GetAddr({{.Project}})
+	naming.AddResolver("local", &localNaming.LocalNamingResolver{})
+	addr, err := naming.GetAddr("{{.Project}}")
 
 	if err != nil {
-		panic(fmt.Sprintf("HealthCheck get connection failed! error%v", err.Error()))
+		panic(fmt.Sprintf("HealthCheck get connection failed! error:%v", err.Error()))
 	}
 
 	addr := commonUtils.GetRealAddrByNetwork(addr)

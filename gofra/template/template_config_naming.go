@@ -12,8 +12,8 @@ var NamingJsonTemplate string = `
     "{{.Project}}":
 	{
       "is_test":false,
-      "location_test":"{{.Addr}}",
-      "location_real":"{{.Addr}}"
+      "location_test":"local|{{.Addr}}",
+      "location_real":"local|{{.Addr}}"
 	}
   }
 }
