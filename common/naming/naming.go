@@ -73,6 +73,9 @@ func Init(args... string) {
 
 	naming = &Naming{
 		Resolvers: make(map[string]NamingResovler),
+		Config: NamingConfig{
+			Locations: make(map[string]LocationConfig),
+		},
 	}
 
 	err = json.Unmarshal(data, naming.Config)

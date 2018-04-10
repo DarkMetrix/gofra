@@ -33,7 +33,11 @@ import (
 
     "github.com/grpc-ecosystem/go-grpc-middleware"
 
-	health_check "{{.WorkingPathRelative}}/src/proto/health_check"
+	pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
+	naming "github.com/DarkMetrix/gofra/common/naming"
+	localNaming "github.com/DarkMetrix/gofra/common/naming/resolver/local"
+
+	commonUtils "github.com/DarkMetrix/gofra/common/utils"
 
 	logInterceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/seelog_interceptor"
 	monitorInterceptor "{{.MonitorInterceptorPackage}}"
@@ -43,8 +47,7 @@ import (
 	monitor "{{.MonitorPackage}}"
     tracing "{{.TracingPackage}}"
 
-	pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
-	commonUtils "github.com/DarkMetrix/gofra/common/utils"
+	health_check "{{.WorkingPathRelative}}/src/proto/health_check"
 )
 
 func main() {
@@ -69,9 +72,19 @@ func main() {
 			logInterceptor.GetClientInterceptor(),
 			monitorInterceptor.GetClientInterceptor())))
 
+	// init pool
 	pool.GetConnectionPool().Init(clientOpts, 5, 10, time.Second * 10)
 
-	addr := commonUtils.GetRealAddrByNetwork("{{.Addr}}")
+	// init naming
+	naming.Init("../conf/naming.json")
+	naming.AddResolver("local", &LocalNamingResolver{})
+	addr, err := naming.GetAddr({{.Project}})
+
+	if err != nil {
+		panic(fmt.Sprintf("HealthCheck get connection failed! error%v", err.Error()))
+	}
+
+	addr := commonUtils.GetRealAddrByNetwork(addr)
 
 	// begin test
 	testHealthCheck(addr)
