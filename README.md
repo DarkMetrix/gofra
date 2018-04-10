@@ -116,7 +116,8 @@ $tree
 ├── bin
 ├── conf
 │   ├── config.json
-│   └── log.config
+│   ├── log.config
+│   └── naming.json
 ├── log
 ├── src
 │   ├── application
@@ -190,7 +191,8 @@ $ tree
 ├── clean.sh
 ├── conf
 │   ├── config.json
-│   └── log.config
+│   ├── log.config
+│   └── naming.json
 ├── init.sh
 ├── log
 ├── src
