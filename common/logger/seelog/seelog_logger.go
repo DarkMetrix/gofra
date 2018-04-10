@@ -53,6 +53,8 @@ func Init(args ... string) {
 	if err != nil {
 		panic(err)
 	}
+
+	log.Trace("Seelog init success!")
 }
 
 func createProjectFormatter(params string) log.FormatterFunc {

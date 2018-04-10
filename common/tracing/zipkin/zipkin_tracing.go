@@ -8,6 +8,8 @@ import (
 	"github.com/opentracing/opentracing-go"
 	zipkin "github.com/openzipkin/zipkin-go-opentracing"
 
+	log "github.com/cihub/seelog"
+
 	commonUtils "github.com/DarkMetrix/gofra/common/utils"
 )
 
@@ -57,6 +59,8 @@ func InitZipkin(addr string, debug bool, hostPort string, serviceName string) {
 	if err != nil {
 		panic(err)
 	}
+
+	log.Tracef("init zipkin success! addr:%v, debug:%v, host port:%v, service name:%v", addr, debug, hostPort, serviceName)
 }
 
 func GetTracingId(ctx context.Context) string {

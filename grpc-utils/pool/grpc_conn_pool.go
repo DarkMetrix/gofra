@@ -9,6 +9,8 @@ import (
 
 	"google.golang.org/grpc"
 
+	log "github.com/cihub/seelog"
+
 	grpcPool "github.com/processout/grpc-go-pool"
 )
 
@@ -72,6 +74,8 @@ func (connPool *ConnectionPool) Init(clientOpts []grpc.DialOption,
 	connPool.initConnections = initConnections
 	connPool.maxConnections = maxConnections
 	connPool.idleTimeout = idleTimeout
+
+	log.Tracef("init grpc conn pool success! opts:%v, init conn:%v, max conn:%v, idle timeout:%v", clientOpts, initConnections, maxConnections, idleTimeout)
 
 	return nil
 }

@@ -6,6 +6,8 @@ import (
 	"errors"
 	"strings"
 
+	log "github.com/cihub/seelog"
+
 	commonUtils "github.com/DarkMetrix/gofra/common/utils"
 )
 
@@ -16,10 +18,15 @@ func (resolver *LocalNamingResolver) Lookup(addrAlias string) (string, error) {
 	addrs := strings.Split(addrAlias, ",")
 
 	if len(addrs) < 1 {
-		return "", errors.New(fmt.Sprintf("addrs is empty! addrAlias:%v", addrAlias))
+		log.Tracef("lookup failed! error:addrs is empty, addrAlias:%v", addrAlias)
+		return "", errors.New(fmt.Sprintf("addrs is empty, addrAlias:%v", addrAlias))
 	}
 
 	index := time.Now().UnixNano() % int64(len(addrs))
 
-	return commonUtils.GetRealAddrByNetwork(addrs[index]), nil
+	addr := commonUtils.GetRealAddrByNetwork(addrs[index])
+
+	log.Tracef("lookup success! addrAlias:%v, addr:%v", addrAlias, addr)
+
+	return addr, nil
 }

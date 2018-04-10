@@ -11,6 +11,8 @@ var client *statsd.Client = nil
 
 //Init statsd client, if addr is empty, using default setting
 func InitStatsd(addr string, project string) {
+	log.Tracef("init statsd, addr:%v, project:%v", addr, project)
+
 	//If addr is empty, use default addr setting which is ":8125" in udp
 	var err error
 	if len(addr) == 0 {
@@ -54,4 +56,6 @@ func Init(args... string) {
 //Increment
 func Increment(bucket string) {
 	GetStatsd().Increment(bucket)
+
+	log.Tracef("monitor increment:%v", bucket)
 }

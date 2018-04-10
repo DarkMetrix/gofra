@@ -1,10 +1,12 @@
 package naming
 
 import (
-	"fmt"
 	"errors"
+	"fmt"
 	"strings"
 	"sync"
+
+	log "github.com/cihub/seelog"
 
 	"github.com/spf13/viper"
 )
@@ -41,6 +43,7 @@ var rwMutex sync.RWMutex
 //Init naming
 func Init(args... string) {
 	if len(args) < 1 {
+		log.Tracef("init naming failed! param invalid")
 		panic("Init args length < 1")
 	}
 
@@ -66,6 +69,7 @@ func Init(args... string) {
 	err := viper.ReadInConfig()
 
 	if err != nil {
+		log.Tracef("init naming failed! error:%v", err.Error())
 		panic(err)
 	}
 
@@ -73,8 +77,11 @@ func Init(args... string) {
 	err = viper.Unmarshal(&naming.Config)
 
 	if err != nil {
+		log.Tracef("init naming failed! error:%v", err.Error())
 		panic(err)
 	}
+
+	log.Tracef("init naming success! naming:%v", naming)
 }
 
 func AddResolver(name string, resovler NamingResovler) {
@@ -82,6 +89,8 @@ func AddResolver(name string, resovler NamingResovler) {
 	defer rwMutex.Unlock()
 
 	naming.Resolvers[name] = resovler
+
+	log.Tracef("add naming resolver! name:%v, resolver:%v", name, resovler)
 }
 
 func GetAddr(service string) (string, error) {
@@ -92,20 +101,21 @@ func GetAddr(service string) (string, error) {
 	location, ok := naming.Config.Locations[service]
 
 	if !ok {
-		return "", errors.New(fmt.Sprintf("GetAddr - Service not found! service:%v", service))
+		return "", errors.New(fmt.Sprintf("service not found, service:%v", service))
 	}
 
 	//Get service addr
 	name, addrAlias, err := getLocation(location)
 
 	if err != nil {
+		log.Tracef("get addr failed! error:%v", err.Error())
 		return "", err
 	}
 
 	resolver, ok := naming.Resolvers[name]
 
 	if !ok {
-		return "", errors.New(fmt.Sprintf("GetAddr - Resolver not found! resolver:%v", name))
+		return "", errors.New(fmt.Sprintf("resolver not found, resolver:%v", name))
 	}
 
 	addr, err := resolver.Lookup(addrAlias)
@@ -113,6 +123,8 @@ func GetAddr(service string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
+	log.Tracef("get addr success! service:%v, location:%v, addr:%v", service, location, addr)
 
 	return addr, nil
 }
