@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+//Utils to help get real ip like using this kind of format 'eth1:8088'
 func GetRealAddrByNetwork(addr string) string {
 	parts := strings.Split(addr, ":")
 

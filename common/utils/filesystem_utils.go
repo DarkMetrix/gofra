@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 )
 
+//Copy file from src to dest
 func CopyFile(src, dest string) error {
 	data, err := ioutil.ReadFile(src)
 
@@ -21,6 +22,7 @@ func CopyFile(src, dest string) error {
 	return nil
 }
 
+//Check if the path is exist or not
 func CheckPathExists(path string) (bool, error) {
 	_, err := os.Stat(path)
 
@@ -35,6 +37,7 @@ func CheckPathExists(path string) (bool, error) {
 	return false, err
 }
 
+//Create dir using path
 func CreatePath(path string, override bool) error {
 	isExist, err := CheckPathExists(path)
 
@@ -65,6 +68,7 @@ func CreatePath(path string, override bool) error {
 	return nil
 }
 
+//Create dirs using paths
 func CreatePaths(override bool, paths... string) error {
 	for _, path := range paths {
 		err := CreatePath(path, override)

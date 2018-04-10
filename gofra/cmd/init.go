@@ -267,6 +267,12 @@ func InitAllFiles(workingPath, goPath string, info *gofraTemplate.TemplateInfo) 
 		return err
 	}
 
+	err = gofraTemplate.GenerateNamingJsonFile(workingPath, goPath, info, override)
+
+	if err != nil {
+		return err
+	}
+
 	err = gofraTemplate.GenerateConfigLogFile(workingPath, goPath, info, override)
 
 	if err != nil {

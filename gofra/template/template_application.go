@@ -33,6 +33,8 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 
 	pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
+	naming "github.com/DarkMetrix/gofra/common/naming"
+
 	logger "github.com/DarkMetrix/gofra/common/logger/seelog"
 	monitor "{{.MonitorPackage}}"
 	tracing "{{.TracingPackage}}"
@@ -86,6 +88,7 @@ func (app *Application) Init(conf *config.Config) error {
 			logInterceptor.GetClientInterceptor(),
 			monitorInterceptor.GetClientInterceptor())))
 
+	// init pool
 	err := pool.GetConnectionPool().Init(app.ClientOpts,
 		conf.Client.Pool.InitConns,
 		conf.Client.Pool.MaxConns,
@@ -94,6 +97,9 @@ func (app *Application) Init(conf *config.Config) error {
 	if err != nil {
 		return err
 	}
+
+	// init naming
+	naming.Init("../conf/naming.json")
 
 	return nil
 }
