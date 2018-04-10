@@ -84,7 +84,7 @@ func main() {
 		panic(fmt.Sprintf("HealthCheck get connection failed! error:%v", err.Error()))
 	}
 
-	addr := commonUtils.GetRealAddrByNetwork(addr)
+	addr = commonUtils.GetRealAddrByNetwork(addr)
 
 	// begin test
 	testHealthCheck(addr)

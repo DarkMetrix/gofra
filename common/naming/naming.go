@@ -84,7 +84,7 @@ func Init(args... string) {
 	}
 
 	//Unmarshal config
-	err = viper.Unmarshal(config)
+	err = viper.Unmarshal(&naming.Config)
 
 	if err != nil {
 		panic(err)
