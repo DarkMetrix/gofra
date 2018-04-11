@@ -28,9 +28,9 @@ func GofraClientInterceptorFunc(ctx context.Context, method string, req, reply i
 	log.Tracef("context:%v", ctx)
 
 	if err != nil {
-		log.Warnf("trace id=%v, span id=%v, req=%v, invoke failed!!! error:%v", tracing.GetTracingId(ctx), tracing.GetSpanId(ctx), req, err)
+		log.Warnf("invoke failed! trace id=%v, span id=%v, req=%v, error:%v", tracing.GetTracingId(ctx), tracing.GetSpanId(ctx), req, err)
 	} else {
-		log.Debugf("trace id=%v, span id=%v, req=%v, invoke success!!! reply:%v", tracing.GetTracingId(ctx), tracing.GetSpanId(ctx), req, reply)
+		log.Debugf("invoke success! trace id=%v, span id=%v, req=%v, reply:%v", tracing.GetTracingId(ctx), tracing.GetSpanId(ctx), req, reply)
 	}
 
 	return err
@@ -46,9 +46,9 @@ func GofraServerInterceptorFunc(ctx context.Context, req interface{}, info *grpc
 	log.Tracef("context:%v", ctx)
 
 	if err != nil {
-		log.Warnf("trace id=%v, span id=%v, req=%v, handle failed!!! error:%v", tracing.GetTracingId(ctx), tracing.GetSpanId(ctx), req, err)
+		log.Warnf("handle failed! trace id=%v, span id=%v, req=%v, error:%v", tracing.GetTracingId(ctx), tracing.GetSpanId(ctx), req, err)
 	} else {
-		log.Debugf("trace id=%v, span id=%v, req=%v, handle success!!! reply:%v", tracing.GetTracingId(ctx), tracing.GetSpanId(ctx), req, reply)
+		log.Debugf("hanlde success! trace id=%v, span id=%v, req=%v, reply:%v", tracing.GetTracingId(ctx), tracing.GetSpanId(ctx), req, reply)
 	}
 
 	return reply, err

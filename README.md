@@ -350,7 +350,7 @@ $./test
 #### Client output
 
 ```bash
-[DEBUG][2018-04-01T02:26:48.890452][test_gofra_test][seelog_interceptor.go:26][GofraClientInterceptorFunc] => context=context.Background.WithValue(metadata.mdOutgoingKey{}, metadata.MD{"x-b3-traceid":[]string{"7d123708aa5946c52efc7ed01f8fde82"}, "x-b3-spanid":[]string{"5fd7cb9d44b4ed72"}, "x-b3-sampled":[]string{"1"}, "x-b3-flags":[]string{"0"}}).WithValue(opentracing.contextKey{}, &zipkintracer.spanImpl{tracer:(*zipkintracer.tracerImpl)(0xc42018c400), event:(func(zipkintracer.SpanEvent))(nil), observer:otobserver.SpanObserver(nil), Mutex:sync.Mutex{state:0, sema:0x0}, raw:zipkintracer.RawSpan{Context:zipkintracer.SpanContext{TraceID:types.TraceID{High:0x7d123708aa5946c5, Low:0x2efc7ed01f8fde82}, SpanID:0x5fd7cb9d44b4ed72, Sampled:true, Baggage:map[string]string(nil), ParentSpanID:(*uint64)(nil), Flags:0x8, Owner:true}, Operation:"/common.health.check.HealthCheckService/HealthCheck", Start:time.Time{wall:0xbea8129a34dfcbca, ext:6018394, loc:(*time.Location)(0xcdb0a0)}, Duration:3396107, Tags:opentracing.Tags{"component":"gRPC"}, Logs:[]opentracing.LogRecord(nil)}, numDroppedLogs:0, Endpoint:(*zipkincore.Endpoint)(nil)}), req=message:"ping" , invoke success!!! reply:
+[DEBUG][2018-04-11T10:55:24.656902][demo_test][seelog_interceptor.go:30][GofraClientInterceptorFunc] => invoke success! trace id=TracingIdNotFound, span id=SpanIdNotFound, req=message:"ping" , reply:
 ```
 
 
@@ -358,7 +358,7 @@ $./test
 #### Service output
 
 ```
-[DEBUG][2018-04-01T02:26:48.888806][test_gofra][seelog_interceptor.go:42][GofraServerInterceptorFunc] => context=context.Background.WithCancel.WithCancel.WithValue(peer.peerKey{}, &peer.Peer{Addr:(*net.TCPAddr)(0xc42016bbf0), AuthInfo:credentials.AuthInfo(nil)}).WithValue(transport.streamKey{}, <stream: 0xc42022e280, /common.health.check.HealthCheckService/HealthCheck>).WithValue(metadata.mdIncomingKey{}, metadata.MD{"user-agent":[]string{"grpc-go/1.8.2"}, "x-b3-traceid":[]string{"7d123708aa5946c52efc7ed01f8fde82"}, "x-b3-spanid":[]string{"5fd7cb9d44b4ed72"}, "x-b3-sampled":[]string{"1"}, "x-b3-flags":[]string{"0"}, ":authority":[]string{"172.16.101.128:58888"}}).WithValue(opentracing.contextKey{}, &zipkintracer.spanImpl{tracer:(*zipkintracer.tracerImpl)(0xc4200f0d00), event:(func(zipkintracer.SpanEvent))(nil), observer:otobserver.SpanObserver(nil), Mutex:sync.Mutex{state:0, sema:0x0}, raw:zipkintracer.RawSpan{Context:zipkintracer.SpanContext{TraceID:types.TraceID{High:0x7d123708aa5946c5, Low:0x2efc7ed01f8fde82}, SpanID:0x5fd7cb9d44b4ed72, Sampled:true, Baggage:map[string]string(nil), ParentSpanID:(*uint64)(nil), Flags:0x2, Owner:false}, Operation:"/common.health.check.HealthCheckService/HealthCheck", Start:time.Time{wall:0xbea8129a34f98f74, ext:3707775087, loc:(*time.Location)(0xdfb0a0)}, Duration:56535, Tags:opentracing.Tags{"component":"gRPC"}, Logs:[]opentracing.LogRecord(nil)}, numDroppedLogs:0, Endpoint:(*zipkincore.Endpoint)(nil)}), req=message:"ping" , handle success!!! reply:
+[DEBUG][2018-04-11T10:55:24.656279][demo][seelog_interceptor.go:48][GofraServerInterceptorFunc] => handle success! trace id=79aee823934dde923790bc7400814e39, span id=4988c9cbcde2cd7b, req=message:"ping" , reply:
 ```
 
 
