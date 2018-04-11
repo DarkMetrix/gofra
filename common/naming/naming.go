@@ -41,14 +41,13 @@ var naming *Naming = nil
 var rwMutex sync.RWMutex
 
 //Init naming
-func Init(args... string) {
+func Init(args... string) error {
 	if len(args) < 1 {
-		log.Tracef("init naming failed! param invalid")
-		panic("Init args length < 1")
+		return errors.New(fmt.Sprintf("param invalid! args:%v", args))
 	}
 
 	if naming != nil {
-		return
+		return nil
 	}
 
 	namingConfigPath := args[0]
@@ -69,19 +68,17 @@ func Init(args... string) {
 	err := viper.ReadInConfig()
 
 	if err != nil {
-		log.Tracef("init naming failed! error:%v", err.Error())
-		panic(err)
+		return err
 	}
 
 	//Unmarshal config
 	err = viper.Unmarshal(&naming.Config)
 
 	if err != nil {
-		log.Tracef("init naming failed! error:%v", err.Error())
-		panic(err)
+		return err
 	}
 
-	log.Tracef("init naming success! naming:%v", naming)
+	return nil
 }
 
 func AddResolver(name string, resovler NamingResovler) {
@@ -108,7 +105,6 @@ func GetAddr(service string) (string, error) {
 	name, addrAlias, err := getLocation(location)
 
 	if err != nil {
-		log.Tracef("get addr failed! error:%v", err.Error())
 		return "", err
 	}
 

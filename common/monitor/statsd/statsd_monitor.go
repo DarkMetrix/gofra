@@ -1,6 +1,9 @@
 package statsd
 
 import (
+	"fmt"
+	"errors"
+
 	log "github.com/cihub/seelog"
 
 	"github.com/alexcesaro/statsd"
@@ -8,9 +11,11 @@ import (
 
 //Statsd client
 var client *statsd.Client = nil
+var addr string = "localhost:8125"
+var project string = "Default"
 
 //Init statsd client, if addr is empty, using default setting
-func InitStatsd(addr string, project string) {
+func InitStatsd(addr string, project string) error {
 	log.Tracef("init statsd, addr:%v, project:%v", addr, project)
 
 	//If addr is empty, use default addr setting which is ":8125" in udp
@@ -28,34 +33,58 @@ func InitStatsd(addr string, project string) {
 	}
 
 	if err != nil {
-		panic(err)
+		log.Tracef(fmt.Sprintf("init statsd failed! error:%v", err.Error()))
+
+		client = nil
+		return err
 	}
+
+	log.Tracef(fmt.Sprintf("init statsd success! error:%v", err.Error()))
+
+	return nil
 }
 
 //Get statsd client
-func GetStatsd() *statsd.Client{
+func GetStatsd() *statsd.Client {
 	if client == nil {
-		InitStatsd("localhost:8125", "Default")
+		err := InitStatsd(addr, project)
+
+		if err != nil {
+			return nil
+		}
 	}
 
 	return client
 }
 
 //Init
-func Init(args... string) {
+func Init(args... string) error {
 	if len(args) < 2 {
-		panic("Init args length < 1")
+		return errors.New(fmt.Sprintf("param invalid! args:%v", args))
 	}
 
-	addr := args[0]
-	project := args[1]
+	addr = args[0]
+	project = args[1]
 
-	InitStatsd(addr, project)
+	err := InitStatsd(addr, project)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 //Increment
 func Increment(bucket string) {
-	GetStatsd().Increment(bucket)
+	statsd := GetStatsd()
 
-	log.Tracef("monitor increment:%v", bucket)
+	if statsd == nil {
+		log.Tracef("monitor increment failed! bucket:%v", bucket)
+		return
+	}
+
+	log.Tracef("monitor increment failed! bucket:%v", bucket)
+
+	statsd.Increment(bucket)
 }

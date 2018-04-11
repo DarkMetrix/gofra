@@ -1,6 +1,8 @@
 package zipkin
 
 import (
+	"fmt"
+	"errors"
 	"context"
 
 	"google.golang.org/grpc/metadata"
@@ -8,16 +10,14 @@ import (
 	"github.com/opentracing/opentracing-go"
 	zipkin "github.com/openzipkin/zipkin-go-opentracing"
 
-	log "github.com/cihub/seelog"
-
 	commonUtils "github.com/DarkMetrix/gofra/common/utils"
 )
 
 var tracer opentracing.Tracer
 
-func Init(args... string) {
+func Init(args... string) error {
 	if len(args) < 1 {
-		panic("Init args length < 1")
+		return errors.New(fmt.Sprintf("param invalid! args:%v", args))
 	}
 
 	addr := args[0]
@@ -31,17 +31,23 @@ func Init(args... string) {
 		debug = true
 	}
 
-	InitZipkin(addr, debug, hostPort, serviceName)
+	err := InitZipkin(addr, debug, hostPort, serviceName)
+
+	if err != nil {
+		return err
+	}
 
 	opentracing.InitGlobalTracer(tracer)
+
+	return nil
 }
 
-func InitZipkin(addr string, debug bool, hostPort string, serviceName string) {
+func InitZipkin(addr string, debug bool, hostPort string, serviceName string) error {
 	// create collector.
 	collector, err := zipkin.NewHTTPCollector(addr)
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	hostPort = commonUtils.GetRealAddrByNetwork(hostPort)
@@ -57,10 +63,10 @@ func InitZipkin(addr string, debug bool, hostPort string, serviceName string) {
 	)
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	log.Tracef("init zipkin success! addr:%v, debug:%v, host port:%v, service name:%v", addr, debug, hostPort, serviceName)
+	return nil
 }
 
 func GetTracingId(ctx context.Context) string {
