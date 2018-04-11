@@ -5,6 +5,8 @@ import (
 	"google.golang.org/grpc"
 
 	log "github.com/cihub/seelog"
+
+	tracing "github.com/DarkMetrix/gofra/common/tracing/zipkin"
 )
 
 func GetClientInterceptor() grpc.UnaryClientInterceptor {
@@ -23,10 +25,12 @@ func GofraClientInterceptorFunc(ctx context.Context, method string, req, reply i
 	// Invoke remote
 	err := invoker(ctx, method, req, reply, cc, opts...)
 
+	log.Tracef("context:%v", ctx)
+
 	if err != nil {
-		log.Warnf("context=%v, req=%v, invoke failed!!! error:%v", ctx, req, err)
+		log.Warnf("trace id=%v, span id=%v, req=%v, invoke failed!!! error:%v", tracing.GetTracingId(ctx), tracing.GetSpanId(ctx), req, err)
 	} else {
-		log.Debugf("context=%v, req=%v, invoke success!!! reply:%v", ctx, req, reply)
+		log.Debugf("trace id=%v, span id=%v, req=%v, invoke success!!! reply:%v", tracing.GetTracingId(ctx), tracing.GetSpanId(ctx), req, reply)
 	}
 
 	return err
@@ -39,10 +43,12 @@ func GofraServerInterceptorFunc(ctx context.Context, req interface{}, info *grpc
 	// Process
 	reply, err = handler(ctx, req)
 
+	log.Tracef("context:%v", ctx)
+
 	if err != nil {
-		log.Warnf("context=%v, req=%v, handle failed!!! error:%v", ctx, req, err)
+		log.Warnf("trace id=%v, span id=%v, req=%v, handle failed!!! error:%v", tracing.GetTracingId(ctx), tracing.GetSpanId(ctx), req, err)
 	} else {
-		log.Debugf("context=%v, req=%v, handle success!!! reply:%v", ctx, req, reply)
+		log.Debugf("trace id=%v, span id=%v, req=%v, handle success!!! reply:%v", tracing.GetTracingId(ctx), tracing.GetSpanId(ctx), req, reply)
 	}
 
 	return reply, err

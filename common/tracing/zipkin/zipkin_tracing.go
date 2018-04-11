@@ -84,3 +84,25 @@ func GetTracingId(ctx context.Context) string {
 
 	return "TracingIdNotFound"
 }
+
+func GetSpanId(ctx context.Context) string {
+	md, ok := metadata.FromIncomingContext(ctx)
+
+	if !ok {
+		return "SpanIdNotFound"
+	}
+
+	data, ok := md["x-b3-spanid"]
+
+	if !ok {
+		return "SpanIdNotFound"
+	}
+
+	for _, value := range data {
+		if len(data) != 0 {
+			return value
+		}
+	}
+
+	return "SpanIdNotFound"
+}
