@@ -48,6 +48,12 @@ func (conn *ClientConn) Get() *grpc.ClientConn {
 	return conn.ClientConn.ClientConn
 }
 
+//Unhealthy mark the connection as unhealthy
+//When recycle called it will be closed and won't be put back to the pool
+func (conn *ClientConn) Unhealthy() {
+	conn.ClientConn.Unhealthy()
+}
+
 //Recycle returns the connection to the pool
 //If the unhealthy mark is set, close and it won't be put back to the pool
 func (conn *ClientConn) Recycle() error {

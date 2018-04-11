@@ -122,7 +122,7 @@ func testHealthCheck(addr string) {
 				fmt.Printf("HealthCheck request failed! err:%v\r\n", err.Error())
 			}
 
-			conn.Unhealhty()
+			conn.Unhealthy()
 
 			return
 		}
