@@ -16,8 +16,6 @@ var project string = "Default"
 
 //Init statsd client, if addr is empty, using default setting
 func InitStatsd(addr string, project string) error {
-	log.Tracef("init statsd, addr:%v, project:%v", addr, project)
-
 	//If addr is empty, use default addr setting which is ":8125" in udp
 	var err error
 	if len(addr) == 0 {
@@ -39,7 +37,7 @@ func InitStatsd(addr string, project string) error {
 		return err
 	}
 
-	log.Tracef(fmt.Sprintf("init statsd success! error:%v", err.Error()))
+	log.Tracef(fmt.Sprintf("init statsd success! addr:%v, project:%v", addr, project))
 
 	return nil
 }
