@@ -82,7 +82,7 @@ func Increment(bucket string) {
 		return
 	}
 
-	log.Tracef("monitor increment failed! bucket:%v", bucket)
+	log.Tracef("monitor increment success! bucket:%v", bucket)
 
 	statsd.Increment(bucket)
 }
