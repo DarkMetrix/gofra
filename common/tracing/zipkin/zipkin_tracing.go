@@ -112,3 +112,7 @@ func GetSpanId(ctx context.Context) string {
 
 	return "SpanIdNotFound"
 }
+
+func GetTracer() opentracing.Tracer {
+	return tracer
+}
