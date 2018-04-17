@@ -9,8 +9,6 @@ import (
 
 	"google.golang.org/grpc"
 
-	log "github.com/cihub/seelog"
-
 	grpcPool "github.com/processout/grpc-go-pool"
 )
 
@@ -48,6 +46,12 @@ func (conn *ClientConn) Get() *grpc.ClientConn {
 	return conn.ClientConn.ClientConn
 }
 
+//Unhealthy mark the connection as unhealthy
+//When recycle called it will be closed and won't be put back to the pool
+func (conn *ClientConn) Unhealthy() {
+	conn.ClientConn.Unhealthy()
+}
+
 //Recycle returns the connection to the pool
 //If the unhealthy mark is set, close and it won't be put back to the pool
 func (conn *ClientConn) Recycle() error {
@@ -74,8 +78,6 @@ func (connPool *ConnectionPool) Init(clientOpts []grpc.DialOption,
 	connPool.initConnections = initConnections
 	connPool.maxConnections = maxConnections
 	connPool.idleTimeout = idleTimeout
-
-	log.Tracef("init grpc conn pool success! opts:%v, init conn:%v, max conn:%v, idle timeout:%v", clientOpts, initConnections, maxConnections, idleTimeout)
 
 	return nil
 }

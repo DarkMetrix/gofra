@@ -28,6 +28,8 @@ import (
 	"time"
 	"context"
 
+	log "github.com/cihub/seelog"
+
     "google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 
@@ -55,13 +57,25 @@ func main() {
 	defer fmt.Println("====== Test [{{.Project}}] end ======")
 
     // init log
-    logger.Init("../conf/log.config", "{{.Project}}_test")
+    err := logger.Init("../conf/log.config", "{{.Project}}_test")
+
+	if err != nil {
+		log.Warnf("Init logger failed! error:%v", err.Error())
+	}
 
 	// init monitor
-	monitor.Init({{.MonitorInitParam}})
+	err = monitor.Init({{.MonitorInitParam}})
+
+	if err != nil {
+		log.Warnf("Init monitor failed! error:%v", err.Error())
+	}
 
     // init tracing
-    tracing.Init({{.TracingInitParam}})
+    err = tracing.Init({{.TracingInitParam}})
+
+	if err != nil {
+		log.Warnf("Init tracing failed! error:%v", err.Error())
+	}
 
 	// dial remote server
 	clientOpts := make([]grpc.DialOption, 0)
@@ -73,15 +87,27 @@ func main() {
 			monitorInterceptor.GetClientInterceptor())))
 
 	// init pool
-	pool.GetConnectionPool().Init(clientOpts, 5, 10, time.Second * 10)
+	err = pool.GetConnectionPool().Init(clientOpts, 5, 10, time.Second * 10)
+
+	if err != nil {
+		log.Warnf("Init pool failed! error:%v", err.Error())
+		return
+	}
 
 	// init naming
-	naming.Init("../conf/naming.json")
+	err = naming.Init("../conf/naming.json")
+
+	if err != nil {
+		log.Warnf("Init naming failed! error:%v", err.Error())
+		return
+	}
+
 	naming.AddResolver("local", &localNaming.LocalNamingResolver{})
 	addr, err := naming.GetAddr("{{.Project}}")
 
 	if err != nil {
-		panic(fmt.Sprintf("HealthCheck get connection failed! error:%v", err.Error()))
+		log.Warnf("HealthCheck get connection failed! error:%v", err.Error())
+		return
 	}
 
 	addr = commonUtils.GetRealAddrByNetwork(addr)
@@ -122,7 +148,7 @@ func testHealthCheck(addr string) {
 				fmt.Printf("HealthCheck request failed! err:%v\r\n", err.Error())
 			}
 
-			conn.Unhealhty()
+			conn.Unhealthy()
 
 			return
 		}

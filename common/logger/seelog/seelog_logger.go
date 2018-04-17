@@ -1,6 +1,9 @@
 package seelog
 
 import (
+	"fmt"
+	"errors"
+
 	log "github.com/cihub/seelog"
 )
 
@@ -20,13 +23,13 @@ var path string = ""
 var project string = ""
 
 //Init seelog using config file path, if empty using default setting
-func Init(args ... string) {
+func Init(args ... string) error {
 	//If path is empty, use default setting
 	var logger log.LoggerInterface
 	var err error
 
 	if len(args) < 2 {
-		panic("Init args length < 2")
+		return errors.New(fmt.Sprintf("param invalid! args:%v", args))
 	}
 
 	path = args[0]
@@ -35,7 +38,8 @@ func Init(args ... string) {
 	err = log.RegisterCustomFormatter("Project", createProjectFormatter)
 
 	if err != nil {
-		panic(err)
+		log.Tracef(err.Error())
+		return err
 	}
 
 	if len(path) == 0 {
@@ -45,16 +49,16 @@ func Init(args ... string) {
 	}
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	err = log.ReplaceLogger(logger)
 
 	if err != nil {
-		panic(err)
+		return err
 	}
 
-	log.Trace("Seelog init success!")
+	return nil
 }
 
 func createProjectFormatter(params string) log.FormatterFunc {

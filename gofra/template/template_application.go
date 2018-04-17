@@ -29,6 +29,8 @@ import (
 	"net"
 	"time"
 
+	log "github.com/cihub/seelog"
+
 	"google.golang.org/grpc"
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 
@@ -65,13 +67,25 @@ func (app *Application) Init(conf *config.Config) error {
 	conf.Server.Addr = commonUtils.GetRealAddrByNetwork(conf.Server.Addr)
 
 	// init log
-	logger.Init("../conf/log.config", common.ProjectName)
+	err := logger.Init("../conf/log.config", common.ProjectName)
+
+	if err != nil {
+		log.Warnf("Init logger failed! error:%v", err.Error())
+	}
 
 	// init monitor
-	monitor.Init({{.MonitorInitParam}}, common.ProjectName)
+	err = monitor.Init({{.MonitorInitParam}}, common.ProjectName)
+
+	if err != nil {
+		log.Warnf("Init monitor failed! error:%v", err.Error())
+	}
 
 	// init tracing
-	tracing.Init({{.TracingInitParam}})
+	err = tracing.Init({{.TracingInitParam}})
+
+	if err != nil {
+		log.Warnf("Init tracing failed! error:%v", err.Error())
+	}
 
 	// set server interceptor
 	app.ServerOpts = append(app.ServerOpts, grpc.UnaryInterceptor(
@@ -89,17 +103,23 @@ func (app *Application) Init(conf *config.Config) error {
 			monitorInterceptor.GetClientInterceptor())))
 
 	// init pool
-	err := pool.GetConnectionPool().Init(app.ClientOpts,
+	err = pool.GetConnectionPool().Init(app.ClientOpts,
 		conf.Client.Pool.InitConns,
 		conf.Client.Pool.MaxConns,
 		time.Second * time.Duration(conf.Client.Pool.IdleTime))
 
 	if err != nil {
+		log.Warnf("Init pool failed! error:%v", err.Error())
 		return err
 	}
 
 	// init naming
-	naming.Init("../conf/naming.json")
+	err = naming.Init("../conf/naming.json")
+
+	if err != nil {
+		log.Warnf("Init naming failed! error:%v", err.Error())
+		return err
+	}
 
 	return nil
 }

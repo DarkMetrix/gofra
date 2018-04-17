@@ -6,8 +6,6 @@ import (
 	"sync"
 	"time"
 
-	log "github.com/cihub/seelog"
-
 	commonPool "github.com/silenceper/pool"
 )
 
@@ -87,8 +85,6 @@ func (connPool *ConnectionPool) Init(initConnections, maxConnections int, idleTi
 	connPool.initConnections = initConnections
 	connPool.maxConnections = maxConnections
 	connPool.idleTimeout = idleTimeout
-
-	log.Tracef("init conn pool success! init conn:%v, max conn:%v, idle timeout:%v", initConnections, maxConnections, idleTimeout)
 
 	return nil
 }
