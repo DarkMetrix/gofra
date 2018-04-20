@@ -49,7 +49,7 @@ func (conn *ClientConn) Get() *grpc.ClientConn {
 //Unhealthy mark the connection as unhealthy
 //When recycle called it will be closed and won't be put back to the pool
 func (conn *ClientConn) Unhealthy() {
-	conn.ClientConn.Unhealhty()
+	conn.ClientConn.Unhealthy()
 }
 
 //Recycle returns the connection to the pool
