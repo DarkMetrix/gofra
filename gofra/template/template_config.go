@@ -108,11 +108,11 @@ var ConfigJsonTemplate string = `
 {
   "monitor":
   {
-    params:[{{.MonitorInitParams}}]
+    "params"":[{{.MonitorInitParams}}]
   },
   "tracing":
   {
-    params:[{{.TracingInitParams}}]
+    "params"":[{{.TracingInitParams}}]
   },
   "server":
   {

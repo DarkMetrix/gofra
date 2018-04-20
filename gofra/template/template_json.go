@@ -33,7 +33,7 @@ var JsonTemplate string = `
     "tracing_package":
     {
         "package":"github.com/DarkMetrix/gofra/common/tracing/zipkin",
-        "init_param":"\"http://127.0.0.1:9411/api/v1/spans\", \"false\", \"{{.Addr}}\", \"{{.Project}}\""
+        "init_param":"\"http://127.0.0.1:9411/api/v1/spans\", \"false\", \"{{.Addr}}\""
     },
     "interceptor_package":
     {
