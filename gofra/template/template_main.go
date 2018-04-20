@@ -31,7 +31,7 @@ func main() {
 	// init config
 	conf := config.GetConfig()
 
-	err := conf.Init("../conf/config.json")
+	err := conf.Init("../conf/config.toml")
 
 	if err != nil {
 		fmt.Printf("Init config failed! error:%v\r\n", err.Error())
@@ -54,6 +54,7 @@ func main() {
 
 	if err != nil {
 		fmt.Printf("Application run failed! error:%v\r\n", err.Error())
+		os.Exit(-3)
 	}
 }
 `

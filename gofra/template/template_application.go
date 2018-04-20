@@ -74,16 +74,14 @@ func (app *Application) Init(conf *config.Config) error {
 	}
 
 	// init monitor
-	monitorParams := append(config.GetConfig().Monitor.Params, common.ProjectName)
-	err = monitor.Init(monitorParams...)
+	err = monitor.Init(config.GetConfig().Monitor.Params...)
 
 	if err != nil {
 		log.Warnf("Init monitor failed! error:%v", err.Error())
 	}
 
 	// init tracing
-	tracingParams := append(config.GetConfig().Tracing.Params, common.ProjectName)
-	err = tracing.Init(tracingParams...)
+	err = tracing.Init(config.GetConfig().Tracing.Params...)
 
 	if err != nil {
 		log.Warnf("Init tracing failed! error:%v", err.Error())
@@ -116,7 +114,7 @@ func (app *Application) Init(conf *config.Config) error {
 	}
 
 	// init naming
-	err = naming.Init("../conf/naming.json")
+	err = naming.Init("../conf/naming.toml")
 
 	if err != nil {
 		log.Warnf("Init naming failed! error:%v", err.Error())

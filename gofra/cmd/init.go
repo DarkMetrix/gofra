@@ -261,13 +261,13 @@ func InitAllFiles(workingPath, goPath string, info *gofraTemplate.TemplateInfo) 
 		return err
 	}
 
-	err = gofraTemplate.GenerateConfigJsonFile(workingPath, goPath, info, override)
+	err = gofraTemplate.GenerateConfigTomlFile(workingPath, goPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	err = gofraTemplate.GenerateNamingJsonFile(workingPath, goPath, info, override)
+	err = gofraTemplate.GenerateNamingTomlFile(workingPath, goPath, info, override)
 
 	if err != nil {
 		return err

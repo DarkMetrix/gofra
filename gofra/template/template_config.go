@@ -72,7 +72,7 @@ func GetConfig() *Config {
 //Init config from json file
 func (config *Config) Init (path string) error {
 	//Set viper setting
-	viper.SetConfigType("json")
+	viper.SetConfigType("toml")
 	viper.SetConfigFile(path)
 	viper.AddConfigPath("../conf/")
 
@@ -94,7 +94,7 @@ func (config *Config) Init (path string) error {
 }
 `
 
-type ConfigJsonInfo struct {
+type ConfigTomlInfo struct {
 	Addr string
 	InitConns int
 	MaxConns int
@@ -104,29 +104,59 @@ type ConfigJsonInfo struct {
 	TracingInitParams string
 }
 
-var ConfigJsonTemplate string = `
-{
-  "monitor":
-  {
-    "params":[{{.MonitorInitParams}}]
-  },
-  "tracing":
-  {
-    "params":[{{.TracingInitParams}}]
-  },
-  "server":
-  {
-    "addr":"{{.Addr}}"
-  },
-  "client":
-  {
-    "pool":
-    {
-      "init_conns":{{.InitConns}},
-      "max_conns":{{.MaxConns}},
-      "idle_time":{{.IdleTime}}
-    }
-  }
-}
+var ConfigTomlTemplate string = `
+# Server configuration
+#
+# server.addr
+#	Server's address to listen on.
+# 	eg: 
+#		localhost:58888
+#		127.0.0.1:58888
+#		eth0:58888
+[server]
+    addr="{{.Addr}}"
+
+# Client configuration
+#
+# client.pool.init_conns
+#	Client's initialized connections of the pool
+#
+# client.pool.max_conns
+#	Client's max connections of the pool
+#
+# client.pool.idle_time
+#	Client's idle time of connection to be recycled
+[client.pool]
+    init_conns={{.InitConns}}
+    max_conns={{.MaxConns}}
+    idle_time={{.IdleTime}}
+
+# Monitor configuration
+#
+# monitor.params
+#	Monitor's params to init
+#	Gofra take the statsd as the default monitor system
+#	so the params has 2 parts(all in a string array)
+#		1.statsd's UDP address
+#		2.the project's name
+#	eg:
+#		params=["127.0.0.1:8125", "demo"]
+[monitor]
+    params=[{{.MonitorInitParams}}]
+
+# Tracing configuration
+#
+# tracing.params
+#	tracing's params to init
+#	Gofra take the zipkin as the default tracing system
+#	so the params has 4 parts(all in a string array)
+#		1.zipkin's url
+#		2.debug flag 
+#		3.server's address
+#		4.the project's name
+#	eg:
+#		params=["http://127.0.0.1:9411/api/v1/spans", "false", "localhost:58888", "demo"]
+[tracing]
+    params=[{{.TracingInitParams}}]
 `
 

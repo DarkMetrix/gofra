@@ -61,6 +61,7 @@ func main() {
 
 	if err != nil {
 		log.Warnf("Init logger failed! error:%v", err.Error())
+		return
 	}
 
 	// init monitor
@@ -68,6 +69,7 @@ func main() {
 
 	if err != nil {
 		log.Warnf("Init monitor failed! error:%v", err.Error())
+		return
 	}
 
     // init tracing
@@ -75,6 +77,7 @@ func main() {
 
 	if err != nil {
 		log.Warnf("Init tracing failed! error:%v", err.Error())
+		return
 	}
 
 	// dial remote server
@@ -95,7 +98,7 @@ func main() {
 	}
 
 	// init naming
-	err = naming.Init("../conf/naming.json")
+	err = naming.Init("../conf/naming.toml")
 
 	if err != nil {
 		log.Warnf("Init naming failed! error:%v", err.Error())

@@ -60,7 +60,7 @@ func Init(args... string) error {
 	}
 
 	//Set viper setting
-	viper.SetConfigType("json")
+	viper.SetConfigType("toml")
 	viper.SetConfigFile(namingConfigPath)
 	viper.AddConfigPath("../conf/")
 

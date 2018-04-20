@@ -28,12 +28,12 @@ var JsonTemplate string = `
     "monitor_package":
     {
         "package":"github.com/DarkMetrix/gofra/common/monitor/statsd",
-        "init_param":"\"127.0.0.1:8125\""
+        "init_param":"\"127.0.0.1:8125\", \"{{.Project}}\""
     },
     "tracing_package":
     {
         "package":"github.com/DarkMetrix/gofra/common/tracing/zipkin",
-        "init_param":"\"http://127.0.0.1:9411/api/v1/spans\", \"false\", \"{{.Addr}}\""
+        "init_param":"\"http://127.0.0.1:9411/api/v1/spans\", \"false\", \"{{.Addr}}\", \"{{.Project}}\""
     },
     "interceptor_package":
     {

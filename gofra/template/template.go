@@ -243,9 +243,9 @@ func GenerateConfigFile(workingPath, goPath string, info *TemplateInfo, override
 	return nil
 }
 
-//Generate config.json
-func GenerateConfigJsonFile(workingPath, goPath string, info *TemplateInfo, override bool) error {
-	filePath := filepath.Join(workingPath, "conf", "config.json")
+//Generate config.toml
+func GenerateConfigTomlFile(workingPath, goPath string, info *TemplateInfo, override bool) error {
+	filePath := filepath.Join(workingPath, "conf", "config.toml")
 
 	//Check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
@@ -273,13 +273,13 @@ func GenerateConfigJsonFile(workingPath, goPath string, info *TemplateInfo, over
 	}
 
 	//Parse template
-	configJsonTemplate, err := template.New("config_json").Parse(ConfigJsonTemplate)
+	configTomlTemplate, err := template.New("config_toml").Parse(ConfigTomlTemplate)
 
 	if err != nil {
 		return err
 	}
 
-	configJsonInfo := &ConfigJsonInfo{
+	configTomlInfo := &ConfigTomlInfo{
 		Addr: info.Server.Addr,
 		InitConns: info.Client.Pool.InitConns,
 		MaxConns: info.Client.Pool.MaxConns,
@@ -296,7 +296,7 @@ func GenerateConfigJsonFile(workingPath, goPath string, info *TemplateInfo, over
 	}
 
 	//Render template to file
-	err = configJsonTemplate.Execute(file, configJsonInfo)
+	err = configTomlTemplate.Execute(file, configTomlInfo)
 
 	if err != nil {
 		return err
@@ -305,9 +305,9 @@ func GenerateConfigJsonFile(workingPath, goPath string, info *TemplateInfo, over
 	return nil
 }
 
-//Generate naming.json
-func GenerateNamingJsonFile(workingPath, goPath string, info *TemplateInfo, override bool) error {
-	filePath := filepath.Join(workingPath, "conf", "naming.json")
+//Generate naming.toml
+func GenerateNamingTomlFile(workingPath, goPath string, info *TemplateInfo, override bool) error {
+	filePath := filepath.Join(workingPath, "conf", "naming.toml")
 
 	//Check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
@@ -335,13 +335,13 @@ func GenerateNamingJsonFile(workingPath, goPath string, info *TemplateInfo, over
 	}
 
 	//Parse template
-	namingJsonTemplate, err := template.New("naming_json").Parse(NamingJsonTemplate)
+	namingTomlTemplate, err := template.New("naming_toml").Parse(NamingTomlTemplate)
 
 	if err != nil {
 		return err
 	}
 
-	namingJsonInfo := &NamingJsonInfo{
+	namingJsonInfo := &NamingTomlInfo{
 		Project: info.Project,
 		Addr: info.Server.Addr,
 	}
@@ -353,7 +353,7 @@ func GenerateNamingJsonFile(workingPath, goPath string, info *TemplateInfo, over
 	}
 
 	//Render template to file
-	err = namingJsonTemplate.Execute(file, namingJsonInfo)
+	err = namingTomlTemplate.Execute(file, namingJsonInfo)
 
 	if err != nil {
 		return err
