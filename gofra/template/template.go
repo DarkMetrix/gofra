@@ -70,8 +70,8 @@ type TemplateInfo struct {
 }
 
 //Generate template.json
-func GenerateTemplateJsonFile(workingPath string, override bool) error {
-	filePath := filepath.Join(workingPath, "template.json.default")
+func GenerateTemplateJsonFile(workingPath string, override bool, jsonInfo JsonInfo) error {
+	filePath := filepath.Join(workingPath, "template.json")
 
 	//Check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
@@ -103,12 +103,6 @@ func GenerateTemplateJsonFile(workingPath string, override bool) error {
 
 	if err != nil {
 		return err
-	}
-
-	jsonInfo := &JsonInfo{
-		Author: "Author Name",
-		Project: "Project Name",
-		Addr: "localhost:58888",
 	}
 
 	file, err := os.OpenFile(filePath, os.O_RDWR | os.O_CREATE, 0666)

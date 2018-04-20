@@ -52,14 +52,23 @@ var initTemplateCmd = &cobra.Command{
 		}
 
 		//Generate template.json.default
-		fmt.Printf("\r\nGenerating template.json.default ......")
-		err = gofraTemplate.GenerateTemplateJsonFile(workingPath, override)
+		fmt.Printf("\r\nGenerating template.json ...... \r\n")
+
+		var jsonInfo gofraTemplate.JsonInfo
+		fmt.Print("Author Name:")
+		fmt.Scanln(&jsonInfo.Author)
+		fmt.Print("Project Name:")
+		fmt.Scanln(&jsonInfo.Project)
+		fmt.Print("Project Address:")
+		fmt.Scanln(&jsonInfo.Addr)
+
+		err = gofraTemplate.GenerateTemplateJsonFile(workingPath, override, jsonInfo)
 
 		if err != nil {
-			fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
+			fmt.Printf(" Generating template.json failed! \r\nerror:%v\r\n", err.Error())
 			return
 		} else {
-			fmt.Printf(" success! \r\n")
+			fmt.Printf(" Generating template.json success! \r\n")
 		}
 	},
 }
