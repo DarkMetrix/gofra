@@ -82,7 +82,7 @@ func (app *Application) Init(conf *config.Config) error {
 	}
 
 	// init tracing
-	tracingParams := append(config.GetConfig().Tracing.Params, icommon.ProjectName)
+	tracingParams := append(config.GetConfig().Tracing.Params, common.ProjectName)
 	err = tracing.Init(tracingParams...)
 
 	if err != nil {

@@ -64,14 +64,14 @@ func main() {
 	}
 
 	// init monitor
-	err = monitor.Init({{.MonitorInitParam}})
+	err = monitor.Init({{.MonitorInitParam}}, {{.Project}})
 
 	if err != nil {
 		log.Warnf("Init monitor failed! error:%v", err.Error())
 	}
 
     // init tracing
-    err = tracing.Init({{.TracingInitParam}})
+    err = tracing.Init({{.TracingInitParam}}, {{.Project}})
 
 	if err != nil {
 		log.Warnf("Init tracing failed! error:%v", err.Error())
