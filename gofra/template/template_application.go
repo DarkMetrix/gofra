@@ -74,14 +74,16 @@ func (app *Application) Init(conf *config.Config) error {
 	}
 
 	// init monitor
-	err = monitor.Init({{.MonitorInitParam}}, common.ProjectName)
+	monitorParams := append(config.GetConfig().Monitor.Params, common.ProjectName)
+	err = monitor.Init(monitorParams...)
 
 	if err != nil {
 		log.Warnf("Init monitor failed! error:%v", err.Error())
 	}
 
 	// init tracing
-	err = tracing.Init({{.TracingInitParam}})
+	tracingParams := append(config.GetConfig().Tracing.Params, common.ProjectName)
+	err = tracing.Init(tracingParams...)
 
 	if err != nil {
 		log.Warnf("Init tracing failed! error:%v", err.Error())

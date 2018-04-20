@@ -284,6 +284,9 @@ func GenerateConfigJsonFile(workingPath, goPath string, info *TemplateInfo, over
 		InitConns: info.Client.Pool.InitConns,
 		MaxConns: info.Client.Pool.MaxConns,
 		IdleTime: info.Client.Pool.IdleTime,
+
+		MonitorInitParams: info.MonitorPackage.InitParam,
+		TracingInitParams: info.TracingPackage.InitParam,
 	}
 
 	file, err := os.OpenFile(filePath, os.O_RDWR | os.O_CREATE, 0755)

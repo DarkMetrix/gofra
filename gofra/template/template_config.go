@@ -20,6 +20,16 @@ import (
 //Global config
 var globalConfig *Config
 
+//Tracing info
+type TracingInfo struct {
+	Params []string "mapstructure:\"params\" json:\"params\""
+}
+
+//Monitor info
+type MonitorInfo struct {
+	Params []string "mapstructure:\"params\" json:\"params\""
+}
+
 //Server config
 type ServerInfo struct {
 	Addr string "mapstructure:\"addr\" json:\"addr\""
@@ -39,6 +49,8 @@ type PoolInfo struct {
 
 //Config sturcture
 type Config struct {
+	Monitor MonitorInfo "mapstructure:\"monitor\" json:\"monitor\""
+	Tracing TracingInfo "mapstructure:\"tracing\" json:\"tracing\""
 	Server ServerInfo "mapstructure:\"server\" json:\"server\""
 	Client ClientInfo "mapstructure:\"client\" json:\"client\""
 }
@@ -87,10 +99,21 @@ type ConfigJsonInfo struct {
 	InitConns int
 	MaxConns int
 	IdleTime int
+
+	MonitorInitParams string
+	TracingInitParams string
 }
 
 var ConfigJsonTemplate string = `
 {
+  "monitor":
+  {
+    params:[{{.MonitorInitParams}}]
+  },
+  "tracing":
+  {
+    params:[{{.TracingInitParams}}]
+  },
   "server":
   {
     "addr":"{{.Addr}}"
