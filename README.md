@@ -45,7 +45,9 @@ First initialize default template file as below.
 $ gofra template init
 ```
 
- A **template.json.default** file will be generated in the current directory which looks like this.
+You need to type Author Name, Project Name & Project Address.
+
+ A **template.json** file will be generated in the current directory which looks like this.
 
 ```json
 {
@@ -99,7 +101,6 @@ $ gofra template init
 | Interceptor_package.monitor_package | Monitor gRPC interceptor(by default statsd is used as the monitor backend) | Pre defined  |
 | Interceptor_package.tracing_package | Tracing gPRC interceptor(by default zipkin is used as the tracing system) | Pre defined  |
 
-Then modify the author's name and project's name to 'tester' and 'test_gofra' and change the file name from template.json.default to template.json
 
 ### Service Generation
 
@@ -115,9 +116,9 @@ $tree
 .
 ├── bin
 ├── conf
-│   ├── config.json
+│   ├── config.toml
 │   ├── log.config
-│   └── naming.json
+│   └── naming.toml
 ├── log
 ├── src
 │   ├── application
@@ -190,9 +191,9 @@ $ tree
 ├── bin
 ├── clean.sh
 ├── conf
-│   ├── config.json
+│   ├── config.toml
 │   ├── log.config
-│   └── naming.json
+│   └── naming.toml
 ├── init.sh
 ├── log
 ├── src
@@ -350,7 +351,7 @@ $./test
 #### Client output
 
 ```bash
-[DEBUG][2018-04-11T10:55:24.656902][demo_test][seelog_interceptor.go:30][GofraClientInterceptorFunc] => invoke success! trace id=TracingIdNotFound, span id=SpanIdNotFound, req=message:"ping" , reply:
+[DEBUG][2018-04-11T10:55:24.656902][test_gofra_test][seelog_interceptor.go:30][GofraClientInterceptorFunc] => invoke success! trace id=TracingIdNotFound, span id=SpanIdNotFound, req=message:"ping" , reply:
 ```
 
 
@@ -358,7 +359,7 @@ $./test
 #### Service output
 
 ```
-[DEBUG][2018-04-11T10:55:24.656279][demo][seelog_interceptor.go:48][GofraServerInterceptorFunc] => handle success! trace id=79aee823934dde923790bc7400814e39, span id=4988c9cbcde2cd7b, req=message:"ping" , reply:
+[DEBUG][2018-04-11T10:55:24.656279][test_gofra][seelog_interceptor.go:48][GofraServerInterceptorFunc] => handle success! trace id=79aee823934dde923790bc7400814e39, span id=4988c9cbcde2cd7b, req=message:"ping" , reply:
 ```
 
 
