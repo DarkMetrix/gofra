@@ -48,7 +48,7 @@ func GofraServerInterceptorFunc(ctx context.Context, req interface{}, info *grpc
 	if err != nil {
 		log.Warnf("handle failed! trace id=%v, span id=%v, req=%v, error:%v", tracing.GetTracingId(ctx), tracing.GetSpanId(ctx), req, err)
 	} else {
-		log.Debugf("hanlde success! trace id=%v, span id=%v, req=%v, reply:%v", tracing.GetTracingId(ctx), tracing.GetSpanId(ctx), req, reply)
+		log.Debugf("handle success! trace id=%v, span id=%v, req=%v, reply:%v", tracing.GetTracingId(ctx), tracing.GetSpanId(ctx), req, reply)
 	}
 
 	return reply, err
