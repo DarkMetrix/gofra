@@ -86,3 +86,17 @@ func Increment(bucket string) {
 
 	statsd.Increment(bucket)
 }
+
+//Count
+func Count(bucket string, number interface{}) {
+	statsd := GetStatsd()
+
+	if statsd == nil {
+		log.Tracef("monitor count failed! bucket:%v, count:%v", bucket, number)
+		return
+	}
+
+	log.Tracef("monitor count success! bucket:%v, count:%v", bucket, number)
+
+	statsd.Count(bucket, number)
+}
