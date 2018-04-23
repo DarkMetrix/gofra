@@ -51,7 +51,7 @@ var initTemplateCmd = &cobra.Command{
 			fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
 		}
 
-		//Generate template.json.default
+		//Generate template.json
 		fmt.Printf("\r\nGenerating template.json ...... \r\n")
 
 		var jsonInfo gofraTemplate.JsonInfo

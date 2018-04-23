@@ -335,7 +335,7 @@ func GenerateNamingTomlFile(workingPath, goPath string, info *TemplateInfo, over
 		return err
 	}
 
-	namingJsonInfo := &NamingTomlInfo{
+	namingTomlInfo := &NamingTomlInfo{
 		Project: info.Project,
 		Addr: info.Server.Addr,
 	}
@@ -347,7 +347,7 @@ func GenerateNamingTomlFile(workingPath, goPath string, info *TemplateInfo, over
 	}
 
 	//Render template to file
-	err = namingTomlTemplate.Execute(file, namingJsonInfo)
+	err = namingTomlTemplate.Execute(file, namingTomlInfo)
 
 	if err != nil {
 		return err
