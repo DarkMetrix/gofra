@@ -147,12 +147,13 @@ func addService(path string, override, update bool) error {
 
 	//Execute protoc to generate .pb.go file
 	fmt.Printf("\r\nCompile proto file ......")
-	shellCmd := exec.Command("protoc", "--go_out=plugins=grpc:.", protoFilePathRelative)
+	shellCmd := exec.Command(gofraTemplate.ProtocPath, "--go_out=plugins=grpc:.", protoFilePathRelative)
 
 	err = shellCmd.Run()
 
 	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
+		fmt.Printf(" failed! cmd:%v --go_out=plugins=grpc:. %v \r\nerror:%v\r\n",
+			gofraTemplate.ProtocPath, protoFilePathRelative, err.Error())
 		return err
 	} else {
 		fmt.Printf(" success! \r\n")
