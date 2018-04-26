@@ -24,7 +24,6 @@ var TestClientTemplate string = `
 package main
 
 import (
-	"fmt"
 	"time"
 	"context"
 
@@ -53,23 +52,23 @@ import (
 )
 
 func main() {
-	fmt.Println("====== Test [{{.Project}}] begin ======")
-	defer fmt.Println("====== Test [{{.Project}}] end ======")
+	defer log.Flush()
 
     // init log
     err := logger.Init("../conf/log.config", "{{.Project}}_test")
 
 	if err != nil {
 		log.Warnf("Init logger failed! error:%v", err.Error())
-		return
 	}
+
+	log.Info("====== Test [{{.Project}}] begin ======")
+	defer log.Info("====== Test [{{.Project}}] end ======")
 
 	// init monitor
 	err = monitor.Init({{.MonitorInitParam}}, "{{.Project}}")
 
 	if err != nil {
 		log.Warnf("Init monitor failed! error:%v", err.Error())
-		return
 	}
 
     // init tracing
@@ -77,7 +76,6 @@ func main() {
 
 	if err != nil {
 		log.Warnf("Init tracing failed! error:%v", err.Error())
-		return
 	}
 
 	// dial remote server
@@ -135,7 +133,7 @@ func testHealthCheck(addr string) {
 		c := health_check.NewHealthCheckServiceClient(conn.Get())
 
 		if err != nil {
-			fmt.Printf("HealthCheck get connection failed! error%v", err.Error())
+			log.Warnf("HealthCheck get connection failed! error%v", err.Error())
 			continue
 		}
 
@@ -145,10 +143,10 @@ func testHealthCheck(addr string) {
 			stat, ok := status.FromError(err)
 
 			if ok {
-				fmt.Printf("HealthCheck request failed! code:%d, message:%v\r\n",
+				log.Warnf("HealthCheck request failed! code:%d, message:%v",
 					stat.Code(), stat.Message())
 			} else {
-				fmt.Printf("HealthCheck request failed! err:%v\r\n", err.Error())
+				log.Warnf("HealthCheck request failed! err:%v", err.Error())
 			}
 
 			conn.Unhealthy()
