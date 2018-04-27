@@ -81,6 +81,8 @@ func Init(args... string) error {
 	return nil
 }
 
+//Add resolver to naming, eg: AddResolver("local", &localNaming.LocalNamingResolver{})
+//Then the naming knows how to resolve the location like 'local|localhost:58888'
 func AddResolver(name string, resovler NamingResovler) {
 	rwMutex.Lock()
 	defer rwMutex.Unlock()
@@ -90,6 +92,9 @@ func AddResolver(name string, resovler NamingResovler) {
 	log.Tracef("add naming resolver! name:%v, resolver:%v", name, resovler)
 }
 
+//Get service address
+//service is a service name defined in the naming.toml
+//And GetAddr will get the location which the service name stands for the using the right resolver to resolve the address
 func GetAddr(service string) (string, error) {
 	rwMutex.RLock()
 	defer rwMutex.RUnlock()
@@ -121,6 +126,37 @@ func GetAddr(service string) (string, error) {
 	}
 
 	log.Tracef("get addr success! service:%v, location:%v, addr:%v", service, location, addr)
+
+	return addr, nil
+}
+
+//Lookup location address
+//location is a string in a certain format, like 'local|localhost:58888'
+//Lookup will resolve the address using the right resolver
+func Lookup(location string) (string, error) {
+	rwMutex.RLock()
+	defer rwMutex.RUnlock()
+
+	//Get service addr
+	name, addrAlias, err := getLocation(location)
+
+	if err != nil {
+		return "", err
+	}
+
+	resolver, ok := naming.Resolvers[name]
+
+	if !ok {
+		return "", errors.New(fmt.Sprintf("resolver not found, resolver:%v", name))
+	}
+
+	addr, err := resolver.Lookup(addrAlias)
+
+	if err != nil {
+		return "", err
+	}
+
+	log.Tracef("get addr success! location:%v, addr:%v", location, addr)
 
 	return addr, nil
 }
