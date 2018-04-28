@@ -40,26 +40,32 @@ type Naming struct {
 var naming *Naming = nil
 var rwMutex sync.RWMutex
 
+func init() {
+	rwMutex.Lock()
+	defer rwMutex.Unlock()
+
+	if naming == nil {
+		naming = &Naming{
+			Resolvers: make(map[string]NamingResovler),
+			Config: NamingConfig{
+				Locations: make(map[string]string),
+			},
+		}
+	}
+}
+
 //Init naming
 func Init(args... string) error {
 	if len(args) < 1 {
 		return errors.New(fmt.Sprintf("param invalid! args:%v", args))
 	}
 
-	if naming != nil {
-		return nil
-	}
-
-	namingConfigPath := args[0]
-
-	naming = &Naming{
-		Resolvers: make(map[string]NamingResovler),
-		Config: NamingConfig{
-			Locations: make(map[string]string),
-		},
-	}
+	rwMutex.Lock()
+	defer rwMutex.Unlock()
 
 	//Set viper setting
+	namingConfigPath := args[0]
+
 	viper.SetConfigType("toml")
 	viper.SetConfigFile(namingConfigPath)
 	viper.AddConfigPath("../conf/")
@@ -86,6 +92,15 @@ func Init(args... string) error {
 func AddResolver(name string, resovler NamingResovler) {
 	rwMutex.Lock()
 	defer rwMutex.Unlock()
+
+	if naming == nil {
+		naming = &Naming{
+			Resolvers: make(map[string]NamingResovler),
+			Config: NamingConfig{
+				Locations: make(map[string]string),
+			},
+		}
+	}
 
 	naming.Resolvers[name] = resovler
 

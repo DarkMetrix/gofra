@@ -36,7 +36,7 @@ import (
 
 	pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
 	naming "github.com/DarkMetrix/gofra/common/naming"
-	localNaming "github.com/DarkMetrix/gofra/common/naming/resolver/local"
+	_ "github.com/DarkMetrix/gofra/common/naming/resolver/local"
 
 	commonUtils "github.com/DarkMetrix/gofra/common/utils"
 
