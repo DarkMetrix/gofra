@@ -2,16 +2,21 @@ package local
 
 import (
 	"fmt"
-	"time"
 	"errors"
 	"strings"
+	"time"
 
 	log "github.com/cihub/seelog"
 
 	commonUtils "github.com/DarkMetrix/gofra/common/utils"
+	naming "github.com/DarkMetrix/gofra/common/naming"
 )
 
 type LocalNamingResolver struct {
+}
+
+func init() {
+	naming.AddResolver("local", &LocalNamingResolver{})
 }
 
 func (resolver *LocalNamingResolver) Lookup(location string) (string, error) {

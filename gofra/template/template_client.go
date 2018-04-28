@@ -103,7 +103,6 @@ func main() {
 		return
 	}
 
-	naming.AddResolver("local", &localNaming.LocalNamingResolver{})
 	addr, err := naming.GetAddr("{{.Project}}")
 
 	if err != nil {
