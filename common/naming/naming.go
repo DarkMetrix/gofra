@@ -41,9 +41,6 @@ var naming *Naming = nil
 var rwMutex sync.RWMutex
 
 func init() {
-	rwMutex.Lock()
-	defer rwMutex.Unlock()
-
 	if naming == nil {
 		naming = &Naming{
 			Resolvers: make(map[string]NamingResovler),
@@ -92,15 +89,6 @@ func Init(args... string) error {
 func AddResolver(name string, resovler NamingResovler) {
 	rwMutex.Lock()
 	defer rwMutex.Unlock()
-
-	if naming == nil {
-		naming = &Naming{
-			Resolvers: make(map[string]NamingResovler),
-			Config: NamingConfig{
-				Locations: make(map[string]string),
-			},
-		}
-	}
 
 	naming.Resolvers[name] = resovler
 
