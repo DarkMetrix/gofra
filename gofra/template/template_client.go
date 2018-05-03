@@ -35,10 +35,6 @@ import (
     "github.com/grpc-ecosystem/go-grpc-middleware"
 
 	pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
-	naming "github.com/DarkMetrix/gofra/common/naming"
-	_ "github.com/DarkMetrix/gofra/common/naming/resolver/local"
-
-	commonUtils "github.com/DarkMetrix/gofra/common/utils"
 
 	logInterceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/seelog_interceptor"
 	monitorInterceptor "{{.MonitorInterceptorPackage}}"
@@ -95,25 +91,8 @@ func main() {
 		return
 	}
 
-	// init naming
-	err = naming.Init("../conf/naming.toml")
-
-	if err != nil {
-		log.Warnf("Init naming failed! error:%v", err.Error())
-		return
-	}
-
-	addr, err := naming.GetAddr("{{.Project}}")
-
-	if err != nil {
-		log.Warnf("HealthCheck get connection failed! error:%v", err.Error())
-		return
-	}
-
-	addr = commonUtils.GetRealAddrByNetwork(addr)
-
 	// begin test
-	testHealthCheck(addr)
+	testHealthCheck("{{.Addr}}")
 
 	time.Sleep(time.Second * 1)
 }

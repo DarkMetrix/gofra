@@ -35,7 +35,6 @@ import (
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 
 	pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
-	naming "github.com/DarkMetrix/gofra/common/naming"
 
 	logger "github.com/DarkMetrix/gofra/common/logger/seelog"
 	monitor "{{.MonitorPackage}}"
@@ -110,14 +109,6 @@ func (app *Application) Init(conf *config.Config) error {
 
 	if err != nil {
 		log.Warnf("Init pool failed! error:%v", err.Error())
-		return err
-	}
-
-	// init naming
-	err = naming.Init("../conf/naming.toml")
-
-	if err != nil {
-		log.Warnf("Init naming failed! error:%v", err.Error())
 		return err
 	}
 

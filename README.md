@@ -117,8 +117,7 @@ $tree
 ├── bin
 ├── conf
 │   ├── config.toml
-│   ├── log.config
-│   └── naming.toml
+│   └── log.config
 ├── log
 ├── src
 │   ├── application
@@ -192,8 +191,7 @@ $ tree
 ├── clean.sh
 ├── conf
 │   ├── config.toml
-│   ├── log.config
-│   └── naming.toml
+│   └── log.config
 ├── init.sh
 ├── log
 ├── src

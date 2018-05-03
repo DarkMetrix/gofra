@@ -299,63 +299,6 @@ func GenerateConfigTomlFile(workingPath, goPath string, info *TemplateInfo, over
 	return nil
 }
 
-//Generate naming.toml
-func GenerateNamingTomlFile(workingPath, goPath string, info *TemplateInfo, override bool) error {
-	filePath := filepath.Join(workingPath, "conf", "naming.toml")
-
-	//Check file is exist or not
-	isExist, err := commonUtils.CheckPathExists(filePath)
-
-	if err != nil {
-		return err
-	}
-
-	if isExist && !override {
-		filePathRel, err := filepath.Rel(workingPath, filePath)
-
-		if err != nil {
-			return err
-		}
-
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
-	}
-
-	if isExist && override {
-		err := os.RemoveAll(filePath)
-
-		if err != nil {
-			return err
-		}
-	}
-
-	//Parse template
-	namingTomlTemplate, err := template.New("naming_toml").Parse(NamingTomlTemplate)
-
-	if err != nil {
-		return err
-	}
-
-	namingTomlInfo := &NamingTomlInfo{
-		Project: info.Project,
-		Addr: info.Server.Addr,
-	}
-
-	file, err := os.OpenFile(filePath, os.O_RDWR | os.O_CREATE, 0755)
-
-	if err != nil {
-		return err
-	}
-
-	//Render template to file
-	err = namingTomlTemplate.Execute(file, namingTomlInfo)
-
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
 //Generate log.config
 func GenerateConfigLogFile(workingPath, goPath string, info *TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "conf", "log.config")
