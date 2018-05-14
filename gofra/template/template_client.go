@@ -34,8 +34,6 @@ import (
 
     "github.com/grpc-ecosystem/go-grpc-middleware"
 
-	pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
-
 	logInterceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/seelog_interceptor"
 	monitorInterceptor "{{.MonitorInterceptorPackage}}"
 	tracingInterceptor "{{.TracingInterceptorPackage}}"
@@ -61,14 +59,14 @@ func main() {
 	defer log.Info("====== Test [{{.Project}}] end ======")
 
 	// init monitor
-	err = monitor.Init({{.MonitorInitParam}}, "{{.Project}}")
+	err = monitor.Init({{.MonitorInitParam}})
 
 	if err != nil {
 		log.Warnf("Init monitor failed! error:%v", err.Error())
 	}
 
     // init tracing
-    err = tracing.Init({{.TracingInitParam}}, "{{.Project}}")
+    err = tracing.Init({{.TracingInitParam}})
 
 	if err != nil {
 		log.Warnf("Init tracing failed! error:%v", err.Error())
@@ -81,41 +79,31 @@ func main() {
 		grpc_middleware.ChainUnaryClient(
 			tracingInterceptor.GetClientInterceptor(),
 			logInterceptor.GetClientInterceptor(),
-			monitorInterceptor.GetClientInterceptor())))
+			monitorInterceptor.GetClientInterceptor())), grpc.WithInsecure())
 
-	// init pool
-	err = pool.GetConnectionPool().Init(clientOpts, 5, 10, time.Second * 10)
+	// init conn
+	conn, err := grpc.Dial("{{.Addr}}", clientOpts...)
 
 	if err != nil {
-		log.Warnf("Init pool failed! error:%v", err.Error())
+		log.Warnf("grpc.Dial failed! error:%v", err.Error())
 		return
 	}
 
 	// begin test
-	testHealthCheck("{{.Addr}}")
+	testHealthCheck(conn)
 
 	time.Sleep(time.Second * 1)
 }
 
-func testHealthCheck(addr string) {
+func testHealthCheck(conn *grpc.ClientConn) {
 	// rpc call
 	req := new(health_check.HealthCheckRequest)
 	req.Message = "ping"
 
 	for index := 0; index < 1; index++ {
-		// get remote server connection
-		conn, err := pool.GetConnectionPool().GetConnection(context.Background(), addr)
-		defer conn.Recycle()
+		c := health_check.NewHealthCheckServiceClient(conn)
 
-		// new client
-		c := health_check.NewHealthCheckServiceClient(conn.Get())
-
-		if err != nil {
-			log.Warnf("HealthCheck get connection failed! error%v", err.Error())
-			continue
-		}
-
-		_, err = c.HealthCheck(context.Background(), req)
+		_, err := c.HealthCheck(context.Background(), req)
 
 		if err != nil {
 			stat, ok := status.FromError(err)
@@ -126,8 +114,6 @@ func testHealthCheck(addr string) {
 			} else {
 				log.Warnf("HealthCheck request failed! err:%v", err.Error())
 			}
-
-			conn.Unhealthy()
 
 			return
 		}

@@ -27,14 +27,11 @@ package application
 
 import (
 	"net"
-	"time"
 
 	log "github.com/cihub/seelog"
 
 	"google.golang.org/grpc"
 	"github.com/grpc-ecosystem/go-grpc-middleware"
-
-	pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
 
 	logger "github.com/DarkMetrix/gofra/common/logger/seelog"
 	monitor "{{.MonitorPackage}}"
@@ -55,9 +52,25 @@ import (
 	/*@HANDLER_STUB*/
 )
 
+var globalApplication *Application
+
 type Application struct {
 	ServerOpts []grpc.ServerOption
 	ClientOpts []grpc.DialOption
+}
+
+//New Application
+func newApplication() *Application {
+	return &Application{}
+}
+
+//Get singleton application
+func GetApplication() *Application {
+	if globalApplication == nil {
+		globalApplication = newApplication()
+	}
+
+	return globalApplication
 }
 
 //Init application
@@ -99,18 +112,7 @@ func (app *Application) Init(conf *config.Config) error {
 		grpc_middleware.ChainUnaryClient(
 			tracingInterceptor.GetClientInterceptor(),
 			logInterceptor.GetClientInterceptor(),
-			monitorInterceptor.GetClientInterceptor())))
-
-	// init pool
-	err = pool.GetConnectionPool().Init(app.ClientOpts,
-		conf.Client.Pool.InitConns,
-		conf.Client.Pool.MaxConns,
-		time.Second * time.Duration(conf.Client.Pool.IdleTime))
-
-	if err != nil {
-		log.Warnf("Init pool failed! error:%v", err.Error())
-		return err
-	}
+			monitorInterceptor.GetClientInterceptor())), grpc.WithInsecure())
 
 	return nil
 }

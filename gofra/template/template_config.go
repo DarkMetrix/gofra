@@ -37,7 +37,6 @@ type ServerInfo struct {
 
 //Client config
 type ClientInfo struct {
-	Pool PoolInfo "mapstructure:\"pool\" json:\"pool\""
 }
 
 //Pool config
@@ -56,14 +55,14 @@ type Config struct {
 }
 
 //New Config
-func NewConfig() *Config {
+func newConfig() *Config {
 	return &Config{}
 }
 
 //Get singleton config
 func GetConfig() *Config {
 	if globalConfig == nil {
-		globalConfig = NewConfig()
+		globalConfig = newConfig()
 	}
 
 	return globalConfig
@@ -96,9 +95,6 @@ func (config *Config) Init (path string) error {
 
 type ConfigTomlInfo struct {
 	Addr string
-	InitConns int
-	MaxConns int
-	IdleTime int
 
 	MonitorInitParams string
 	TracingInitParams string
@@ -117,19 +113,7 @@ var ConfigTomlTemplate string = `
     addr="{{.Addr}}"
 
 # Client configuration
-#
-# client.pool.init_conns
-#	Client's initialized connections of the pool
-#
-# client.pool.max_conns
-#	Client's max connections of the pool
-#
-# client.pool.idle_time
-#	Client's idle time of connection to be recycled
-[client.pool]
-    init_conns={{.InitConns}}
-    max_conns={{.MaxConns}}
-    idle_time={{.IdleTime}}
+# [client]
 
 # Monitor configuration
 #

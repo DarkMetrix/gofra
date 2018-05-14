@@ -16,15 +16,6 @@ var JsonTemplate string = `
     {
         "addr":"{{.Addr}}"
     },
-    "client":
-    {
-        "pool":
-        {
-            "init_conns":5,
-            "max_conns":10,
-            "idle_time":30
-        }
-    },
     "monitor_package":
     {
         "package":"github.com/DarkMetrix/gofra/common/monitor/statsd",

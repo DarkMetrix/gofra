@@ -24,18 +24,6 @@ type ServerInfo struct {
 	Addr string `json:"addr"`
 }
 
-//Client config
-type ClientInfo struct {
-	Pool PoolInfo `json:"pool"`
-}
-
-//Pool config
-type PoolInfo struct {
-	InitConns int `json:"init_conns"`
-	MaxConns int `json:"max_conns"`
-	IdleTime int `json:"idle_time"`
-}
-
 //Monitor package
 type MonitorPackageInfo struct {
 	Package string `json:"package"`
@@ -61,7 +49,6 @@ type TemplateInfo struct {
 	Version string `json:"version"`
 
 	Server ServerInfo `json:"server"`
-	Client ClientInfo `json:"client"`
 
 	MonitorPackage MonitorPackageInfo `json:"monitor_package"`
 	TracingPackage TracingPackageInfo `json:"tracing_package"`
@@ -275,9 +262,6 @@ func GenerateConfigTomlFile(workingPath, goPath string, info *TemplateInfo, over
 
 	configTomlInfo := &ConfigTomlInfo{
 		Addr: info.Server.Addr,
-		InitConns: info.Client.Pool.InitConns,
-		MaxConns: info.Client.Pool.MaxConns,
-		IdleTime: info.Client.Pool.IdleTime,
 
 		MonitorInitParams: info.MonitorPackage.InitParam,
 		TracingInitParams: info.TracingPackage.InitParam,
