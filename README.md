@@ -58,15 +58,6 @@ You need to type Author Name, Project Name & Project Address.
     {
         "addr":"localhost:58888"
     },
-    "client":
-    {
-        "pool":
-        {
-            "init_conns":5,
-            "max_conns":10,
-            "idle_time":30
-        }
-    },
     "monitor_package":
     {
         "package":"github.com/DarkMetrix/gofra/grpc-utils/monitor/statsd",
@@ -91,9 +82,6 @@ You need to type Author Name, Project Name & Project Address.
 | project                             | Project's name                                               | User defined |
 | version                             | Version                                                      | User defined |
 | server.addr                         | Servicehe 's ip and port                                     | User defined |
-| client.pool.init_conns              | Client's connection pool's initial connection number         | User defined |
-| client.pool.max_conns               | Client's connection pool's max connection number             | User defined |
-| client.pool.idle_time               | Client's connection pool's connection idle time in seconds   | User defined |
 | monitor_package.package             | Monitor package import path used in the service(by default statsd is used as the monitor backend), you could write your own monitor package as long as you implement Init & Increment interfaces | Pre defined  |
 | monitor_package.init_param          | Monitor params used by Init method(it's the statsd address and project name used in your environment) | Pre defined  |
 | Tracing_package.package             | Tracing package import path used in the service(by default zipkin is used as the monitor backend), you could write your own tracing package as long as you implement Init interface | Pre defined  |
