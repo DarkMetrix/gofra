@@ -26,6 +26,8 @@ var ApplicationTemplate string = `
 package application
 
 import (
+	"os"
+	"os/signal"
 	"net"
 
 	log "github.com/cihub/seelog"
@@ -135,11 +137,26 @@ func (app *Application) Run(address string) error {
 	/*@REGISTER_STUB*/
 
 	// run to serve
-	err = s.Serve(listen)
+	go func() {
+		err = s.Serve(listen)
 
-	if err != nil {
-		return err
-	}
+		if err != nil {
+			log.Errorf("Serve failed! error:%v", err.Error())
+		}
+	}()
+
+	// deal with signals, when interrupt was notified, server will stop gracefully
+	signalChannel := make(chan os.Signal, 1)
+	signal.Notify(signalChannel, os.Interrupt)
+
+	signalOccur := <- signalChannel
+
+	log.Infof("Signal occured, signal:%v", signalOccur.String())
+
+	// stop server gracefully
+	s.GracefulStop()
+
+	log.Infof("Server stopped gracefully!")
 
 	return nil
 }
