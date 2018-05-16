@@ -138,25 +138,27 @@ func (app *Application) Run(address string) error {
 
 	// run to serve
 	go func() {
-		err = s.Serve(listen)
+		// deal with signals, when interrupt was notified, server will stop gracefully
+		signalChannel := make(chan os.Signal, 1)
+		signal.Notify(signalChannel, os.Interrupt)
 
-		if err != nil {
-			log.Errorf("Serve failed! error:%v", err.Error())
-		}
+		signalOccur := <- signalChannel
+
+		log.Infof("Signal occured, signal:%v", signalOccur.String())
+
+		// stop server gracefully
+		s.GracefulStop()
+
+		log.Infof("Server stopped gracefully!")
 	}()
 
-	// deal with signals, when interrupt was notified, server will stop gracefully
-	signalChannel := make(chan os.Signal, 1)
-	signal.Notify(signalChannel, os.Interrupt)
+	err = s.Serve(listen)
 
-	signalOccur := <- signalChannel
-
-	log.Infof("Signal occured, signal:%v", signalOccur.String())
-
-	// stop server gracefully
-	s.GracefulStop()
-
-	log.Infof("Server stopped gracefully!")
+	if err != nil {
+		log.Errorf("Serve failed! error:%v", err.Error())
+	} else {
+		log.Infof("Serve quit!")
+	}
 
 	return nil
 }
