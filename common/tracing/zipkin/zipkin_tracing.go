@@ -3,9 +3,6 @@ package zipkin
 import (
 	"fmt"
 	"errors"
-	"context"
-
-	"google.golang.org/grpc/metadata"
 
 	"github.com/opentracing/opentracing-go"
 	zipkin "github.com/openzipkin/zipkin-go-opentracing"
@@ -67,50 +64,6 @@ func InitZipkin(addr string, debug bool, hostPort string, serviceName string) er
 	}
 
 	return nil
-}
-
-func GetTracingId(ctx context.Context) string {
-	md, ok := metadata.FromIncomingContext(ctx)
-
-	if !ok {
-		return "TracingIdNotFound"
-	}
-
-	data, ok := md["x-b3-traceid"]
-
-	if !ok {
-		return "TracingIdNotFound"
-	}
-
-	for _, value := range data {
-		if len(data) != 0 {
-			return value
-		}
-	}
-
-	return "TracingIdNotFound"
-}
-
-func GetSpanId(ctx context.Context) string {
-	md, ok := metadata.FromIncomingContext(ctx)
-
-	if !ok {
-		return "SpanIdNotFound"
-	}
-
-	data, ok := md["x-b3-spanid"]
-
-	if !ok {
-		return "SpanIdNotFound"
-	}
-
-	for _, value := range data {
-		if len(data) != 0 {
-			return value
-		}
-	}
-
-	return "SpanIdNotFound"
 }
 
 func GetTracer() opentracing.Tracer {
