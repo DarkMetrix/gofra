@@ -337,15 +337,15 @@ $./test
 #### Client output
 
 ```bash
-[DEBUG][2018-04-11T10:55:24.656902][test_gofra_test][seelog_interceptor.go:30][GofraClientInterceptorFunc] => invoke success! trace id=TracingIdNotFound, span id=SpanIdNotFound, req=message:"ping" , reply:
+[DEBUG][2018-04-11T10:55:24.656902][test_gofra_test][seelog_interceptor.go:30][GofraClientInterceptorFunc] => invoke success! req=message:"ping" , reply:
 ```
 
 
 
 #### Service output
 
-```
-[DEBUG][2018-04-11T10:55:24.656279][test_gofra][seelog_interceptor.go:48][GofraServerInterceptorFunc] => handle success! trace id=79aee823934dde923790bc7400814e39, span id=4988c9cbcde2cd7b, req=message:"ping" , reply:
+```bash
+[DEBUG][2018-04-11T10:55:24.656279][test_gofra][seelog_interceptor.go:48][GofraServerInterceptorFunc] => handle success! req=message:"ping" , reply:
 ```
 
 
