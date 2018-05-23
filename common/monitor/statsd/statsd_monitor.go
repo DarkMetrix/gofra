@@ -100,3 +100,29 @@ func Count(bucket string, number interface{}) {
 
 	statsd.Count(bucket, number)
 }
+
+type MonitorTiming struct {
+	statsd.Timing
+}
+
+//Timing
+func NewTiming() *MonitorTiming {
+	statsd := GetStatsd()
+
+	if statsd == nil {
+		log.Tracef("monitor NewTiming failed!")
+		return nil
+	}
+
+	log.Tracef("monitor NewTiming success!")
+
+	timing := statsd.NewTiming()
+	return &MonitorTiming{timing}
+}
+
+//Sent timing
+func (timing *MonitorTiming) SendTiming(bucket string) {
+	log.Tracef("monitor SendTiming success! bucket:%v", bucket)
+
+	timing.Send(bucket)
+}
