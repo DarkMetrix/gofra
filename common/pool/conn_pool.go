@@ -54,7 +54,7 @@ func (conn *Conn) Unhealthy() {
 //If the unhealthy mark is set, close and it won't be put back to the pool
 func (conn *Conn) Recycle() error {
 	if conn.unhealthy {
-		conn.Close()
+		conn.connPool.Close(conn)
 		return nil
 	} else {
 		err := conn.connPool.Put(conn)
@@ -63,7 +63,6 @@ func (conn *Conn) Recycle() error {
 			return err
 		}
 
-		conn.Conn = nil
 		return nil
 	}
 }
@@ -136,5 +135,11 @@ func getFactory(addr string) func() (interface{}, error) {
 }
 
 func closeFunc(conn interface{}) error {
-	return conn.(net.Conn).Close()
+	var err error = nil
+
+	if conn != nil {
+		err = conn.(net.Conn).Close()
+	}
+
+	return err
 }
