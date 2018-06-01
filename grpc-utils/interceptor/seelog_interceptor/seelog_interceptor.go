@@ -1,6 +1,8 @@
 package seelog_interceptor
 
 import (
+	"fmt"
+
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
@@ -23,7 +25,8 @@ func GofraClientInterceptorFunc(ctx context.Context, method string, req, reply i
 	// Invoke remote
 	err := invoker(ctx, method, req, reply, cc, opts...)
 
-	log.Tracef("context:%v", ctx)
+	ctxInfo := fmt.Sprintf("%v", ctx)
+	log.Tracef("context:%v", ctxInfo)
 
 	if err != nil {
 		log.Warnf("invoke failed! req=%v, error:%v", req, err)
@@ -41,7 +44,8 @@ func GofraServerInterceptorFunc(ctx context.Context, req interface{}, info *grpc
 	// Process
 	reply, err = handler(ctx, req)
 
-	log.Tracef("context:%v", ctx)
+	ctxInfo := fmt.Sprintf("%v", ctx)
+	log.Tracef("context:%v", ctxInfo)
 
 	if err != nil {
 		log.Warnf("handle failed! req=%v, error:%v", req, err)
