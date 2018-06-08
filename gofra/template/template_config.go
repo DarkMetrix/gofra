@@ -20,6 +20,12 @@ import (
 //Global config
 var globalConfig *Config
 
+//pprof
+type PprofInfo struct {
+	Addr string "mapstructure:\"addr\" json:\"addr\""
+	Active uint32 "mapstructure:\"active\" json:\"active\""
+}
+
 //Tracing info
 type TracingInfo struct {
 	Params []string "mapstructure:\"params\" json:\"params\""
@@ -48,6 +54,7 @@ type PoolInfo struct {
 
 //Config sturcture
 type Config struct {
+	Pprof PprofInfo "mapstructure:\"pprof\" json:\"pprof\""
 	Monitor MonitorInfo "mapstructure:\"monitor\" json:\"monitor\""
 	Tracing TracingInfo "mapstructure:\"tracing\" json:\"tracing\""
 	Server ServerInfo "mapstructure:\"server\" json:\"server\""
@@ -114,6 +121,19 @@ var ConfigTomlTemplate string = `
 
 # Client configuration
 # [client]
+
+# pprof configuration
+#
+# pprof.active
+#	Is pprof active or not, 0 = not active, otherwise active
+#
+# pprof.addr
+#	Http address to listen on for getting profile information
+#	eg:
+#		wget http://localhost:50000/debug/pprof/profile
+[pprof]
+	active = 0
+	addr="localhost:50000"
 
 # Monitor configuration
 #

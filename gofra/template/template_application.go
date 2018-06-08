@@ -30,6 +30,9 @@ import (
 	"os/signal"
 	"net"
 
+	"net/http"
+	_ "net/http/pprof"
+
 	log "github.com/cihub/seelog"
 
 	"google.golang.org/grpc"
@@ -85,6 +88,14 @@ func (app *Application) Init(conf *config.Config) error {
 
 	if err != nil {
 		log.Warnf("Init logger failed! error:%v", err.Error())
+	}
+
+	//Init pprof
+	if conf.Pprof.Active != 0 {
+		go func() {
+			log.Infof("Begin pprof at addr:%v", conf.Pprof.Addr)
+			http.ListenAndServe(conf.Pprof.Addr, nil)
+		}()
 	}
 
 	// init monitor
