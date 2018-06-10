@@ -42,6 +42,7 @@ func NewConnectionPool() *ConnectionPool {
 	return &ConnectionPool {
 		pools: make(map[string]*ConnectionInfo),
 		clientOpts: make([]grpc.DialOption, 0),
+		maxConnectionPerAddr: runtime.NumCPU(),
 	}
 }
 
@@ -51,7 +52,6 @@ func (connPool *ConnectionPool) Init(clientOpts []grpc.DialOption) error {
 	defer connPool.mtx.Unlock()
 
 	connPool.clientOpts = clientOpts
-	connPool.maxConnectionPerAddr = runtime.NumCPU()
 
 	return nil
 }

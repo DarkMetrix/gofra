@@ -41,6 +41,7 @@ import (
     logger "github.com/DarkMetrix/gofra/common/logger/seelog"
 	monitor "{{.MonitorPackage}}"
     tracing "{{.TracingPackage}}"
+    pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
 
 	health_check "{{.WorkingPathRelative}}/src/proto/health_check"
 )
@@ -81,29 +82,38 @@ func main() {
 			logInterceptor.GetClientInterceptor(),
 			monitorInterceptor.GetClientInterceptor())), grpc.WithInsecure())
 
-	// init conn
-	conn, err := grpc.Dial("{{.Addr}}", clientOpts...)
+	// init grpc connection pool
+	err = pool.GetConnectionPool().Init(clientOpts)
 
 	if err != nil {
-		log.Warnf("grpc.Dial failed! error:%v", err.Error())
+		log.Warnf("Init grpc pool failed! error:%v", err.Error())
 		return
 	}
 
 	// begin test
-	testHealthCheck(conn)
+	testHealthCheck()
 
 	time.Sleep(time.Second * 1)
 }
 
-func testHealthCheck(conn *grpc.ClientConn) {
+func testHealthCheck() {
 	// rpc call
 	req := new(health_check.HealthCheckRequest)
 	req.Message = "ping"
 
 	for index := 0; index < 1; index++ {
+		// get connection
+		conn, err := pool.GetConnectionPool().GetConnection(context.Background(), "{{.Addr}}")
+
+		if err != nil {
+			log.Warnf("pool.GetConnection failed! error:%v", err.Error())
+			continue
+		}
+
+		// call
 		c := health_check.NewHealthCheckServiceClient(conn)
 
-		_, err := c.HealthCheck(context.Background(), req)
+		_, err = c.HealthCheck(context.Background(), req)
 
 		if err != nil {
 			stat, ok := status.FromError(err)
