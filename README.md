@@ -364,7 +364,6 @@ $./test
 - github.com/grpc-ecosystem/go-grpc-middleware [Apache 2.0 License](https://github.com/grpc-ecosystem/go-grpc-middleware/blob/master/LICENSE)
 - github.com/tallstoat/pbparser [MIT License](https://github.com/tallstoat/pbparser/blob/master/LICENSE)
 - github.com/alexcesaro/statsd [MIT License](https://github.com/alexcesaro/statsd/blob/master/LICENSE)
-- github.com/processout/grpc-go-pool [MIT License](https://github.com/processout/grpc-go-pool/blob/master/LICENSE)
 - github.com/silenceper/pool [MIT License](https://github.com/silenceper/pool/blob/master/LICENSE)
 - github.com/opentracing/opentracing-go [MIT License](https://github.com/opentracing/opentracing-go/blob/master/LICENSE)
 - github.com/openzipkin/zipkin-go-opentracing [MIT License](https://github.com/openzipkin/zipkin-go-opentracing/blob/master/LICENSE)
