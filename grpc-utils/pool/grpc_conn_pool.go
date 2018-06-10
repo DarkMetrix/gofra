@@ -4,12 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"runtime"
 	"sync"
-	"time"
 
 	"google.golang.org/grpc"
-
-	grpcPool "github.com/processout/grpc-go-pool"
 )
 
 //Global connection pool instance
@@ -28,103 +26,82 @@ func GetConnectionPool() *ConnectionPool {
 type ConnectionPool struct {
 	mtx sync.Mutex									//Mutex to protect from race condition
 
-	pools map[string]*grpcPool.Pool					//Pool map to save all connections
+	pools map[string]*ConnectionInfo				//Pool map to save all connections
 	clientOpts []grpc.DialOption
 
-	initConnections int								//Initial connection count per addr
-	maxConnections int								//Max connection count per addr
-	idleTimeout time.Duration						//Idle timeout for connection
+	maxConnectionPerAddr int						//Max connections for each address
 }
 
-//ClientConn is the wrapper for a grpc-go-pool.ClientConn
-type ClientConn struct {
-	*grpcPool.ClientConn
-}
-
-//Get returns the real connection to use
-func (conn *ClientConn) Get() *grpc.ClientConn {
-	return conn.ClientConn.ClientConn
-}
-
-//Unhealthy mark the connection as unhealthy
-//When recycle called it will be closed and won't be put back to the pool
-func (conn *ClientConn) Unhealthy() {
-	conn.ClientConn.Unhealthy()
-}
-
-//Recycle returns the connection to the pool
-//If the unhealthy mark is set, close and it won't be put back to the pool
-func (conn *ClientConn) Recycle() error {
-	return conn.Close()
+//Connection info
+type ConnectionInfo struct {
+	Conns []*grpc.ClientConn						//Connections
+	Index int64										//Index of the next connection
 }
 
 func NewConnectionPool() *ConnectionPool {
 	return &ConnectionPool {
-		pools: make(map[string]*grpcPool.Pool),
+		pools: make(map[string]*ConnectionInfo),
 		clientOpts: make([]grpc.DialOption, 0),
-		initConnections: 10,
-		maxConnections: 500,
-		idleTimeout: time.Second * 30,
 	}
 }
 
 //Init connection pool
-func (connPool *ConnectionPool) Init(clientOpts []grpc.DialOption,
-	initConnections, maxConnections int, idleTimeout time.Duration) error {
+func (connPool *ConnectionPool) Init(clientOpts []grpc.DialOption) error {
 	connPool.mtx.Lock()
 	defer connPool.mtx.Unlock()
 
 	connPool.clientOpts = clientOpts
-	connPool.initConnections = initConnections
-	connPool.maxConnections = maxConnections
-	connPool.idleTimeout = idleTimeout
+	connPool.maxConnectionPerAddr = runtime.NumCPU()
 
 	return nil
 }
 
 //Get connection from pool
-func (connPool *ConnectionPool) GetConnection(ctx context.Context, addr string) (*ClientConn, error) {
+func (connPool *ConnectionPool) GetConnection(ctx context.Context, addr string) (*grpc.ClientConn, error) {
 	connPool.mtx.Lock()
 	defer connPool.mtx.Unlock()
 
-	var err error
-	pool, ok := connPool.pools[addr]
+	connInfo, ok := connPool.pools[addr]
 
 	if !ok {
-		pool, err = grpcPool.New(getFactory(addr, connPool.clientOpts), connPool.initConnections, connPool.maxConnections, connPool.idleTimeout)
+		//Init connection info
+		connInfo = &ConnectionInfo{
+			Conns: make([]*grpc.ClientConn, connPool.maxConnectionPerAddr),
+			Index: 0,
+		}
+
+		connPool.pools[addr] = connInfo
+	}
+
+	curIndex := connInfo.Index % int64(len(connInfo.Conns))
+
+	//Get connection
+	if connInfo.Conns[curIndex] != nil {
+		connInfo.Index++
+		return connInfo.Conns[curIndex], nil
+	} else {
+		//Get grpc Client connection
+		conn, err := getClientConn(addr, connPool.clientOpts)
 
 		if err != nil {
 			return nil, err
 		}
 
-		connPool.pools[addr] = pool
+		connInfo.Conns[curIndex] = conn
+		connInfo.Index++
+		return conn, err
 	}
-
-	conn, err := pool.Get(ctx)
-
-	if err != nil {
-		return nil, err
-	}
-
-	wrapper := &ClientConn{
-		ClientConn:	conn,
-	}
-
-	return wrapper, nil
 }
 
-func getFactory(addr string, clientOpts []grpc.DialOption) grpcPool.Factory {
-	return func() (*grpc.ClientConn, error) {
-		// dial remote server
-		clientOpts := append(clientOpts, grpc.WithInsecure())
+func getClientConn(addr string, clientOpts []grpc.DialOption) (*grpc.ClientConn, error) {
+	// dial remote server
+	clientOpts = append(clientOpts, grpc.WithInsecure())
 
-		conn, err := grpc.Dial(addr, clientOpts ...)
+	conn, err := grpc.Dial(addr, clientOpts ...)
 
-		if err != nil {
-			fmt.Println(err)
-			return nil, errors.New(fmt.Sprintf("GRPC Dial failed! error:%v", err.Error()))
-		}
-
-		return conn, nil
+	if err != nil {
+		return nil, errors.New(fmt.Sprintf("GRPC Dial failed! error:%v", err.Error()))
 	}
+
+	return conn, nil
 }
