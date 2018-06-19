@@ -47,6 +47,7 @@ import (
 	monitorInterceptor "{{.MonitorInterceptorPackage}}"
 	tracingInterceptor "{{.TracingInterceptorPackage}}"
 
+	pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
 	commonUtils "github.com/DarkMetrix/gofra/common/utils"
 
 	"{{.WorkingPathRelative}}/src/common"
@@ -126,6 +127,8 @@ func (app *Application) Init(conf *config.Config) error {
 			tracingInterceptor.GetClientInterceptor(),
 			logInterceptor.GetClientInterceptor(),
 			monitorInterceptor.GetClientInterceptor())), grpc.WithInsecure())
+
+	pool.GetConnectionPool().Init(app.ClientOpts)
 
 	return nil
 }
