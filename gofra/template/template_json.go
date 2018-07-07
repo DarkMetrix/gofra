@@ -23,13 +23,13 @@ var JsonTemplate string = `
     },
     "tracing_package":
     {
-        "package":"github.com/DarkMetrix/gofra/common/tracing/zipkin",
-        "init_param":"\"http://127.0.0.1:9411/api/v1/spans\", \"false\", \"{{.Addr}}\", \"{{.Project}}\""
+        "package":"github.com/DarkMetrix/gofra/common/tracing/jaeger",
+        "init_param":"\"127.0.0.1:6831\", \"{{.Project}}\""
     },
     "interceptor_package":
     {
         "monitor_package":"github.com/DarkMetrix/gofra/grpc-utils/interceptor/statsd_interceptor",
-        "tracing_package":"github.com/DarkMetrix/gofra/grpc-utils/interceptor/zipkin_interceptor"
+        "tracing_package":"github.com/DarkMetrix/gofra/grpc-utils/interceptor/opentracing_interceptor"
     }
 }
 `

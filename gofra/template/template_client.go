@@ -60,14 +60,14 @@ func main() {
 	defer log.Info("====== Test [{{.Project}}] end ======")
 
 	// init monitor
-	err = monitor.Init({{.MonitorInitParam}})
+	err = monitor.Init("127.0.0.1:8125", "{{.Project}}_test")
 
 	if err != nil {
 		log.Warnf("Init monitor failed! error:%v", err.Error())
 	}
 
     // init tracing
-    err = tracing.Init({{.TracingInitParam}})
+    err = tracing.Init("127.0.0.1:6831", "{{.Project}}_test")
 
 	if err != nil {
 		log.Warnf("Init tracing failed! error:%v", err.Error())

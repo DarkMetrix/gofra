@@ -1,4 +1,4 @@
-package zipkin_interceptor
+package opentracing_interceptor
 
 import (
 	"google.golang.org/grpc"

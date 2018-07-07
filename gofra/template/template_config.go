@@ -152,14 +152,12 @@ var ConfigTomlTemplate string = `
 #
 # tracing.params
 #	tracing's params to init
-#	Gofra take the zipkin as the default tracing system
-#	so the params has 4 parts(all in a string array)
-#		1.zipkin's url
-#		2.debug flag 
-#		3.server's address
-#		4.the project's name
+#	Gofra take the jaeger as the default tracing system
+#	so the params has 2 parts(all in a string array)
+#		1.jaeger's agent udp address
+#		2.the project's name
 #	eg:
-#		params=["http://127.0.0.1:9411/api/v1/spans", "false", "localhost:58888", "demo"]
+#		params=["127.0.0.1:6831", "demo"]
 [tracing]
     params=[{{.TracingInitParams}}]
 `
