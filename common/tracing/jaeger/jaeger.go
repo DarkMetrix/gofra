@@ -1,11 +1,9 @@
 package jaeger
 
 import (
-
-"errors"
-"fmt"
-"io"
-
+	"fmt"
+	"errors"
+	"io"
 
 	"github.com/uber/jaeger-client-go"
 
