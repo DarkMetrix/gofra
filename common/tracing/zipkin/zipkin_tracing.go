@@ -39,6 +39,10 @@ func Init(args... string) error {
 	return nil
 }
 
+func Close() error {
+	return nil
+}
+
 func InitZipkin(addr string, debug bool, hostPort string, serviceName string) error {
 	// create collector.
 	collector, err := zipkin.NewHTTPCollector(addr)
