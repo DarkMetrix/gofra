@@ -11,7 +11,7 @@ import (
 )
 
 var tracer opentracing.Tracer
-var closer io.Closer
+var closer io.Closer = nil
 
 func Init(args... string) error {
 	if len(args) < 1 {
@@ -33,7 +33,11 @@ func Init(args... string) error {
 }
 
 func Close() error {
-	return closer.Close()
+	if closer != nil {
+		return closer.Close()
+	}
+
+	return nil
 }
 
 func InitJaeger(addr string,  serviceName string) error {
