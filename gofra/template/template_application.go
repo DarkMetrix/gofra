@@ -136,6 +136,7 @@ func (app *Application) Init(conf *config.Config) error {
 //Run application
 func (app *Application) Run(address string) error {
 	defer log.Flush()
+	defer tracing.Close()
 
 	listen, err := net.Listen("tcp", address)
 
