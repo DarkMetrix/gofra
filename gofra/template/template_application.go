@@ -41,6 +41,7 @@ import (
 	logger "github.com/DarkMetrix/gofra/common/logger/seelog"
 	monitor "{{.MonitorPackage}}"
 	tracing "{{.TracingPackage}}"
+	performance "git.code.oa.com/gofra/gofra/common/performance"
 
 	recoverInterceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/recover_interceptor"
 	logInterceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/seelog_interceptor"
@@ -129,6 +130,20 @@ func (app *Application) Init(conf *config.Config) error {
 			monitorInterceptor.GetClientInterceptor())), grpc.WithInsecure())
 
 	pool.GetConnectionPool().Init(app.ClientOpts)
+
+	// init performance
+	if conf.Performance.Active != 0 {
+		switch conf.Performance.Type {
+		case "log":
+			go performance.BeginMemoryPerformanceMonitorWithLog()
+			go performance.BeginGoroutinePerformanceMonitorWithLog()
+		case "statsd":
+			go performance.BeginMemoryPerformanceMonitorWithStatsd()
+			go performance.BeginGoroutinePerformanceMonitorWithStatsd()
+		default:
+			log.Warnf("Performance type not found! Type:%v", conf.Performance.Type)
+		}
+	}
 
 	return nil
 }

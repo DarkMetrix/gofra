@@ -101,6 +101,20 @@ func Count(bucket string, number interface{}) {
 	statsd.Count(bucket, number)
 }
 
+//Gauge
+func Gauge(bucket string, value interface{}) {
+	statsd := GetStatsd()
+
+	if statsd == nil {
+		log.Tracef("monitor gauge failed! bucket:%v, value:%v", bucket, value)
+		return
+	}
+
+	log.Tracef("monitor gauge success! bucket:%v, value:%v", bucket, value)
+
+	statsd.Gauge(bucket, value)
+}
+
 type MonitorTiming struct {
 	statsd.Timing
 }

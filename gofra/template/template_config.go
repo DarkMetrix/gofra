@@ -26,6 +26,12 @@ type PprofInfo struct {
 	Active uint32 "mapstructure:\"active\" json:\"active\""
 }
 
+//Performance info
+type PerformanceInfo struct {
+	Active uint32 "mapstructure:\"active\" json:\"active\""
+	Type string "mapstructure:\"type\" json:\"type\""
+}
+
 //Tracing info
 type TracingInfo struct {
 	Params []string "mapstructure:\"params\" json:\"params\""
@@ -55,6 +61,7 @@ type PoolInfo struct {
 //Config sturcture
 type Config struct {
 	Pprof PprofInfo "mapstructure:\"pprof\" json:\"pprof\""
+	Performance PerformanceInfo "mapstructure:\"performance\" json:\"performance\""
 	Monitor MonitorInfo "mapstructure:\"monitor\" json:\"monitor\""
 	Tracing TracingInfo "mapstructure:\"tracing\" json:\"tracing\""
 	Server ServerInfo "mapstructure:\"server\" json:\"server\""
@@ -134,6 +141,19 @@ var ConfigTomlTemplate string = `
 [pprof]
 	active = 0
 	addr="localhost:50000"
+
+# performance configuration
+# 	Performance will collect memory, gc, goroutine information periodically
+#	and output to log or statsd
+#
+# performance.active
+#	Is performance monitor active or not, 0 = not active, otherwise active
+#
+# performance.type
+#   Type to output the performance monitor information, available option [log, statsd]
+[performance]
+	active=1
+	type="log"
 
 # Monitor configuration
 #
