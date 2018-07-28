@@ -2,10 +2,10 @@ package performance
 
 import (
 	"time"
+	"runtime"
 
 	log "github.com/cihub/seelog"
-	monitor "git.code.oa.com/gofra/gofra/common/monitor/statsd"
-	"runtime"
+	monitor "github.com/DarkMetrix/gofra/common/monitor/statsd"
 )
 
 func BeginGoroutinePerformanceMonitorWithStatsd() {

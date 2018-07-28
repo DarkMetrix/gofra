@@ -41,7 +41,7 @@ import (
 	logger "github.com/DarkMetrix/gofra/common/logger/seelog"
 	monitor "{{.MonitorPackage}}"
 	tracing "{{.TracingPackage}}"
-	performance "git.code.oa.com/gofra/gofra/common/performance"
+	performance "github.com/DarkMetrix/gofra/common/performance"
 
 	recoverInterceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/recover_interceptor"
 	logInterceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/seelog_interceptor"

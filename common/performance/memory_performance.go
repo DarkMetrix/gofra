@@ -5,7 +5,7 @@ import (
 	"runtime"
 
 	log "github.com/cihub/seelog"
-	monitor "git.code.oa.com/gofra/gofra/common/monitor/statsd"
+	monitor "github.com/DarkMetrix/gofra/common/monitor/statsd"
 )
 
 func BeginMemoryPerformanceMonitorWithStatsd() {
