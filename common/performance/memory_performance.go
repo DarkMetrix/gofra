@@ -13,9 +13,9 @@ func BeginMemoryPerformanceMonitorWithStatsd() {
 
 	ticker := time.NewTicker(time.Second * 10)
 
-	for {
-		var lastMemStats runtime.MemStats
+	var lastMemStats runtime.MemStats
 
+	for {
 		select {
 		case t := <- ticker.C:
 			log.Tracef("Ticker triggered! time:%v", t)
