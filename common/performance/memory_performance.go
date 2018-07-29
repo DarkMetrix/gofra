@@ -30,13 +30,13 @@ func BeginMemoryPerformanceMonitorWithStatsd() {
 			monitor.Gauge("/application/performance/memory,type=heap_in_use_bytes", int64(memStats.HeapInuse))
 			monitor.Gauge("/application/performance/memory,type=heap_released_bytes", int64(memStats.HeapReleased))
 
-			if memStats.NumGC < lastMemStats.NumGC {
+			if memStats.NumGC <= lastMemStats.NumGC {
 				monitor.Gauge("/application/performance/gc,type=gc_counts", int64(0))
+				monitor.Gauge("/application/performance/gc,type=gc_pause", int64(0))
 			} else {
 				monitor.Gauge("/application/performance/gc,type=gc_counts", int64(memStats.NumGC - lastMemStats.NumGC))
+				monitor.Gauge("/application/performance/gc,type=gc_pause", int64(memStats.PauseNs[(memStats.NumGC + 255) % 256]))
 			}
-
-			monitor.Gauge("/application/performance/gc,type=gc_pause", int64(memStats.PauseNs[(memStats.NumGC + 255) % 256]))
 
 			lastMemStats = *memStats
 		}
@@ -61,8 +61,8 @@ func BeginMemoryPerformanceMonitorWithLog() {
 			log.Infof(`heap_objects:%v\r\n heap_alloc_bytes:%v\r\n heap_sys_bytes:%v\r\n heap_idle_bytes:%v\r\n heap_in_user_bytes:%v\r\n heap_released_bytes:%v`,
 				memStats.HeapObjects, memStats.HeapAlloc, memStats.HeapSys, memStats.HeapIdle, memStats.HeapInuse, memStats.HeapReleased)
 
-			if memStats.NumGC < lastMemStats.NumGC {
-				log.Infof("gc_counts:%v gc_pause:%v", 0, memStats.PauseNs[(memStats.NumGC + 255) % 256])
+			if memStats.NumGC <= lastMemStats.NumGC {
+				log.Infof("gc_counts:%v gc_pause:%v", 0, 0)
 			} else {
 				log.Infof("gc_counts:%v gc_pause:%v", memStats.NumGC - lastMemStats.NumGC, memStats.PauseNs[(memStats.NumGC + 255) % 256])
 			}
