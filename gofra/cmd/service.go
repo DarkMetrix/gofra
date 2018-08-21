@@ -71,9 +71,11 @@ func init() {
 	// serviceCmd.PersistentFlags().String("foo", "", "A help for foo")
 	addServiceCmd.PersistentFlags().StringVar(&servicePath, "path", "", "A .proto file to generate codes")
 	addServiceCmd.PersistentFlags().StringVar(&protocPath, "protoc_path", "protoc", "protoc binary path, in case user has multi versions of protoc")
+	addServiceCmd.PersistentFlags().StringArrayVar(&protoFileIncludePath, "proto_path", []string{}, "proto files include path used by protoc's command '--proto_path'")
 
 	updateServiceCmd.PersistentFlags().StringVar(&servicePath, "path", "", "A .proto file to generate codes")
 	updateServiceCmd.PersistentFlags().StringVar(&protocPath, "protoc_path", "protoc", "protoc binary path, in case user has multi versions of protoc")
+	updateServiceCmd.PersistentFlags().StringArrayVar(&protoFileIncludePath, "proto_path", []string{}, "proto files path include used by protoc's command '--proto_path'")
 	updateServiceCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
 
 	// Cobra supports local flags which will only run when this command
@@ -147,21 +149,33 @@ func addService(path string, override, update bool) error {
 
 	//Execute protoc to generate .pb.go file
 	fmt.Printf("\r\nCompile proto file ......")
-	shellCmd := exec.Command(gofraTemplate.ProtocPath, "--go_out=plugins=grpc:.", protoFilePathRelative)
 
-	err = shellCmd.Run()
+	args := []string{}
+
+	protoFileIncludePath = append(protoFileIncludePath, workingPath, goPath + "/src")
+
+	for _, path := range protoFileIncludePath {
+		arg := fmt.Sprintf("--proto_path=%v", path)
+		args = append(args, arg)
+	}
+
+	args = append(args,"--go_out=plugins=grpc:.")
+	args = append(args, protoFilePathRelative)
+
+	shellCmd := exec.Command(gofraTemplate.ProtocPath, args...)
+
+	output, err := shellCmd.CombinedOutput()
 
 	if err != nil {
-		fmt.Printf(" failed! cmd:%v --go_out=plugins=grpc:. %v \r\nerror:%v\r\n",
-			gofraTemplate.ProtocPath, protoFilePathRelative, err.Error())
+		fmt.Printf(" failed! cmd:%v %v \r\nerror:%v\r\noutput:%v\r\n", gofraTemplate.ProtocPath, args, err.Error(), string(output))
 		return err
 	} else {
-		fmt.Printf(" success! \r\n")
+		fmt.Printf(" success! cmd:%v %v\r\n", gofraTemplate.ProtocPath, args)
 	}
 
 	//Generate service
 	fmt.Printf("\r\nGenerating service code ......")
-	err = gofraTemplate.GenerateService(workingPath, goPath, templateInfo, path, override, update)
+	err = gofraTemplate.GenerateService(workingPath, goPath, protoFileIncludePath, templateInfo, protoFilePathRelative, override, update)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())

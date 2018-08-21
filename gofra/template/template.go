@@ -14,6 +14,7 @@ import (
 	"github.com/tallstoat/pbparser"
 
 	commonUtils "github.com/DarkMetrix/gofra/common/utils"
+	"github.com/DarkMetrix/gofra/gofra/utils/pbparser_import_provider"
 )
 
 //protoc command path
@@ -481,7 +482,7 @@ func GenerateHealthCheckHandler(workingPath, goPath string, info *TemplateInfo, 
 
 	filePath := filepath.Join(workingPath, "src", "proto", "health_check", "health_check.proto")
 
-	err = GenerateService(workingPath, goPath, info, filePath, override, false)
+	err = GenerateService(workingPath, goPath, []string{"./src/proto/health_check"}, info, filePath, override, false)
 
 	if err != nil {
 		return err
@@ -559,9 +560,22 @@ func GenerateHealthCheckProto(workingPath, goPath string, info *TemplateInfo, ov
 }
 
 //Generate service
-func GenerateService(workingPath, goPath string, info *TemplateInfo, protoPath string, override bool, update bool) error {
+func GenerateService(workingPath, goPath string, protoFileIncludePath []string, info *TemplateInfo, protoPath string, override bool, update bool) error {
 	//Parse proto file
-	pf, err := pbparser.ParseFile(protoPath)
+	raw, err := ioutil.ReadFile(protoPath)
+
+	if err != nil {
+		return errors.New(fmt.Sprintf("Unable to read proto file! error:%v", err.Error()))
+	}
+
+	r := strings.NewReader(string(raw[:]))
+
+	// implement a dir based import module provider which reads
+	// import modules from the same dir as the original proto file
+	importProvider := pbparser_import_provider.GofraImportModuleProvider{ModuleSearchPaths:protoFileIncludePath}
+
+	// invoke Parse() API to parse the file
+	pf, err := pbparser.Parse(r, &importProvider)
 
 	if err != nil {
 		return errors.New(fmt.Sprintf("Unable to parse proto file! error:%v", err.Error()))

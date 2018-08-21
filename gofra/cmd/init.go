@@ -103,6 +103,7 @@ var initCmd = &cobra.Command{
 
 var templatePath string
 var protocPath string
+var protoFileIncludePath []string
 var override bool
 
 //Server config
