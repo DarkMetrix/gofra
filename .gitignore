@@ -8,6 +8,7 @@ gofra/gofra
 gofra/build.sh
 gofra/sync.sh
 
+vendor
 
 # Test binary, build with `go test -c`
 *.test
