@@ -170,7 +170,7 @@ func (app *Application) Run(address string) error {
 
 	//gin.SetMode(gin.ReleaseMode)
 	httpServer := &http.Server{
-		Addr: config.GetConfig().Server.HttpAddr,
+		Addr: address,
 		Handler: engine,
 	}
 
