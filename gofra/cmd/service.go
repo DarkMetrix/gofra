@@ -22,7 +22,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	gofraTemplate "github.com/DarkMetrix/gofra/gofra/template"
+	grpcTemplate "github.com/DarkMetrix/gofra/gofra/template/grpc"
 	commonUtils "github.com/DarkMetrix/gofra/common/utils"
 )
 
@@ -30,7 +30,7 @@ import (
 var serviceCmd = &cobra.Command{
 	Use:   "service",
 	Short: "Service operations [add, update]",
-	Long: `Gofra is a framework using gRPC as the communication layer.\r\nservice command will help to manipulate .proto file to generate service frame & handler.`,
+	Long: `Gofra is a framework using gRPC/gin as the communication layer.\r\nservice command will help to manipulate .proto file to generate service frame & handler.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
 	},
@@ -40,7 +40,7 @@ var serviceCmd = &cobra.Command{
 var addServiceCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add service (*.proto) to project",
-	Long: `Gofra is a framework using gRPC as the communication layer.\r\nservice add command will help to manipulate .proto file to add service frame & handler.`,
+	Long: `Gofra is a framework using gRPC/gin as the communication layer.\r\nservice add command will help to manipulate .proto file to add service frame & handler.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		addService(servicePath, false, false)
 	},
@@ -50,7 +50,7 @@ var addServiceCmd = &cobra.Command{
 var updateServiceCmd = &cobra.Command{
 	Use:   "update",
 	Short: "Update service (*.proto) to project",
-	Long: `Gofra is a framework using gRPC as the communication layer.\r\nservice add command will help to manipulate .proto file to update service frame & handler.`,
+	Long: `Gofra is a framework using gRPC/gin as the communication layer.\r\nservice update command will help to manipulate .proto file to update service frame & handler.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		addService(servicePath, override, true)
 	},
@@ -89,7 +89,7 @@ func addService(path string, override, update bool) error {
 
 	//Set protoc binary path
 	if len(protocPath) != 0 {
-		gofraTemplate.ProtocPath = protocPath
+		grpcTemplate.ProtocPath = protocPath
 	}
 
 	//Check path
@@ -117,6 +117,12 @@ func addService(path string, override, update bool) error {
 		return err
 	} else {
 		fmt.Printf(" success! \r\n")
+	}
+
+	//Check server type
+	if templateInfo.Type != "grpc" {
+		fmt.Printf(" failed! \r\nerror:Server type is not 'grpc'!\r\n")
+		return err
 	}
 
 	//Mkdir
@@ -162,20 +168,20 @@ func addService(path string, override, update bool) error {
 	args = append(args,"--go_out=plugins=grpc:.")
 	args = append(args, protoFilePathRelative)
 
-	shellCmd := exec.Command(gofraTemplate.ProtocPath, args...)
+	shellCmd := exec.Command(grpcTemplate.ProtocPath, args...)
 
 	output, err := shellCmd.CombinedOutput()
 
 	if err != nil {
-		fmt.Printf(" failed! cmd:%v %v \r\nerror:%v\r\noutput:%v\r\n", gofraTemplate.ProtocPath, args, err.Error(), string(output))
+		fmt.Printf(" failed! cmd:%v %v \r\nerror:%v\r\noutput:%v\r\n", grpcTemplate.ProtocPath, args, err.Error(), string(output))
 		return err
 	} else {
-		fmt.Printf(" success! cmd:%v %v\r\n", gofraTemplate.ProtocPath, args)
+		fmt.Printf(" success! cmd:%v %v\r\n", grpcTemplate.ProtocPath, args)
 	}
 
 	//Generate service
 	fmt.Printf("\r\nGenerating service code ......")
-	err = gofraTemplate.GenerateService(workingPath, goPath, protoFileIncludePath, templateInfo, protoFilePathRelative, override, update)
+	err = grpcTemplate.GenerateService(workingPath, goPath, protoFileIncludePath, templateInfo, protoFilePathRelative, override, update)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())

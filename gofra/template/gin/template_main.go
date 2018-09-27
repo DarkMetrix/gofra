@@ -1,4 +1,4 @@
-package template
+package grpc
 
 type MainInfo struct {
 	Author string
@@ -53,9 +53,9 @@ func main() {
 		os.Exit(-3)
 	}
 
-	fmt.Printf("Listen on port [%v]\r\n", conf.Server.Addr)
+	fmt.Printf("Listen on port [%v]\r\n", conf.Server.HttpAddr)
 
-	err = app.Run(conf.Server.Addr)
+	err = app.Run(conf.Server.HttpAddr)
 
 	if err != nil {
 		fmt.Printf("Application run failed! error:%v\r\n", err.Error())

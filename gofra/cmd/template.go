@@ -20,13 +20,15 @@ import (
 	"os"
 
 	gofraTemplate "github.com/DarkMetrix/gofra/gofra/template"
+	grpcTemplate "github.com/DarkMetrix/gofra/gofra/template/grpc"
+	httpTemplate "github.com/DarkMetrix/gofra/gofra/template/gin"
 )
 
 // templateCmd represents the template command
 var templateCmd = &cobra.Command{
 	Use:   "template",
 	Short: "Template operations [init]",
-	Long: `Gofra is a framework using gRPC as the communication layer.\r\ntemplate command will help to generate template.json.default file.`,
+	Long: `Gofra is a framework using gRPC/gin as the communication layer.\r\ntemplate command will help to generate template.json.default file.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
 	},
@@ -36,7 +38,7 @@ var templateCmd = &cobra.Command{
 var initTemplateCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Template initialization, a template.json.default file will be generated",
-	Long: `Gofra is a framework using gRPC as the communication layer.\r\ninit command will help to initialize template.json.default file.`,
+	Long: `Gofra is a framework using gRPC/gin as the communication layer.\r\ninit command will help to initialize template.json.default file.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("====== Gofra service add ======")
 
@@ -59,16 +61,32 @@ var initTemplateCmd = &cobra.Command{
 		fmt.Scanln(&jsonInfo.Author)
 		fmt.Print("Project Name:")
 		fmt.Scanln(&jsonInfo.Project)
-		fmt.Print("Project Address:")
+		fmt.Print("Project Address [e.g.: 127.0.0.1:8080]:")
 		fmt.Scanln(&jsonInfo.Addr)
+		fmt.Print("Server Type [grpc, http]:")
+		fmt.Scanln(&jsonInfo.Type)
 
-		err = gofraTemplate.GenerateTemplateJsonFile(workingPath, override, jsonInfo)
+		switch jsonInfo.Type {
+		case "grpc":
+			err = grpcTemplate.GenerateTemplateJsonFile(workingPath, override, jsonInfo)
 
-		if err != nil {
-			fmt.Printf(" Generating template.json failed! \r\nerror:%v\r\n", err.Error())
-			return
-		} else {
-			fmt.Printf(" Generating template.json success! \r\n")
+			if err != nil {
+				fmt.Printf(" Generating template.json failed! \r\nerror:%v\r\n", err.Error())
+				return
+			} else {
+				fmt.Printf(" Generating template.json success! \r\n")
+			}
+		case "http":
+			err = httpTemplate.GenerateTemplateJsonFile(workingPath, override, jsonInfo)
+
+			if err != nil {
+				fmt.Printf(" Generating template.json failed! \r\nerror:%v\r\n", err.Error())
+				return
+			} else {
+				fmt.Printf(" Generating template.json success! \r\n")
+			}
+		default:
+			fmt.Println("Invalid project type! grpc & http are the available options")
 		}
 	},
 }

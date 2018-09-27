@@ -1,4 +1,4 @@
-package template
+package grpc
 
 type CommonInfo struct {
 	Author string

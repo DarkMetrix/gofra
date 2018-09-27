@@ -1,4 +1,4 @@
-package template
+package grpc
 
 type ServiceInfo struct {
 	Author string

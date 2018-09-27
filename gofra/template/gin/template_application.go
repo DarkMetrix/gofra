@@ -1,4 +1,4 @@
-package template
+package grpc
 
 type ApplicationInfo struct {
 	Author string
@@ -28,7 +28,8 @@ package application
 import (
 	"os"
 	"os/signal"
-	"net"
+	"time"
+	"context"
 
 	"net/http"
 	_ "net/http/pprof"
@@ -38,31 +39,36 @@ import (
 	"google.golang.org/grpc"
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 
+	//Component
 	logger "github.com/DarkMetrix/gofra/common/logger/seelog"
 	monitor "{{.MonitorPackage}}"
 	tracing "{{.TracingPackage}}"
 	performance "github.com/DarkMetrix/gofra/common/performance"
 
-	recoverInterceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/recover_interceptor"
+	//Gin relative
+	"github.com/gin-gonic/gin"
+	logMiddleware "github.com/DarkMetrix/gofra/gin-utils/middleware/log_middleware/seelog"
+	monitorMiddleware "github.com/DarkMetrix/gofra/gin-utils/middleware/monitor_middleware/statsd"
+
+	//gRPC relative
 	logInterceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/seelog_interceptor"
 	monitorInterceptor "{{.MonitorInterceptorPackage}}"
 	tracingInterceptor "{{.TracingInterceptorPackage}}"
 
+	//Common
 	pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
 	commonUtils "github.com/DarkMetrix/gofra/common/utils"
 
 	"{{.WorkingPathRelative}}/src/common"
 	"{{.WorkingPathRelative}}/src/config"
 
-	//!!!DO NOT EDIT!!!
-	/*@PROTO_STUB*/
-	/*@HANDLER_STUB*/
+	//Http handler
+	httpHandler "{{.WorkingPathRelative}}/src/http_handler"
 )
 
 var globalApplication *Application
 
 type Application struct {
-	ServerOpts []grpc.ServerOption
 	ClientOpts []grpc.DialOption
 }
 
@@ -82,8 +88,8 @@ func GetApplication() *Application {
 
 //Init application
 func (app *Application) Init(conf *config.Config) error {
-	// process conf.Server.Addr
-	conf.Server.Addr = commonUtils.GetRealAddrByNetwork(conf.Server.Addr)
+	// process conf.Server.HttpAddr
+	conf.Server.HttpAddr = commonUtils.GetRealAddrByNetwork(conf.Server.HttpAddr)
 
 	// init log
 	err := logger.Init("../conf/log.config", common.ProjectName)
@@ -113,14 +119,6 @@ func (app *Application) Init(conf *config.Config) error {
 	if err != nil {
 		log.Warnf("Init tracing failed! error:%v", err.Error())
 	}
-
-	// set server interceptor
-	app.ServerOpts = append(app.ServerOpts, grpc.UnaryInterceptor(
-		grpc_middleware.ChainUnaryServer(
-			recoverInterceptor.GetServerInterceptor(),
-			tracingInterceptor.GetServerInterceptor(),
-			logInterceptor.GetServerInterceptor(),
-			monitorInterceptor.GetServerInterceptor())))
 
 	// set client interceptor
 	app.ClientOpts = append(app.ClientOpts, grpc.WithUnaryInterceptor(
@@ -153,42 +151,55 @@ func (app *Application) Run(address string) error {
 	defer log.Flush()
 	defer tracing.Close()
 
-	listen, err := net.Listen("tcp", address)
+	// run to serve http
+	engine := gin.Default()
 
-	if err != nil {
-		return err
+	group := engine.Group("/", gin.Recovery(),
+		logMiddleware.GetMiddleware(),
+		monitorMiddleware.GetMiddleware())
+
+	// add http handler
+	//!!!DO NOT EDIT!!!
+	/*@REGISTER_HTTP_STUB*/
+
+	//gin.SetMode(gin.ReleaseMode)
+	httpServer := &http.Server{
+		Addr: config.GetConfig().Server.HttpAddr,
+		Handler: engine,
 	}
 
-	// init grpc server
-	s := grpc.NewServer(app.ServerOpts ...)
-
-	// register services
-	//!!!DO NOT EDIT!!!
-	/*@REGISTER_STUB*/
-
-	// run to serve
 	go func() {
-		// deal with signals, when interrupt was notified, server will stop gracefully
-		signalChannel := make(chan os.Signal, 1)
-		signal.Notify(signalChannel, os.Interrupt)
+		err := httpServer.ListenAndServe()
 
-		signalOccur := <- signalChannel
+		if err != nil {
+			log.Errorf("Serve http failed! error:%v", err.Error())
 
-		log.Infof("Signal occured, signal:%v", signalOccur.String())
-
-		// stop server gracefully
-		s.GracefulStop()
-
-		log.Infof("Server stopped gracefully!")
+			time.Sleep(time.Second)
+			os.Exit(-2)
+		} else {
+			log.Infof("Serve http quit")
+		}
 	}()
 
-	err = s.Serve(listen)
+	// deal with signals, when interrupt was notified, server will stop gracefully
+	signalChannel := make(chan os.Signal, 1)
+	signal.Notify(signalChannel, os.Interrupt)
+
+	signalOccur := <- signalChannel
+
+	log.Infof("Signal occured, signal:%v", signalOccur.String())
+
+	// stop http service gracefully
+	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+	defer cancel()
+
+	err := httpServer.Shutdown(ctx)
 
 	if err != nil {
-		log.Errorf("Serve failed! error:%v", err.Error())
-	} else {
-		log.Infof("Serve quit!")
+		log.Warnf("http shutdown failed! error:%s", err.Error())
 	}
+
+	log.Infof("Server stopped gracefully!")
 
 	return nil
 }

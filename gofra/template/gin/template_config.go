@@ -1,4 +1,4 @@
-package template
+package grpc
 
 type ConfigInfo struct {
 	Author string
@@ -44,7 +44,7 @@ type MonitorInfo struct {
 
 //Server config
 type ServerInfo struct {
-	Addr string "mapstructure:\"addr\" json:\"addr\""
+	HttpAddr string "mapstructure:\"http_addr\" json:\"http_addr\""
 }
 
 //Client config
@@ -124,7 +124,7 @@ var ConfigTomlTemplate string = `
 #		127.0.0.1:58888
 #		eth0:58888
 [server]
-    addr="{{.Addr}}"
+    http_addr="{{.Addr}}"
 
 # Client configuration
 # [client]

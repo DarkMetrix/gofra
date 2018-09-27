@@ -1,4 +1,4 @@
-package template
+package grpc
 
 import (
 	"fmt"
@@ -15,50 +15,15 @@ import (
 
 	commonUtils "github.com/DarkMetrix/gofra/common/utils"
 	"github.com/DarkMetrix/gofra/gofra/utils/pbparser_import_provider"
+
+	gofraTemplate"github.com/DarkMetrix/gofra/gofra/template"
 )
 
 //protoc command path
 var ProtocPath string = "protoc"
 
-//Server config
-type ServerInfo struct {
-	Addr string `json:"addr"`
-}
-
-//Monitor package
-type MonitorPackageInfo struct {
-	Package string `json:"package"`
-	InitParam string `json:"init_param"`
-}
-
-//Tracing package
-type TracingPackageInfo struct {
-	Package string `json:"package"`
-	InitParam string `json:"init_param"`
-}
-
-//Interceptor package
-type InterceptorPackageInfo struct {
-	MonitorPackage string `json:"monitor_package"`
-	TracingPackage string `json:"tracing_package"`
-}
-
-//Template info
-type TemplateInfo struct {
-	Author string `json:"author"`
-	Project string `json:"project"`
-	Version string `json:"version"`
-
-	Server ServerInfo `json:"server"`
-
-	MonitorPackage MonitorPackageInfo `json:"monitor_package"`
-	TracingPackage TracingPackageInfo `json:"tracing_package"`
-
-	InterceptorPackage InterceptorPackageInfo `json:"interceptor_package"`
-}
-
 //Generate template.json
-func GenerateTemplateJsonFile(workingPath string, override bool, jsonInfo JsonInfo) error {
+func GenerateTemplateJsonFile(workingPath string, override bool, jsonInfo gofraTemplate.JsonInfo) error {
 	filePath := filepath.Join(workingPath, "template.json")
 
 	//Check file is exist or not
@@ -87,7 +52,7 @@ func GenerateTemplateJsonFile(workingPath string, override bool, jsonInfo JsonIn
 	}
 
 	//Parse template
-	jsonTemplate, err := template.New("template_json").Parse(JsonTemplate)
+	jsonTemplate, err := template.New("template_json").Parse(gofraTemplate.JsonTemplate)
 
 	if err != nil {
 		return err
@@ -110,7 +75,7 @@ func GenerateTemplateJsonFile(workingPath string, override bool, jsonInfo JsonIn
 }
 
 //Generate common.go
-func GenerateCommonFile(workingPath, goPath string, info *TemplateInfo, override bool) error {
+func GenerateCommonFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "src", "common", "common.go")
 
 	//Check file is exist or not
@@ -169,7 +134,7 @@ func GenerateCommonFile(workingPath, goPath string, info *TemplateInfo, override
 }
 
 //Generate config.go
-func GenerateConfigFile(workingPath, goPath string, info *TemplateInfo, override bool) error {
+func GenerateConfigFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "src", "config", "config.go")
 
 	//Check file is exist or not
@@ -226,7 +191,7 @@ func GenerateConfigFile(workingPath, goPath string, info *TemplateInfo, override
 }
 
 //Generate config.toml
-func GenerateConfigTomlFile(workingPath, goPath string, info *TemplateInfo, override bool) error {
+func GenerateConfigTomlFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "conf", "config.toml")
 
 	//Check file is exist or not
@@ -285,7 +250,7 @@ func GenerateConfigTomlFile(workingPath, goPath string, info *TemplateInfo, over
 }
 
 //Generate log.config
-func GenerateConfigLogFile(workingPath, goPath string, info *TemplateInfo, override bool) error {
+func GenerateConfigLogFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "conf", "log.config")
 
 	//Check file is exist or not
@@ -343,7 +308,7 @@ func GenerateConfigLogFile(workingPath, goPath string, info *TemplateInfo, overr
 }
 
 //Generate application.go
-func GenerateApplicationFile(workingPath, goPath string, info *TemplateInfo, override bool) error {
+func GenerateApplicationFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "src", "application", "application.go")
 
 	//Check file is exist or not
@@ -410,7 +375,7 @@ func GenerateApplicationFile(workingPath, goPath string, info *TemplateInfo, ove
 }
 
 //Generate main.go
-func GenerateMainFile(workingPath, goPath string, info *TemplateInfo, override bool) error {
+func GenerateMainFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "src", "main.go")
 
 	//Check file is exist or not
@@ -472,7 +437,7 @@ func GenerateMainFile(workingPath, goPath string, info *TemplateInfo, override b
 }
 
 //Generate health check handler
-func GenerateHealthCheckHandler(workingPath, goPath string, info *TemplateInfo, override bool) error {
+func GenerateHealthCheckHandler(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	//Generate health check proto file
 	err := GenerateHealthCheckProto(workingPath, goPath, info, override)
 
@@ -492,7 +457,7 @@ func GenerateHealthCheckHandler(workingPath, goPath string, info *TemplateInfo, 
 }
 
 //Generate health check service proto
-func GenerateHealthCheckProto(workingPath, goPath string, info *TemplateInfo, override bool) error {
+func GenerateHealthCheckProto(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "src", "proto", "health_check", "health_check.proto")
 	filePathRelative := filepath.Join(".", "src", "proto", "health_check", "health_check.proto")
 
@@ -560,7 +525,7 @@ func GenerateHealthCheckProto(workingPath, goPath string, info *TemplateInfo, ov
 }
 
 //Generate service
-func GenerateService(workingPath, goPath string, protoFileIncludePath []string, info *TemplateInfo, protoPath string, override bool, update bool) error {
+func GenerateService(workingPath, goPath string, protoFileIncludePath []string, info *gofraTemplate.TemplateInfo, protoPath string, override bool, update bool) error {
 	//Parse proto file
 	raw, err := ioutil.ReadFile(protoPath)
 
@@ -654,7 +619,7 @@ func GenerateService(workingPath, goPath string, protoFileIncludePath []string, 
 }
 
 //Add service proto import to application file
-func AddServiceProtoToApplicationFileImport(workingPath, goPath string, info *TemplateInfo, protoPath string) error {
+func AddServiceProtoToApplicationFileImport(workingPath, goPath string, info *gofraTemplate.TemplateInfo, protoPath string) error {
 	applicationFilePath := filepath.Join(workingPath, "src", "application", "application.go")
 
 	applicationContent, err := ioutil.ReadFile(applicationFilePath)
@@ -685,7 +650,7 @@ func AddServiceProtoToApplicationFileImport(workingPath, goPath string, info *Te
 }
 
 //Add service handler import to application file
-func AddServiceHandlerToApplicationFileImport(workingPath, goPath string, info *TemplateInfo, serviceName string) error {
+func AddServiceHandlerToApplicationFileImport(workingPath, goPath string, info *gofraTemplate.TemplateInfo, serviceName string) error {
 	applicationFilePath := filepath.Join(workingPath, "src", "application", "application.go")
 
 	applicationContent, err := ioutil.ReadFile(applicationFilePath)
@@ -715,7 +680,7 @@ func AddServiceHandlerToApplicationFileImport(workingPath, goPath string, info *
 }
 
 //Add service handler import to application file
-func AddServiceRegisterToApplicationFile(workingPath, goPath string, info *TemplateInfo, protoPath, serviceName string) error {
+func AddServiceRegisterToApplicationFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, protoPath, serviceName string) error {
 	applicationFilePath := filepath.Join(workingPath, "src", "application", "application.go")
 
 	applicationContent, err := ioutil.ReadFile(applicationFilePath)
@@ -745,7 +710,7 @@ func AddServiceRegisterToApplicationFile(workingPath, goPath string, info *Templ
 }
 
 //Generate service implementation
-func GenerateServiceImplementation(workingPath, goPath string, info *TemplateInfo, service *ServiceInfo, override bool, update bool) error {
+func GenerateServiceImplementation(workingPath, goPath string, info *gofraTemplate.TemplateInfo, service *ServiceInfo, override bool, update bool) error {
 	filePath := filepath.Join(workingPath, "src", "handler", service.ServiceName, service.ServiceName + ".go")
 
 	//Check file is exist or not
@@ -801,7 +766,7 @@ func GenerateServiceImplementation(workingPath, goPath string, info *TemplateInf
 }
 
 //Generate service handler
-func GenerateServiceHandler(workingPath, goPath string, info *TemplateInfo, rpc *RpcInfo, override bool, update bool) error {
+func GenerateServiceHandler(workingPath, goPath string, info *gofraTemplate.TemplateInfo, rpc *RpcInfo, override bool, update bool) error {
 	filePath := filepath.Join(workingPath, "src", "handler", rpc.ServiceName, rpc.RpcName + ".go")
 
 	//Check file is exist or not
@@ -857,7 +822,7 @@ func GenerateServiceHandler(workingPath, goPath string, info *TemplateInfo, rpc 
 }
 
 //Generate test client
-func GenerateTestClient(workingPath, goPath string, info *TemplateInfo, override bool) error {
+func GenerateTestClient(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "test", "main.go")
 
 	//Check file is exist or not
