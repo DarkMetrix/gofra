@@ -1,4 +1,4 @@
-package grpc
+package gin
 
 type MainInfo struct {
 	Author string

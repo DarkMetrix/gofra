@@ -1,4 +1,4 @@
-package grpc
+package gin
 
 type ConfigInfo struct {
 	Author string

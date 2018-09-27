@@ -129,7 +129,13 @@ func (app *Application) Init(conf *config.Config) error {
 			logInterceptor.GetClientInterceptor(),
 			monitorInterceptor.GetClientInterceptor())), grpc.WithInsecure())
 
-	pool.GetConnectionPool().Init(app.ClientOpts)
+	// init pool
+	err = pool.GetConnectionPool().Init(app.ClientOpts)
+
+	if err != nil {
+		log.Warnf("Init pool failed! error:%v", err.Error())
+		return err
+	}
 
 	// init performance
 	if conf.Performance.Active != 0 {

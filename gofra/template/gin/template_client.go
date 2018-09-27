@@ -1,4 +1,4 @@
-package grpc
+package gin
 
 type TestClientInfo struct {
 	Author string
@@ -24,32 +24,25 @@ var TestClientTemplate string = `
 package main
 
 import (
+	"fmt"
 	"time"
-	"context"
+	"bytes"
+	"io/ioutil"
+	"sync"
+	"net/http"
+
+    logger "git.code.oa.com/gofra/gofra/common/logger/seelog"
 
 	log "github.com/cihub/seelog"
+	naming "git.code.oa.com/gofra/gofra/tencent-utils/naming"
 
-    "google.golang.org/grpc"
-	"google.golang.org/grpc/status"
-
-    "github.com/grpc-ecosystem/go-grpc-middleware"
-
-	logInterceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/seelog_interceptor"
-	monitorInterceptor "{{.MonitorInterceptorPackage}}"
-	tracingInterceptor "{{.TracingInterceptorPackage}}"
-
-    logger "github.com/DarkMetrix/gofra/common/logger/seelog"
-	monitor "{{.MonitorPackage}}"
-    tracing "{{.TracingPackage}}"
-    pool "github.com/DarkMetrix/gofra/grpc-utils/pool"
-
-	health_check "{{.WorkingPathRelative}}/src/proto/health_check"
+	_ "git.code.oa.com/gofra/gofra/tencent-utils/naming/resolver/local"
 )
 
 func main() {
 	defer log.Flush()
 
-    // init log
+	// init log
     err := logger.Init("../conf/log.config", "{{.Project}}_test")
 
 	if err != nil {
@@ -59,74 +52,71 @@ func main() {
 	log.Info("====== Test [{{.Project}}] begin ======")
 	defer log.Info("====== Test [{{.Project}}] end ======")
 
-	// init monitor
-	err = monitor.Init("127.0.0.1:8125", "{{.Project}}_test")
+	// init naming
+	err = naming.Init("../conf/naming.toml")
 
 	if err != nil {
-		log.Warnf("Init monitor failed! error:%v", err.Error())
-	}
-
-    // init tracing
-    err = tracing.Init("127.0.0.1:6831", "{{.Project}}_test")
-
-	if err != nil {
-		log.Warnf("Init tracing failed! error:%v", err.Error())
-	}
-
-	// dial remote server
-	clientOpts := make([]grpc.DialOption, 0)
-
-	clientOpts = append(clientOpts, grpc.WithUnaryInterceptor(
-		grpc_middleware.ChainUnaryClient(
-			tracingInterceptor.GetClientInterceptor(),
-			logInterceptor.GetClientInterceptor(),
-			monitorInterceptor.GetClientInterceptor())), grpc.WithInsecure())
-
-	// init grpc connection pool
-	err = pool.GetConnectionPool().Init(clientOpts)
-
-	if err != nil {
-		log.Warnf("Init grpc pool failed! error:%v", err.Error())
+		log.Warnf("Init naming failed! error:%v", err.Error())
 		return
 	}
 
 	// begin test
-	testHealthCheck()
+	testHealth()
 
 	time.Sleep(time.Second * 1)
 }
 
-func testHealthCheck() {
-	// rpc call
-	req := new(health_check.HealthCheckRequest)
-	req.Message = "ping"
+var (
+	httpInitOnce sync.Once
+	httpClient *http.Client
+)
 
-	for index := 0; index < 1; index++ {
-		// get connection
-		conn, err := pool.GetConnectionPool().GetConnection(context.Background(), "{{.Addr}}")
-
-		if err != nil {
-			log.Warnf("pool.GetConnection failed! error:%v", err.Error())
-			continue
+func testHealth() {
+	//Init http client
+	httpInitOnce.Do(func() {
+		httpClient = &http.Client{
+			Transport: &http.Transport{
+				MaxIdleConns: 20,
+			},
+			Timeout: 5 * time.Second,
 		}
 
-		// call
-		c := health_check.NewHealthCheckServiceClient(conn)
+		log.Infof("Init httpClient success!")
+	})
 
-		_, err = c.HealthCheck(context.Background(), req)
+	// http call
+	for index := 0; index < 1; index++ {
+		url := fmt.Sprintf("http://%v%v", "{{.Addr}}", "/health")
+		reader := bytes.NewReader([]byte("{}"))
+
+		httpReq, err := http.NewRequest("POST", url, reader)
 
 		if err != nil {
-			stat, ok := status.FromError(err)
-
-			if ok {
-				log.Warnf("HealthCheck request failed! code:%d, message:%v",
-					stat.Code(), stat.Message())
-			} else {
-				log.Warnf("HealthCheck request failed! err:%v", err.Error())
-			}
-
+			log.Warnf("http.NewRequest failed! error:%v", err.Error())
 			return
 		}
+
+		//Copy header
+		httpReq.Header.Add("Content-Type", "application/json")
+
+		resp, err := httpClient.Do(httpReq)
+
+		if err != nil {
+			log.Warnf("client.Do failed! error:%v", err.Error())
+			return
+		}
+
+		//Make sure body is closed so that the connection could be reused
+		defer resp.Body.Close()
+
+		respBody, err := ioutil.ReadAll(resp.Body)
+
+		if err != nil {
+			log.Warnf("ioutil.ReadAll failed! error:%v", err.Error())
+			return
+		}
+
+		log.Infof("http request end! url:%v, resp body:%v", url, string(respBody))
 	}
 }
 `

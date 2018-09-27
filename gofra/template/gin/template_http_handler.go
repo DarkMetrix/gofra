@@ -1,4 +1,4 @@
-package grpc
+package gin
 
 type HttpHandlerInfo struct {
 	Author string

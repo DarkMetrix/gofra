@@ -1,4 +1,4 @@
-package grpc
+package gin
 
 type LogInfo struct {
 	Path string
