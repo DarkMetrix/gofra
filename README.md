@@ -26,14 +26,7 @@ $ go get -u github.com/DarkMetrix/gofra/gofra
 
 ## Guide
 
-- [Creating a service template](#creating-a-service-template)
-- [Service Generation](#service-generation)
-- [Add or Update Services](#add-or-update-services)
-- [Implement RPC Methods](#implement-rpc-methods)
-- [Compile and Run](#compile-and-run)
-- [Test using Health Check](#test-using-health-check)
-
-
+- [Creating a Service Template](#creating-a-service-template)
 
 ### Creating a Service Template
 
@@ -45,7 +38,7 @@ First initialize default template file as below.
 $ gofra template init
 ```
 
-You need to type Author Name, Project Name & Project Address.
+You need to type Author Name, Project Name, Project Address & Server Type.
 
  A **template.json** file will be generated in the current directory which looks like this.
 
@@ -54,6 +47,7 @@ You need to type Author Name, Project Name & Project Address.
     "author":"Author Name",
     "project":"Project Name",
     "version":"0.0.1",
+    "type":"grpc",
     "server":
     {
         "addr":"localhost:58888"
@@ -81,6 +75,7 @@ You need to type Author Name, Project Name & Project Address.
 | author                              | Author's name                                                | User defined |
 | project                             | Project's name                                               | User defined |
 | version                             | Version                                                      | User defined |
+| type                                | Type                                                         | grpc or http |
 | server.addr                         | Servicehe 's ip and port                                     | User defined |
 | monitor_package.package             | Monitor package import path used in the service(by default statsd is used as the monitor backend), you could write your own monitor package as long as you implement Init & Increment interfaces | Pre defined  |
 | monitor_package.init_param          | Monitor params used by Init method(it's the statsd address and project name used in your environment) | Pre defined  |
@@ -90,7 +85,15 @@ You need to type Author Name, Project Name & Project Address.
 | Interceptor_package.tracing_package | Tracing gPRC interceptor(by default zipkin is used as the tracing system) | Pre defined  |
 
 
-### Service Generation
+
+## gRPC
+- [gRPC Service Generation](#grpc-service-generation)
+- [Add or Update Services](#add-or-update-services)
+- [Implement RPC Methods](#implement-rpc-methods)
+- [Compile and Run](#compile-and-run)
+- [Test using Health Check](#test-using-health-check)
+
+### gRPC Service Generation
 
 ```bash
 $gofra init --path=./template.json
@@ -348,6 +351,221 @@ $./test
 [DEBUG][2018-04-11T10:55:24.656279][test_gofra][seelog_interceptor.go:48][GofraServerInterceptorFunc] => handle success! req=message:"ping" , reply:
 ```
 
+## Http
+- [Http Service Generation](#http-service-generation)
+- [Add Http Handlers](#add-http-handlers)
+- [Implement Http Methods](#implement-http-methods)
+- [Compile and Run](#compile-and-run)
+- [Test using Health Check](#test-using-health-check)
+
+### Http Service Generation
+
+```bash
+$gofra init --path=./template.json
+```
+
+All files needed are generated.
+
+```bash
+$tree
+
+.
+├── bin
+├── conf
+│   ├── config.toml
+│   └── log.config
+├── log
+├── src
+│   ├── application
+│   │   └── application.go
+│   ├── common
+│   │   └── common.go
+│   ├── config
+│   │   └── config.go
+│   ├── http_handler
+│   │   └── HEALTH.go
+│   └── main.go
+├── template.json
+└── test
+    └── main.go
+
+13 directories, 12 files
+```
+
+### Add Http Handlers
+
+By default a health handler is generated.
+
+You could using test/main.go to send health http request to test if the service is working fine.
+
+And you could add your own http handler, e.g.:
+
+#### Add Handler
+
+```bash
+$gofra http add --uri=/my/test
+```
+
+Then a new file named MY_TEST.go is generated.
+
+```bash
+$ tree
+
+.
+├── bin
+├── conf
+│   ├── config.toml
+│   └── log.config
+├── log
+├── src
+│   ├── application
+│   │   └── application.go
+│   ├── common
+│   │   └── common.go
+│   ├── config
+│   │   └── config.go
+│   ├── http_handler
+│   │   ├── HEALTH.go
+│   │   └── MY_TEST.go
+│   └── main.go
+├── template.json
+└── test
+    └── main.go
+```
+
+### Implement Http Methods
+
+After add http handler, all the thing left is to implement your own business logic.
+
+All basic logging, metrics, panic recovery have been added already.
+
+#### http_handler/MY_TEST.go
+
+Implement your own business logic.
+
+```bash
+$cat src/http_handler/MY_TEST.go
+
+/**********************************
+ * Author : techieliu
+ * Time : 2018-09-27 19:01:47
+ **********************************/
+
+package http_handler
+
+import (
+        //Log package
+        log "github.com/cihub/seelog"
+
+        //Monitor package
+        //monitor "github.com/DarkMetrix/gofra/common/monitor/statsd"
+
+        //Tracing package
+        //tracing "github.com/DarkMetrix/gofra/common/tracing/jaeger"
+
+        "github.com/gin-gonic/gin"
+)
+
+func MY_TEST(ctx *gin.Context) {
+        log.Tracef("====== MY_TEST start ======")
+
+        /*
+        //Parse request
+        //TODO: Bind json to request
+        var req xxx
+
+        err := ctx.BindJSON(&req)
+
+        if err != nil {
+                log.Warnf("ctx.BindJSON failed! error:%v", err.Error())
+                ctx.AbortWithStatusJSON(520, gin.H{"ret":-1, "msg":"Bad json body!"})
+                return
+        }
+
+        //Check params
+        //TODO: Check params
+        err = checkMY_TESTParams(&req)
+
+        if err != nil {
+                log.Warnf("checkMY_TESTParams failed! error:%v", err.Error())
+                ctx.AbortWithStatusJSON(520, gin.H{"ret":-1, "msg":fmt.Sprintf("Param invalid! error:%v", err.Error())})
+                return
+        }
+        */
+
+        //Reply success
+        ctx.JSON(200, gin.H{"ret":0, "msg":"success"})
+}
+
+/*
+//TODO: Implement checkMY_TESTParams function
+func checkMY_TESTParams(req *xxx) error {
+        return nil
+}
+*/
+```
+
+#### 
+
+### Compile and Run
+
+#### Complie
+
+```bash
+$cd src
+$go build -o test_gofra
+```
+
+#### Run
+
+```bash
+$./test_gofra
+
+====== Server [test_gofra] Start ======
+Listen on port [localhost:58888]
+[GIN-debug] [WARNING] Creating an Engine instance with the Logger and Recovery middleware already attached.
+
+[GIN-debug] [WARNING] Running in "debug" mode. Switch to "release" mode in production.
+ - using env:	export GIN_MODE=release
+ - using code:	gin.SetMode(gin.ReleaseMode)
+
+[GIN-debug] POST   /health                   --> test/src/http_handler.HEALTH (6 handlers)
+[GIN-debug] POST   /my/test                  --> test/src/http_handler.MY_TEST (6 handlers)
+```
+
+### Test using Health Check
+
+#### Complie test
+
+By default the health check client request is already generated.
+
+```bash
+$cd test
+$go build
+```
+
+#### Run test
+
+Run to test health check.
+
+```bash
+$./test
+```
+
+
+
+#### Client output
+
+```bash
+[INFO][2018-09-27T19:08:18.473573][test_gofra_test][main.go:55][testHealth] => http request end! url:http://localhost:58888/health, resp body:{"msg":"success","ret":0}
+```
+
+#### Service output
+
+```bash
+[GIN] 2018/09/27 - 19:08:18 | 200 |      95.701µs |       127.0.0.1 | POST     /health
+[DEBUG][2018-09-27T19:08:18.473165][test_gofra][seelog_middleware.go:28][func1] => Handle success! URI:/health, Host:localhost:58888, Remote address:127.0.0.1:47856, header:map[User-Agent:[Go-http-client/1.1] Content-Length:[2] Content-Type:[application/json] Accept-Encoding:[gzip]]
+```
 
 
 ## License
@@ -357,14 +575,18 @@ $./test
 [MIT license](https://github.com/DarkMetrix/gofra/blob/master/LICENSE)
 
 ### Dependencies
-
+- google.golang.org/grpc [Apache 2.0 License](https://github.com/grpc/grpc-go/blob/master/LICENSE)
+- github.com/gin-gonic/gin [MIT License](https://github.com/gin-gonic/gin/blob/master/LICENSE)
 - github.com/cihub/seelog [BSD License](https://github.com/cihub/seelog/blob/master/LICENSE.txt)
 - github.com/spf13/viper [MIT License](https://github.com/spf13/viper/blob/master/LICENSE)
 - github.com/spf13/cobra [Apache 2.0 License](https://github.com/spf13/cobra/blob/master/LICENSE.txt)
+- github.com/go-ozzo/ozzo-validation [MIT License](https://github.com/go-ozzo/ozzo-validation/blob/master/LICENSE)
+- github.com/mitchellh/go-homedir" [MIT License](https://github.com/mitchellh/go-homedir/blob/master/LICENSE)
 - github.com/grpc-ecosystem/go-grpc-middleware [Apache 2.0 License](https://github.com/grpc-ecosystem/go-grpc-middleware/blob/master/LICENSE)
 - github.com/tallstoat/pbparser [MIT License](https://github.com/tallstoat/pbparser/blob/master/LICENSE)
 - github.com/alexcesaro/statsd [MIT License](https://github.com/alexcesaro/statsd/blob/master/LICENSE)
 - github.com/silenceper/pool [MIT License](https://github.com/silenceper/pool/blob/master/LICENSE)
 - github.com/opentracing/opentracing-go [MIT License](https://github.com/opentracing/opentracing-go/blob/master/LICENSE)
 - github.com/openzipkin/zipkin-go-opentracing [MIT License](https://github.com/openzipkin/zipkin-go-opentracing/blob/master/LICENSE)
+- github.com/jaegertracing/jaeger-client-go [Apache 2.0 License](https://github.com/jaegertracing/jaeger-client-go/blob/master/LICENSE)
 
