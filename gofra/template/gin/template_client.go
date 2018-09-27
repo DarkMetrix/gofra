@@ -31,12 +31,9 @@ import (
 	"sync"
 	"net/http"
 
-    logger "git.code.oa.com/gofra/gofra/common/logger/seelog"
+    logger "github.com/DarkMetrix/gofra/common/logger/seelog"
 
 	log "github.com/cihub/seelog"
-	naming "git.code.oa.com/gofra/gofra/tencent-utils/naming"
-
-	_ "git.code.oa.com/gofra/gofra/tencent-utils/naming/resolver/local"
 )
 
 func main() {
@@ -51,14 +48,6 @@ func main() {
 
 	log.Info("====== Test [{{.Project}}] begin ======")
 	defer log.Info("====== Test [{{.Project}}] end ======")
-
-	// init naming
-	err = naming.Init("../conf/naming.toml")
-
-	if err != nil {
-		log.Warnf("Init naming failed! error:%v", err.Error())
-		return
-	}
 
 	// begin test
 	testHealth()
