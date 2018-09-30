@@ -55,6 +55,7 @@ func main() {
 
 	fmt.Printf("Listen on port [%v]\r\n", conf.Server.HttpAddr)
 
+	// run application
 	err = app.Run(conf.Server.HttpAddr)
 
 	if err != nil {

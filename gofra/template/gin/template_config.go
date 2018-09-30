@@ -45,6 +45,7 @@ type MonitorInfo struct {
 //Server config
 type ServerInfo struct {
 	HttpAddr string "mapstructure:\"http_addr\" json:\"http_addr\""
+	GinDebug int "mapstructure:\"gin_debug\" json:\"gin_debug\""
 }
 
 //Client config
@@ -117,14 +118,18 @@ type ConfigTomlInfo struct {
 var ConfigTomlTemplate string = `
 # Server configuration
 #
-# server.addr
+# server.http_addr
 #	Server's address to listen on.
 # 	eg: 
 #		localhost:58888
 #		127.0.0.1:58888
 #		eth0:58888
+#
+# server.gin_debug
+#	gin's debug flag, 0=release mode, other=debug mode
 [server]
     http_addr="{{.Addr}}"
+	gin_debug=1
 
 # Client configuration
 # [client]

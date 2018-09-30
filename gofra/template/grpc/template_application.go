@@ -26,6 +26,7 @@ var ApplicationTemplate string = `
 package application
 
 import (
+	"time"
 	"os"
 	"os/signal"
 	"net"
@@ -159,10 +160,35 @@ func (app *Application) Run(address string) error {
 	defer log.Flush()
 	defer tracing.Close()
 
+	// run to serve grpc
+	grpcClose, err := app.runGrpcServer(address)
+
+	if err != nil {
+		log.Warnf("app.runGrpcServerFailed! error:%v", err.Error())
+		return err
+	}
+
+	defer grpcClose()
+
+	// deal with signals, when interrupt was notified, server will stop gracefully
+	signalChannel := make(chan os.Signal, 1)
+	signal.Notify(signalChannel, os.Interrupt)
+
+	signalOccur := <- signalChannel
+
+	log.Infof("Signal occured, signal:%v", signalOccur.String())
+
+	return nil
+}
+
+type grpcCloseFunc func()
+
+func (app *Application) runGrpcServer(address string) (grpcCloseFunc, error) {
+	// listen
 	listen, err := net.Listen("tcp", address)
 
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	// init grpc server
@@ -170,32 +196,28 @@ func (app *Application) Run(address string) error {
 
 	// register services
 	//!!!DO NOT EDIT!!!
+	health_check.RegisterHealthCheckServiceServer(s, HealthCheckServiceHandler.HealthCheckServiceImpl{})
 	/*@REGISTER_STUB*/
 
 	// run to serve
 	go func() {
-		// deal with signals, when interrupt was notified, server will stop gracefully
-		signalChannel := make(chan os.Signal, 1)
-		signal.Notify(signalChannel, os.Interrupt)
+		err = s.Serve(listen)
 
-		signalOccur := <- signalChannel
+		if err != nil {
+			log.Errorf("Serve gRPC failed! error:%v", err.Error())
 
-		log.Infof("Signal occured, signal:%v", signalOccur.String())
-
-		// stop server gracefully
-		s.GracefulStop()
-
-		log.Infof("Server stopped gracefully!")
+			time.Sleep(time.Second)
+			os.Exit(-2)
+		} else {
+			log.Infof("Serve gRPC quit!")
+		}
 	}()
 
-	err = s.Serve(listen)
+	return func() {
+		// stop grpc service gracefully
+		s.GracefulStop()
 
-	if err != nil {
-		log.Errorf("Serve failed! error:%v", err.Error())
-	} else {
-		log.Infof("Serve quit!")
-	}
-
-	return nil
+		log.Infof("gRPC server stopped gracefully!")
+	}, nil
 }
 `

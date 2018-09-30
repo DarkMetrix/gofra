@@ -26,10 +26,11 @@ var ApplicationTemplate string = `
 package application
 
 import (
-	"os"
-	"os/signal"
 	"time"
 	"context"
+
+	"os"
+	"os/signal"
 
 	"net/http"
 	_ "net/http/pprof"
@@ -158,6 +159,39 @@ func (app *Application) Run(address string) error {
 	defer tracing.Close()
 
 	// run to serve http
+	httpClose, err := app.runHttpServer(address)
+
+	if err != nil {
+		log.Warnf("app.runHttpServerFailed! error:%v", err.Error())
+		return err
+	}
+
+	defer httpClose()
+
+	// deal with signals, when interrupt was notified, server will stop gracefully
+	signalChannel := make(chan os.Signal, 1)
+	signal.Notify(signalChannel, os.Interrupt)
+
+	signalOccur := <- signalChannel
+
+	log.Infof("Signal occured, signal:%v", signalOccur.String())
+
+	return nil
+}
+
+type httpCloseFunc func()
+
+func (app *Application) runHttpServer(address string) (httpCloseFunc, error) {
+	//Set release or debug mode
+	if config.GetConfig().Server.GinDebug == 0 {
+		gin.SetMode(gin.ReleaseMode)
+		log.Infof("gin runs in release mode!")
+	} else {
+		gin.SetMode(gin.DebugMode)
+		log.Infof("gin runs in debug mode!")
+	}
+
+	// init engine
 	engine := gin.Default()
 
 	group := engine.Group("/", gin.Recovery(),
@@ -166,9 +200,9 @@ func (app *Application) Run(address string) error {
 
 	// add http handler
 	//!!!DO NOT EDIT!!!
+	group.POST("/health", httpHandler.HEALTH)
 	/*@REGISTER_HTTP_STUB*/
 
-	//gin.SetMode(gin.ReleaseMode)
 	httpServer := &http.Server{
 		Addr: address,
 		Handler: engine,
@@ -187,26 +221,18 @@ func (app *Application) Run(address string) error {
 		}
 	}()
 
-	// deal with signals, when interrupt was notified, server will stop gracefully
-	signalChannel := make(chan os.Signal, 1)
-	signal.Notify(signalChannel, os.Interrupt)
+	return func(){
+		// stop http service gracefully
+		ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+		defer cancel()
 
-	signalOccur := <- signalChannel
+		err := httpServer.Shutdown(ctx)
 
-	log.Infof("Signal occured, signal:%v", signalOccur.String())
-
-	// stop http service gracefully
-	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
-	defer cancel()
-
-	err := httpServer.Shutdown(ctx)
-
-	if err != nil {
-		log.Warnf("http shutdown failed! error:%s", err.Error())
-	}
-
-	log.Infof("Server stopped gracefully!")
-
-	return nil
+		if err != nil {
+			log.Warnf("Http server stopped gracefully failed! error:%s", err.Error())
+		} else {
+			log.Infof("Http server stopped gracefully!")
+		}
+	}, nil
 }
 `
