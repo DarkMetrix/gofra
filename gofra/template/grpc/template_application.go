@@ -164,7 +164,7 @@ func (app *Application) Run(address string) error {
 	grpcClose, err := app.runGrpcServer(address)
 
 	if err != nil {
-		log.Warnf("app.runGrpcServerFailed! error:%v", err.Error())
+		log.Warnf("app.runGrpcServer failed! error:%v", err.Error())
 		return err
 	}
 

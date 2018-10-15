@@ -162,7 +162,7 @@ func (app *Application) Run(address string) error {
 	httpClose, err := app.runHttpServer(address)
 
 	if err != nil {
-		log.Warnf("app.runHttpServerFailed! error:%v", err.Error())
+		log.Warnf("app.runHttpServer failed! error:%v", err.Error())
 		return err
 	}
 
