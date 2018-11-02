@@ -50,6 +50,7 @@ import (
 	"github.com/gin-gonic/gin"
 	logMiddleware "github.com/DarkMetrix/gofra/gin-utils/middleware/log_middleware/seelog"
 	monitorMiddleware "github.com/DarkMetrix/gofra/gin-utils/middleware/monitor_middleware/statsd"
+	recoveryMiddleware "github.com/DarkMetrix/gofra/gin-utils/middleware/recovery_middleware/seelog"
 
 	//gRPC relative
 	logInterceptor "github.com/DarkMetrix/gofra/grpc-utils/interceptor/seelog_interceptor"
@@ -194,7 +195,8 @@ func (app *Application) runHttpServer(address string) (httpCloseFunc, error) {
 	// init engine
 	engine := gin.Default()
 
-	group := engine.Group("/", gin.Recovery(),
+	group := engine.Group("/",
+		recoveryMiddleware.GetMiddleware(),
 		logMiddleware.GetMiddleware(),
 		monitorMiddleware.GetMiddleware())
 
