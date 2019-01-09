@@ -97,7 +97,7 @@ func (connPool *ConnectionPool) GetConnection(ctx context.Context, addr string) 
 	pool, ok := connPool.pools[addr]
 
 	if !ok {
-		pool, err = commonPool.NewChannelPool(&commonPool.PoolConfig{
+		pool, err = commonPool.NewChannelPool(&commonPool.Config{
 			InitialCap: connPool.initConnections,
 			MaxCap: connPool.maxConnections,
 			Factory: getFactory(addr),
