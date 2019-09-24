@@ -55,7 +55,7 @@ func InitJaeger(addr string,  serviceName string) error {
 	reporter := jaeger.NewRemoteReporter(transport)
 
 	// new tracer
-	tracer, _ = jaeger.NewTracer(serviceName, sampler, reporter)
+	tracer, closer = jaeger.NewTracer(serviceName, sampler, reporter)
 
 	return nil
 }
