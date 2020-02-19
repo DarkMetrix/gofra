@@ -16,6 +16,7 @@ package commands
 
 import (
 	"fmt"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -94,13 +95,13 @@ func addService(path string, override, update bool) error {
 
 	//Check path
 	fmt.Printf("\r\nChecking Path ......")
-	goPath, workingPath, err := CheckPath()
+	workingPath, err := os.Getwd()
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
 		return err
 	} else {
-		fmt.Printf(" success! \r\nGOPATH:%v\r\nWorking path:%v\r\n", goPath, workingPath)
+		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
 	}
 
 	//Read template
@@ -158,6 +159,13 @@ func addService(path string, override, update bool) error {
 
 	args := []string{}
 
+	goPath, err := commonUtils.GetGOPATH()
+
+	if err != nil {
+		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
+		return err
+	}
+
 	protoFileIncludePath = append(protoFileIncludePath, workingPath, goPath + "/src")
 
 	for _, path := range protoFileIncludePath {
@@ -181,7 +189,7 @@ func addService(path string, override, update bool) error {
 
 	//Generate service
 	fmt.Printf("\r\nGenerating service code ......")
-	err = grpcTemplate.GenerateService(workingPath, goPath, protoFileIncludePath, templateInfo, protoFilePathRelative, override, update)
+	err = grpcTemplate.GenerateService(workingPath, protoFileIncludePath, templateInfo, protoFilePathRelative, override, update)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())

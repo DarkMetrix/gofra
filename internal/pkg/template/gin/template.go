@@ -67,7 +67,7 @@ func GenerateTemplateJsonFile(workingPath string, override bool, jsonInfo gofraT
 }
 
 //Generate common.go
-func GenerateCommonFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
+func GenerateCommonFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "internal", "pkg", "common", "common.go")
 
 	//Check file is exist or not
@@ -126,7 +126,7 @@ func GenerateCommonFile(workingPath, goPath string, info *gofraTemplate.Template
 }
 
 //Generate config.go
-func GenerateConfigFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
+func GenerateConfigFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "internal", "pkg", "config", "config.go")
 
 	//Check file is exist or not
@@ -183,7 +183,7 @@ func GenerateConfigFile(workingPath, goPath string, info *gofraTemplate.Template
 }
 
 //Generate config.toml
-func GenerateConfigTomlFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
+func GenerateConfigTomlFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "configs", "config.toml")
 
 	//Check file is exist or not
@@ -242,7 +242,7 @@ func GenerateConfigTomlFile(workingPath, goPath string, info *gofraTemplate.Temp
 }
 
 //Generate log.config
-func GenerateConfigLogFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
+func GenerateConfigLogFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "configs", "log.config")
 
 	//Check file is exist or not
@@ -300,7 +300,7 @@ func GenerateConfigLogFile(workingPath, goPath string, info *gofraTemplate.Templ
 }
 
 //Generate application.go
-func GenerateApplicationFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
+func GenerateApplicationFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "internal", "app", "application.go")
 
 	//Check file is exist or not
@@ -368,7 +368,7 @@ func GenerateApplicationFile(workingPath, goPath string, info *gofraTemplate.Tem
 }
 
 //Generate main.go
-func GenerateMainFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
+func GenerateMainFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "cmd", "main.go")
 
 	//Check file is exist or not
@@ -431,9 +431,9 @@ func GenerateMainFile(workingPath, goPath string, info *gofraTemplate.TemplateIn
 }
 
 //Generate health check handler
-func GenerateHealthCheckHttpHandler(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
+func GenerateHealthCheckHttpHandler(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	//Generate health check proto file
-	err := GenerateHttpHandler(workingPath, goPath, info, "/health", override)
+	err := GenerateHttpHandler(workingPath, info, "/health", override)
 
 	if err != nil {
 		return err
@@ -443,7 +443,7 @@ func GenerateHealthCheckHttpHandler(workingPath, goPath string, info *gofraTempl
 }
 
 //Generate http service
-func GenerateHttpHandler(workingPath, goPath string, info *gofraTemplate.TemplateInfo, uri string, override bool) error {
+func GenerateHttpHandler(workingPath string, info *gofraTemplate.TemplateInfo, uri string, override bool) error {
 	//Generate http service
 	//Create path
 	handlerPath := filepath.Join(workingPath, "internal", "http_handler")
@@ -481,14 +481,14 @@ func GenerateHttpHandler(workingPath, goPath string, info *gofraTemplate.Templat
 		TracingPackage: info.TracingPackage.Package,
 	}
 
-	err = GenerateHttpHandlerFile(workingPath, goPath, info, handler, override)
+	err = GenerateHttpHandlerFile(workingPath, info, handler, override)
 
 	if err != nil {
 		return err
 	}
 
 	//Add http handler to engine in application
-	err = AddHttpHandlerToApplicationFile(workingPath, goPath, info, handler, uri)
+	err = AddHttpHandlerToApplicationFile(workingPath, info, handler, uri)
 
 	if err != nil {
 		return err
@@ -498,7 +498,7 @@ func GenerateHttpHandler(workingPath, goPath string, info *gofraTemplate.Templat
 }
 
 //Add http handler import to application file
-func AddHttpHandlerToApplicationFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, handler *HttpHandlerInfo, uri string) error {
+func AddHttpHandlerToApplicationFile(workingPath string, info *gofraTemplate.TemplateInfo, handler *HttpHandlerInfo, uri string) error {
 	applicationFilePath := filepath.Join(workingPath, "internal", "app", "application.go")
 
 	applicationContent, err := ioutil.ReadFile(applicationFilePath)
@@ -526,7 +526,7 @@ func AddHttpHandlerToApplicationFile(workingPath, goPath string, info *gofraTemp
 }
 
 //Generate http handler file
-func GenerateHttpHandlerFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, handler *HttpHandlerInfo, override bool) error {
+func GenerateHttpHandlerFile(workingPath string, info *gofraTemplate.TemplateInfo, handler *HttpHandlerInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "internal", "http_handler", handler.HandlerName + ".go")
 
 	//Check file is exist or not
@@ -578,7 +578,7 @@ func GenerateHttpHandlerFile(workingPath, goPath string, info *gofraTemplate.Tem
 }
 
 //Generate test client
-func GenerateTestClient(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
+func GenerateTestClient(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "test", "main.go")
 
 	//Check file is exist or not
@@ -606,8 +606,6 @@ func GenerateTestClient(workingPath, goPath string, info *gofraTemplate.Template
 		}
 	}
 
-	workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "src") + "/")
-
 	//Parse template
 	testClientTemplate, err := template.New("test_client").Parse(TestClientTemplate)
 
@@ -620,7 +618,7 @@ func GenerateTestClient(workingPath, goPath string, info *gofraTemplate.Template
 		Time: time.Now().Format("2006-01-02 15:04:05"),
 		Project: info.Project,
 		Addr: info.Server.Addr,
-		WorkingPathRelative: workingPathRelative,
+		WorkingPathRelative: "",
 		MonitorPackage: info.MonitorPackage.Package,
 		MonitorInitParam: info.MonitorPackage.InitParam,
         TracingPackage: info.TracingPackage.Package,

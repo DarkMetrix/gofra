@@ -3,6 +3,7 @@ package utils
 import (
 	"os"
 	"io/ioutil"
+	"errors"
 )
 
 //Copy file from src to dest
@@ -79,4 +80,15 @@ func CreatePaths(override bool, paths... string) error {
 	}
 
 	return nil
+}
+
+//Get GOPATH
+func GetGOPATH() (string, error) {
+	goPath := os.Getenv("GOPATH")
+
+	if len(goPath) == 0 {
+		return "", errors.New("GOPATH is not set!")
+	} else {
+		return goPath, nil
+	}
 }

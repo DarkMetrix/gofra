@@ -16,14 +16,11 @@ package commands
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
+	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"strings"
-
-	"github.com/spf13/cobra"
 
 	gofraTemplate "github.com/DarkMetrix/gofra/internal/pkg/template"
 	httpTemplate "github.com/DarkMetrix/gofra/internal/pkg/template/gin"
@@ -41,13 +38,13 @@ var initCmd = &cobra.Command{
 
 		//Check path
 		fmt.Printf("\r\nChecking Path ......")
-		goPath, workingPath, err := CheckPath()
+		workingPath, err := os.Getwd()
 
 		if err != nil {
 			fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
 			return
 		} else {
-			fmt.Printf(" success! \r\nGOPATH:%v\r\nWorking path:%v\r\n", goPath, workingPath)
+			fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
 		}
 
 		//Read template
@@ -83,7 +80,7 @@ var initCmd = &cobra.Command{
 
 			//Init all files
 			fmt.Printf("\r\nInitializing all files ......")
-			err = InitGrpcAllFiles(workingPath, goPath, templateInfo)
+			err = InitGrpcAllFiles(workingPath, templateInfo)
 
 			if err != nil {
 				fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
@@ -105,7 +102,7 @@ var initCmd = &cobra.Command{
 
 			//Init all files
 			fmt.Printf("\r\nInitializing all files ......")
-			err = InitHttpAllFiles(workingPath, goPath, templateInfo)
+			err = InitHttpAllFiles(workingPath, templateInfo)
 
 			if err != nil {
 				fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
@@ -191,29 +188,6 @@ func init() {
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// initCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-}
-
-//Check if current working directory is under gopath
-func CheckPath() (string, string, error) {
-	goPath := os.Getenv("GOPATH")
-
-	if len(goPath) == 0 {
-		return "", "", errors.New("GOPATH is not set!")
-	}
-
-	workingPath, err := os.Getwd()
-
-	if err != nil {
-		return "", "", err
-	}
-
-	isMatch := strings.HasPrefix(workingPath, filepath.Join(goPath, "src"))
-
-	if !isMatch {
-		return "", "", errors.New("The working path is not under $GOPATH/src!")
-	}
-
-	return goPath, workingPath, nil
 }
 
 //Read template json file to ge information about how to generate the application
@@ -326,55 +300,55 @@ func InitHttpDirectoryStructure(workingPath string, info *gofraTemplate.Template
 }
 
 //Init all go file with template for grpc
-func InitGrpcAllFiles(workingPath, goPath string, info *gofraTemplate.TemplateInfo) error {
+func InitGrpcAllFiles(workingPath string, info *gofraTemplate.TemplateInfo) error {
 	//Set protoc binary path
 	if len(protocPath) != 0 {
 		grpcTemplate.ProtocPath = protocPath
 	}
 
-	err := grpcTemplate.GenerateCommonFile(workingPath, goPath, info, override)
+	err := grpcTemplate.GenerateCommonFile(workingPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	err = grpcTemplate.GenerateConfigFile(workingPath, goPath, info, override)
+	err = grpcTemplate.GenerateConfigFile(workingPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	err = grpcTemplate.GenerateConfigTomlFile(workingPath, goPath, info, override)
+	err = grpcTemplate.GenerateConfigTomlFile(workingPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	err = grpcTemplate.GenerateConfigLogFile(workingPath, goPath, info, override)
+	err = grpcTemplate.GenerateConfigLogFile(workingPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	err = grpcTemplate.GenerateApplicationFile(workingPath, goPath, info, override)
+	err = grpcTemplate.GenerateApplicationFile(workingPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	err = grpcTemplate.GenerateMainFile(workingPath, goPath, info, override)
+	err = grpcTemplate.GenerateMainFile(workingPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	err = grpcTemplate.GenerateHealthCheckHandler(workingPath, goPath, info, override)
+	err = grpcTemplate.GenerateHealthCheckHandler(workingPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	err = grpcTemplate.GenerateTestClient(workingPath, goPath, info, override)
+	err = grpcTemplate.GenerateTestClient(workingPath, info, override)
 
 	if err != nil {
 		return err
@@ -384,50 +358,50 @@ func InitGrpcAllFiles(workingPath, goPath string, info *gofraTemplate.TemplateIn
 }
 
 //Init all go file with template for http
-func InitHttpAllFiles(workingPath, goPath string, info *gofraTemplate.TemplateInfo) error {
-	err := httpTemplate.GenerateCommonFile(workingPath, goPath, info, override)
+func InitHttpAllFiles(workingPath string, info *gofraTemplate.TemplateInfo) error {
+	err := httpTemplate.GenerateCommonFile(workingPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	err = httpTemplate.GenerateConfigFile(workingPath, goPath, info, override)
+	err = httpTemplate.GenerateConfigFile(workingPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	err = httpTemplate.GenerateConfigTomlFile(workingPath, goPath, info, override)
+	err = httpTemplate.GenerateConfigTomlFile(workingPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	err = httpTemplate.GenerateConfigLogFile(workingPath, goPath, info, override)
+	err = httpTemplate.GenerateConfigLogFile(workingPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	err = httpTemplate.GenerateApplicationFile(workingPath, goPath, info, override)
+	err = httpTemplate.GenerateApplicationFile(workingPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	err = httpTemplate.GenerateMainFile(workingPath, goPath, info, override)
+	err = httpTemplate.GenerateMainFile(workingPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	err = httpTemplate.GenerateHealthCheckHttpHandler(workingPath, goPath, info, override)
+	err = httpTemplate.GenerateHealthCheckHttpHandler(workingPath, info, override)
 
 	if err != nil {
 		return err
 	}
 
-	err = httpTemplate.GenerateTestClient(workingPath, goPath, info, override)
+	err = httpTemplate.GenerateTestClient(workingPath, info, override)
 
 	if err != nil {
 		return err

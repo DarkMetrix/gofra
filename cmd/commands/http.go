@@ -16,6 +16,7 @@ package commands
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 
@@ -75,13 +76,13 @@ func addHttpHandler(override bool) error {
 
 	//Check path
 	fmt.Printf("\r\nChecking Path ......")
-	goPath, workingPath, err := CheckPath()
+	workingPath, err := os.Getwd()
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
 		return err
 	} else {
-		fmt.Printf(" success! \r\nGOPATH:%v\r\nWorking path:%v\r\n", goPath, workingPath)
+		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
 	}
 
 	//Read template
@@ -108,7 +109,7 @@ func addHttpHandler(override bool) error {
 
 	//Generate http handler
 	fmt.Printf("\r\nGenerating http handler code ......")
-	err = httpTemplate.GenerateHttpHandler(workingPath, goPath, templateInfo, uri, override)
+	err = httpTemplate.GenerateHttpHandler(workingPath, templateInfo, uri, override)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
