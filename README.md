@@ -54,18 +54,18 @@ You need to type Author Name, Project Name, Project Address & Server Type.
     },
     "monitor_package":
     {
-        "package":"github.com/DarkMetrix/gofra/grpc-utils/monitor/statsd",
+        "package":"github.com/DarkMetrix/gofra/pkg/grpc-utils/monitor/statsd",
         "init_param":"\"127.0.0.1:8125\", \"Project Name\""
     },
     "tracing_package":
     {
-        "package":"github.com/DarkMetrix/gofra/grpc-utils/tracing/zipkin",
+        "package":"github.com/DarkMetrix/gofra/pkg/grpc-utils/tracing/zipkin",
         "init_param":"\"http://127.0.0.1:9411/api/v1/spans\", \"false\", \"localhost:58888\", \"Project Name\""
     },
     "interceptor_package":
     {
-        "monitor_package":"github.com/DarkMetrix/gofra/grpc-utils/interceptor/statsd_interceptor",
-        "tracing_package":"github.com/DarkMetrix/gofra/grpc-utils/interceptor/zipkin_interceptor"
+        "monitor_package":"github.com/DarkMetrix/gofra/pkg/grpc-utils/interceptor/statsd_interceptor",
+        "tracing_package":"github.com/DarkMetrix/gofra/pkg/grpc-utils/interceptor/zipkin_interceptor"
     }
 }
 ```
@@ -272,10 +272,10 @@ import (
         //log "github.com/cihub/seelog"
 
         //Monitor package
-        //monitor "github.com/DarkMetrix/gofra/grpc-utils/monitor/statsd"
+        //monitor "github.com/DarkMetrix/gofra/pkg/grpc-utils/monitor/statsd"
 
         //Tracing package
-        //tracing "github.com/DarkMetrix/gofra/grpc-utils/tracing/zipkin"
+        //tracing "github.com/DarkMetrix/gofra/pkg/grpc-utils/tracing/zipkin"
 
         pb "github.com/DarkMetrix/gofra/tmp/demo/src/proto/user"
 )
@@ -458,10 +458,10 @@ import (
         log "github.com/cihub/seelog"
 
         //Monitor package
-        //monitor "github.com/DarkMetrix/gofra/common/monitor/statsd"
+        //monitor "github.com/DarkMetrix/gofra/pkg/monitor/statsd"
 
         //Tracing package
-        //tracing "github.com/DarkMetrix/gofra/common/tracing/jaeger"
+        //tracing "github.com/DarkMetrix/gofra/pkg/tracing/jaeger"
 
         "github.com/gin-gonic/gin"
 )

@@ -4,9 +4,7 @@
 *.so
 *.dylib
 
-gofra/gofra
-gofra/build.sh
-gofra/sync.sh
+build
 
 vendor
 
