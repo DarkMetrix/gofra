@@ -241,36 +241,39 @@ func ReadTemplate(templatePath string) (*gofraTemplate.TemplateInfo, string, err
 
 //Init application directory structure for grpc
 func InitGrpcDirectoryStructure(workingPath string, info *gofraTemplate.TemplateInfo) error {
-	binPath := filepath.Join(workingPath, "bin")
-	confPath := filepath.Join(workingPath, "conf")
+	buildPath := filepath.Join(workingPath, "build")
+	confPath := filepath.Join(workingPath, "configs")
 	logPath := filepath.Join(workingPath, "log")
-	srcPath := filepath.Join(workingPath, "src")
+	cmdPath := filepath.Join(workingPath, "cmd")
+	apiPath := filepath.Join(workingPath, "api")
+	internalPath := filepath.Join(workingPath, "internal")
 	testPath := filepath.Join(workingPath, "test")
 
-	applicationPath := filepath.Join(workingPath, "src", "application")
-	commonPath := filepath.Join(workingPath, "src", "common")
-	configPath := filepath.Join(workingPath, "src",  "config")
-	handlerPath := filepath.Join(workingPath, "src", "handler")
-	protoPath := filepath.Join(workingPath, "src", "proto")
+	internalAppPath := filepath.Join(workingPath, "internal", "app")
+	internalPkgPath := filepath.Join(workingPath, "internal", "pkg")
+	internalCommonPath := filepath.Join(workingPath, "internal", "pkg", "common")
+	internalConfigPath := filepath.Join(workingPath, "internal", "pkg", "config")
+	internalHandlerPath := filepath.Join(workingPath, "internal", "grpc_handler")
 
-	healthCheckServicePath := filepath.Join(workingPath, "src", "proto", "health_check")
+	apiProtobufPath := filepath.Join(workingPath, "api", "protobuf_spec")
+	apiProtobufHealthCheckPath := filepath.Join(workingPath, "api", "protobuf_spec", "health_check")
 
 	//Create root directories
-	err := commonUtils.CreatePaths(override, binPath, confPath, logPath, srcPath, testPath)
+	err := commonUtils.CreatePaths(override, buildPath, confPath, logPath, cmdPath, apiPath, internalPath, testPath)
 
 	if err != nil {
 		return err
 	}
 
-	//Create src sub directories
-	err = commonUtils.CreatePaths(override, applicationPath, commonPath, configPath, handlerPath, protoPath)
+	//Create internal sub directories
+	err = commonUtils.CreatePaths(override, internalAppPath, internalPkgPath, internalCommonPath, internalConfigPath, internalHandlerPath)
 
 	if err != nil {
 		return err
 	}
 
-	//Create proto sub directories
-	err = commonUtils.CreatePaths(override, healthCheckServicePath)
+	//Create api sub directories
+	err = commonUtils.CreatePaths(override, apiProtobufPath, apiProtobufHealthCheckPath)
 
 	if err != nil {
 		return err
@@ -281,26 +284,39 @@ func InitGrpcDirectoryStructure(workingPath string, info *gofraTemplate.Template
 
 //Init application directory structure for http
 func InitHttpDirectoryStructure(workingPath string, info *gofraTemplate.TemplateInfo) error {
-	binPath := filepath.Join(workingPath, "bin")
-	confPath := filepath.Join(workingPath, "conf")
+	buildPath := filepath.Join(workingPath, "build")
+	confPath := filepath.Join(workingPath, "configs")
 	logPath := filepath.Join(workingPath, "log")
-	srcPath := filepath.Join(workingPath, "src")
+	cmdPath := filepath.Join(workingPath, "cmd")
+	apiPath := filepath.Join(workingPath, "api")
+	internalPath := filepath.Join(workingPath, "internal")
 	testPath := filepath.Join(workingPath, "test")
 
-	applicationPath := filepath.Join(workingPath, "src", "application")
-	commonPath := filepath.Join(workingPath, "src", "common")
-	configPath := filepath.Join(workingPath, "src",  "config")
-	handlerPath := filepath.Join(workingPath, "src", "http_handler")
+	internalAppPath := filepath.Join(workingPath, "internal", "app")
+	internalPkgPath := filepath.Join(workingPath, "internal", "pkg")
+	internalCommonPath := filepath.Join(workingPath, "internal", "pkg", "common")
+	internalConfigPath := filepath.Join(workingPath, "internal", "pkg", "config")
+	internalHandlerPath := filepath.Join(workingPath, "internal", "http_handler")
+
+	apiHttpPath:= filepath.Join(workingPath, "api", "http_spec")
+	apiHttpHealthCheckPath := filepath.Join(workingPath, "api", "http_spec", "health_check")
 
 	//Create root directories
-	err := commonUtils.CreatePaths(override, binPath, confPath, logPath, srcPath, testPath)
+	err := commonUtils.CreatePaths(override, buildPath, confPath, logPath, cmdPath, apiPath, internalPath, testPath)
 
 	if err != nil {
 		return err
 	}
 
-	//Create src sub directories
-	err = commonUtils.CreatePaths(override, applicationPath, commonPath, configPath, handlerPath)
+	//Create internal sub directories
+	err = commonUtils.CreatePaths(override, internalAppPath, internalPkgPath, internalCommonPath, internalConfigPath, internalHandlerPath)
+
+	if err != nil {
+		return err
+	}
+
+	//Create api sub directories
+	err = commonUtils.CreatePaths(override, apiHttpPath, apiHttpHealthCheckPath)
 
 	if err != nil {
 		return err

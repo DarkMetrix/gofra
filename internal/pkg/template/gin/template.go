@@ -68,7 +68,7 @@ func GenerateTemplateJsonFile(workingPath string, override bool, jsonInfo gofraT
 
 //Generate common.go
 func GenerateCommonFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
-	filePath := filepath.Join(workingPath, "src", "common", "common.go")
+	filePath := filepath.Join(workingPath, "internal", "pkg", "common", "common.go")
 
 	//Check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
@@ -127,7 +127,7 @@ func GenerateCommonFile(workingPath, goPath string, info *gofraTemplate.Template
 
 //Generate config.go
 func GenerateConfigFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
-	filePath := filepath.Join(workingPath, "src", "config", "config.go")
+	filePath := filepath.Join(workingPath, "internal", "pkg", "config", "config.go")
 
 	//Check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
@@ -184,7 +184,7 @@ func GenerateConfigFile(workingPath, goPath string, info *gofraTemplate.Template
 
 //Generate config.toml
 func GenerateConfigTomlFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
-	filePath := filepath.Join(workingPath, "conf", "config.toml")
+	filePath := filepath.Join(workingPath, "configs", "config.toml")
 
 	//Check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
@@ -243,7 +243,7 @@ func GenerateConfigTomlFile(workingPath, goPath string, info *gofraTemplate.Temp
 
 //Generate log.config
 func GenerateConfigLogFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
-	filePath := filepath.Join(workingPath, "conf", "log.config")
+	filePath := filepath.Join(workingPath, "configs", "log.config")
 
 	//Check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
@@ -301,7 +301,7 @@ func GenerateConfigLogFile(workingPath, goPath string, info *gofraTemplate.Templ
 
 //Generate application.go
 func GenerateApplicationFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
-	filePath := filepath.Join(workingPath, "src", "application", "application.go")
+	filePath := filepath.Join(workingPath, "internal", "app", "application.go")
 
 	//Check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
@@ -328,7 +328,8 @@ func GenerateApplicationFile(workingPath, goPath string, info *gofraTemplate.Tem
 		}
 	}
 
-	workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "src") + "/")
+	//workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "internal") + "/")
+	workingPathRelative := filepath.Base(workingPath)
 
 	//Parse template
 	applicationTemplate, err := template.New("application").Parse(ApplicationTemplate)
@@ -368,7 +369,7 @@ func GenerateApplicationFile(workingPath, goPath string, info *gofraTemplate.Tem
 
 //Generate main.go
 func GenerateMainFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, override bool) error {
-	filePath := filepath.Join(workingPath, "src", "main.go")
+	filePath := filepath.Join(workingPath, "cmd", "main.go")
 
 	//Check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
@@ -395,7 +396,8 @@ func GenerateMainFile(workingPath, goPath string, info *gofraTemplate.TemplateIn
 		}
 	}
 
-	workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "src") + "/")
+	//workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "cmd") + "/")
+	workingPathRelative := filepath.Base(workingPath)
 
 	//Parse template
 	mainTemplate, err := template.New("main").Parse(MainTemplate)
@@ -444,7 +446,7 @@ func GenerateHealthCheckHttpHandler(workingPath, goPath string, info *gofraTempl
 func GenerateHttpHandler(workingPath, goPath string, info *gofraTemplate.TemplateInfo, uri string, override bool) error {
 	//Generate http service
 	//Create path
-	handlerPath := filepath.Join(workingPath, "src", "http_handler")
+	handlerPath := filepath.Join(workingPath, "internal", "http_handler")
 
 	err := commonUtils.CreatePath(handlerPath, false)
 
@@ -497,7 +499,7 @@ func GenerateHttpHandler(workingPath, goPath string, info *gofraTemplate.Templat
 
 //Add http handler import to application file
 func AddHttpHandlerToApplicationFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, handler *HttpHandlerInfo, uri string) error {
-	applicationFilePath := filepath.Join(workingPath, "src", "application", "application.go")
+	applicationFilePath := filepath.Join(workingPath, "internal", "app", "application.go")
 
 	applicationContent, err := ioutil.ReadFile(applicationFilePath)
 
@@ -525,7 +527,7 @@ func AddHttpHandlerToApplicationFile(workingPath, goPath string, info *gofraTemp
 
 //Generate http handler file
 func GenerateHttpHandlerFile(workingPath, goPath string, info *gofraTemplate.TemplateInfo, handler *HttpHandlerInfo, override bool) error {
-	filePath := filepath.Join(workingPath, "src", "http_handler", handler.HandlerName + ".go")
+	filePath := filepath.Join(workingPath, "internal", "http_handler", handler.HandlerName + ".go")
 
 	//Check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)

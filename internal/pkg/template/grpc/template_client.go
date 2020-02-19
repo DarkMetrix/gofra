@@ -43,14 +43,14 @@ import (
     tracing "{{.TracingPackage}}"
     pool "github.com/DarkMetrix/gofra/pkg/grpc-utils/pool"
 
-	health_check "{{.WorkingPathRelative}}/src/proto/health_check"
+	health_check "{{.WorkingPathRelative}}/api/protobuf_spec/health_check"
 )
 
 func main() {
 	defer log.Flush()
 
     // init log
-    err := logger.Init("../conf/log.config", "{{.Project}}_test")
+    err := logger.Init("../configs/log.config", "{{.Project}}_test")
 
 	if err != nil {
 		log.Warnf("Init logger failed! error:%v", err.Error())

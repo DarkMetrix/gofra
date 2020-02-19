@@ -128,7 +128,7 @@ func addService(path string, override, update bool) error {
 	//Mkdir
 	fmt.Printf("\r\nMake dir ......")
 	filename := filepath.Base(path)
-	protoPath := filepath.Join(workingPath, "src", "proto", strings.TrimSuffix(filename, ".proto"))
+	protoPath := filepath.Join(workingPath, "api", "protobuf_spec", strings.TrimSuffix(filename, ".proto"))
 
 	commonUtils.CreatePath(protoPath, override)
 
@@ -141,8 +141,8 @@ func addService(path string, override, update bool) error {
 
 	//Copy proto file path & generate .pb.go file
 	fmt.Printf("\r\nCopy proto file ......")
-	protoFilePath := filepath.Join(workingPath, "src", "proto", strings.TrimSuffix(filename, ".proto"), filename)
-	protoFilePathRelative := filepath.Join(".", "src", "proto", strings.TrimSuffix(filename, ".proto"), filename)
+	protoFilePath := filepath.Join(workingPath, "api", "protobuf_spec", strings.TrimSuffix(filename, ".proto"), filename)
+	protoFilePathRelative := filepath.Join(".", "api", "protobuf_spec", strings.TrimSuffix(filename, ".proto"), filename)
 
 	err = commonUtils.CopyFile(path, protoFilePath)
 

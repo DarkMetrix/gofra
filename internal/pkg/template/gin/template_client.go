@@ -40,7 +40,7 @@ func main() {
 	defer log.Flush()
 
 	// init log
-    err := logger.Init("../conf/log.config", "{{.Project}}_test")
+    err := logger.Init("../config/log.config", "{{.Project}}_test")
 
 	if err != nil {
 		log.Warnf("Init logger failed! error:%v", err.Error())

@@ -54,7 +54,7 @@ import (
 	//Tracing package
 	//tracing "{{.TracingPackage}}"
 
-	pb "{{.WorkingPathRelative}}/src/proto/{{.FileNamePrefix}}"
+	pb "{{.WorkingPathRelative}}/api/protobuf_spec/{{.FileNamePrefix}}"
 )
 
 func (this {{.ServiceName}}Impl) {{.RpcName}} (ctx context.Context, req *pb.{{.Request}}) (*pb.{{.Response}}, error) {

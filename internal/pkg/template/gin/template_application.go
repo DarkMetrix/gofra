@@ -48,9 +48,9 @@ import (
 
 	//Gin relative
 	"github.com/gin-gonic/gin"
-	logMiddleware "github.com/DarkMetrix/gofra/gin-utils/middleware/log_middleware/seelog"
-	monitorMiddleware "github.com/DarkMetrix/gofra/gin-utils/middleware/monitor_middleware/statsd"
-	recoveryMiddleware "github.com/DarkMetrix/gofra/gin-utils/middleware/recovery_middleware/seelog"
+	logMiddleware "github.com/DarkMetrix/gofra/pkg/gin-utils/middleware/log_middleware/seelog"
+	monitorMiddleware "github.com/DarkMetrix/gofra/pkg/gin-utils/middleware/monitor_middleware/statsd"
+	recoveryMiddleware "github.com/DarkMetrix/gofra/pkg/gin-utils/middleware/recovery_middleware/recovery"
 
 	//gRPC relative
 	logInterceptor "github.com/DarkMetrix/gofra/pkg/grpc-utils/interceptor/seelog_interceptor"
@@ -61,11 +61,11 @@ import (
 	pool "github.com/DarkMetrix/gofra/pkg/grpc-utils/pool"
 	commonUtils "github.com/DarkMetrix/gofra/pkg/utils"
 
-	"{{.WorkingPathRelative}}/src/common"
-	"{{.WorkingPathRelative}}/src/config"
+	"{{.WorkingPathRelative}}/internal/pkg/common"
+	"{{.WorkingPathRelative}}/internal/pkg/config"
 
 	//Http handler
-	httpHandler "{{.WorkingPathRelative}}/src/http_handler"
+	httpHandler "{{.WorkingPathRelative}}/internal/http_handler"
 )
 
 var globalApplication *Application
@@ -94,7 +94,7 @@ func (app *Application) Init(conf *config.Config) error {
 	conf.Server.HttpAddr = commonUtils.GetRealAddrByNetwork(conf.Server.HttpAddr)
 
 	// init log
-	err := logger.Init("../conf/log.config", common.ProjectName)
+	err := logger.Init("../configs/log.config", common.ProjectName)
 
 	if err != nil {
 		log.Warnf("Init logger failed! error:%v", err.Error())

@@ -52,8 +52,8 @@ import (
 	pool "github.com/DarkMetrix/gofra/pkg/grpc-utils/pool"
 	commonUtils "github.com/DarkMetrix/gofra/pkg/utils"
 
-	"{{.WorkingPathRelative}}/src/common"
-	"{{.WorkingPathRelative}}/src/config"
+	"{{.WorkingPathRelative}}/internal/pkg/common"
+	"{{.WorkingPathRelative}}/internal/pkg/config"
 
 	//!!!DO NOT EDIT!!!
 	/*@PROTO_STUB*/
@@ -87,7 +87,7 @@ func (app *Application) Init(conf *config.Config) error {
 	conf.Server.Addr = commonUtils.GetRealAddrByNetwork(conf.Server.Addr)
 
 	// init log
-	err := logger.Init("../conf/log.config", common.ProjectName)
+	err := logger.Init("../configs/log.config", common.ProjectName)
 
 	if err != nil {
 		log.Warnf("Init logger failed! error:%v", err.Error())

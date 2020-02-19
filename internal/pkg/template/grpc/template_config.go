@@ -87,7 +87,7 @@ func (config *Config) Init (path string) error {
 	//Set viper setting
 	viper.SetConfigType("toml")
 	viper.SetConfigFile(path)
-	viper.AddConfigPath("../conf/")
+	viper.AddConfigPath("../configs/")
 
 	//Read in config
 	err := viper.ReadInConfig()

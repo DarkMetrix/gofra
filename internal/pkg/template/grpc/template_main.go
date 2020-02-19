@@ -20,8 +20,8 @@ import (
 	"fmt"
 	"os"
 
-	config "{{.WorkingPathRelative}}/src/config"
-	application "{{.WorkingPathRelative}}/src/application"
+	config "{{.WorkingPathRelative}}/internal/pkg/config"
+	application "{{.WorkingPathRelative}}/internal/app"
 )
 
 func main() {
@@ -31,7 +31,7 @@ func main() {
 	// init config
 	conf := config.GetConfig()
 
-	err := conf.Init("../conf/config.toml")
+	err := conf.Init("../configs/config.toml")
 
 	if err != nil {
 		fmt.Printf("Init config failed! error:%v\r\n", err.Error())
