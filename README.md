@@ -30,7 +30,7 @@ $ go get -u github.com/DarkMetrix/gofra/gofra
 
 ### Creating a Service Template
 
-**All the commands should be used in the subdirectory of $GOPATH, that'll be forced by Gofra and it's really a good habit.**
+**Now gofra used go module, so you need to update your Go version up to at least v1.11**
 
 First initialize default template file as below.
 
@@ -103,35 +103,36 @@ All files needed are generated.
 
 ```bash
 $tree
-
 .
-├── bin
-├── conf
-│   ├── config.toml
-│   └── log.config
-├── log
-├── src
-│   ├── application
-│   │   └── application.go
-│   ├── common
-│   │   └── common.go
-│   ├── config
-│   │   └── config.go
-│   ├── handler
-│   │   └── HealthCheckService
-│   │       ├── HealthCheck.go
-│   │       └── HealthCheckService.go
-│   ├── main.go
-│   └── proto
-│       ├── health_check
-│       │   ├── health_check.pb.go
-│       │   └── health_check.proto
-│       └── user
-├── template.json
-└── test
-    └── main.go
+|-- api
+|   `-- protobuf_spec
+|       |-- health_check
+|           |-- health_check.pb.go
+|           `-- health_check.proto
+|-- build
+|-- cmd
+|   `-- main.go
+|-- configs
+|   |-- config.toml
+|   `-- log.config
+|-- go.mod
+|-- internal
+|   |-- app
+|   |   `-- application.go
+|   |-- grpc_handler
+|   |   |-- HealthCheckService
+|   |       |-- HealthCheck.go
+|   |       `-- HealthCheckService.go
+|   `-- pkg
+|       |-- common
+|       |   `-- common.go
+|       `-- config
+|           `-- config.go
+|-- log
+|-- template.json
+`-- test
+    `-- main.go
 
-13 directories, 12 files
 ```
 
 
@@ -178,39 +179,40 @@ Then a directory UserService & two files AddUser.go and UserService.go are gener
 $ tree
 
 .
-├── bin
-├── clean.sh
-├── conf
-│   ├── config.toml
-│   └── log.config
-├── init.sh
-├── log
-├── src
-│   ├── application
-│   │   └── application.go
-│   ├── common
-│   │   └── common.go
-│   ├── config
-│   │   └── config.go
-│   ├── handler
-│   │   ├── HealthCheckService
-│   │   │   ├── HealthCheck.go
-│   │   │   └── HealthCheckService.go
-│   │   └── UserService
-│   │       ├── AddUser.go
-│   │       └── UserService.go
-│   ├── main.go
-│   └── proto
-│       ├── health_check
-│       │   ├── health_check.pb.go
-│       │   └── health_check.proto
-│       └── user
-│           ├── user.pb.go
-│           └── user.proto
-├── template.json
-├── test
-│   └── main.go
-└── user.proto
+|-- api
+|   `-- protobuf_spec
+|       |-- health_check
+|       |   |-- health_check.pb.go
+|       |   `-- health_check.proto
+|       `-- user
+|           |-- user.pb.go
+|           `-- user.proto
+|-- build
+|-- cmd
+|   `-- main.go
+|-- configs
+|   |-- config.toml
+|   `-- log.config
+|-- go.mod
+|-- internal
+|   |-- app
+|   |   `-- application.go
+|   |-- grpc_handler
+|   |   |-- HealthCheckService
+|   |   |   |-- HealthCheck.go
+|   |   |   `-- HealthCheckService.go
+|   |   `-- UserService
+|   |       |-- AddUser.go
+|   |       `-- UserService.go
+|   `-- pkg
+|       |-- common
+|       |   `-- common.go
+|       `-- config
+|           `-- config.go
+|-- log
+|-- template.json
+`-- test
+    `-- main.go
 ```
 
 #### Update Service
@@ -219,7 +221,7 @@ You could update the service if the pb file has updates, such as adding a new me
 
 The only difference between add and update is update won't override the file already generated.
 
-Using add command, a —overried=true flag will help to override all the files generated about the pb file.
+Using add command, a —override=true flag will help to override all the files generated about the pb file.
 
 
 
@@ -239,7 +241,7 @@ You do not need to do anything about this file, just leave it.
 $cat src/handler/UserService/UserService.go
 
 /**********************************
- * Author : tester
+ * Author : foo
  * Time : 2018-03-26 23:04:23
  **********************************/
 
@@ -259,7 +261,7 @@ Implement your own business logic.
 $cat src/handler/UserService/AddUser.go
 
 /**********************************
- * Author : techieliu
+ * Author : foo
  * Time : 2018-04-01 02:26:20
  **********************************/
 
@@ -370,24 +372,31 @@ All files needed are generated.
 $tree
 
 .
-├── bin
-├── conf
-│   ├── config.toml
-│   └── log.config
-├── log
-├── src
-│   ├── application
-│   │   └── application.go
-│   ├── common
-│   │   └── common.go
-│   ├── config
-│   │   └── config.go
-│   ├── http_handler
-│   │   └── HEALTH.go
-│   └── main.go
-├── template.json
-└── test
-    └── main.go
+|-- api
+|   `-- http_spec
+|       `-- health_check
+|-- build
+|-- cmd
+|   `-- main.go
+|-- configs
+|   |-- config.toml
+|   `-- log.config
+|-- go.mod
+|-- init.sh
+|-- internal
+|   |-- app
+|   |   `-- application.go
+|   |-- http_handler
+|   |   `-- POST_HEALTH.go
+|   `-- pkg
+|       |-- common
+|       |   `-- common.go
+|       `-- config
+|           `-- config.go
+|-- log
+|-- template.json
+`-- test
+    `-- main.go
 
 13 directories, 12 files
 ```
@@ -403,8 +412,10 @@ And you could add your own http handler, e.g.:
 #### Add Handler
 
 ```bash
-$gofra http add --uri=/my/test
+$gofra http add --uri=/my/test --method=POST
 ```
+
+**gofra use gin, so '/contact/:name/\*action' like URI is also ok**
 
 Then a new file named MY_TEST.go is generated.
 
@@ -412,25 +423,31 @@ Then a new file named MY_TEST.go is generated.
 $ tree
 
 .
-├── bin
-├── conf
-│   ├── config.toml
-│   └── log.config
-├── log
-├── src
-│   ├── application
-│   │   └── application.go
-│   ├── common
-│   │   └── common.go
-│   ├── config
-│   │   └── config.go
-│   ├── http_handler
-│   │   ├── HEALTH.go
-│   │   └── MY_TEST.go
-│   └── main.go
-├── template.json
-└── test
-    └── main.go
+|-- api
+|   `-- http_spec
+|       `-- health_check
+|-- build
+|-- cmd
+|   `-- main.go
+|-- configs
+|   |-- config.toml
+|   `-- log.config
+|-- go.mod
+|-- internal
+|   |-- app
+|   |   `-- application.go
+|   |-- http_handler
+|   |   |-- POST_HEALTH.go
+|   |   `-- POST_MY_TEST.go
+|   `-- pkg
+|       |-- common
+|       |   `-- common.go
+|       `-- config
+|           `-- config.go
+|-- log
+|-- template.json
+`-- test
+    `-- main.go
 ```
 
 ### Implement Http Methods
@@ -447,60 +464,61 @@ Implement your own business logic.
 $cat src/http_handler/MY_TEST.go
 
 /**********************************
- * Author : techieliu
- * Time : 2018-09-27 19:01:47
+ * Author : foo
+ * Time : 2020-02-20 13:07:51
  **********************************/
 
 package http_handler
 
 import (
-        //Log package
-        log "github.com/cihub/seelog"
+	//Log package
+	log "github.com/cihub/seelog"
 
-        //Monitor package
-        //monitor "github.com/DarkMetrix/gofra/pkg/monitor/statsd"
+	//Monitor package
+	//monitor "github.com/DarkMetrix/gofra/pkg/monitor/statsd"
 
-        //Tracing package
-        //tracing "github.com/DarkMetrix/gofra/pkg/tracing/jaeger"
+	//Tracing package
+	//tracing "github.com/DarkMetrix/gofra/pkg/tracing/jaeger"
 
-        "github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin"
 )
 
-func MY_TEST(ctx *gin.Context) {
-        log.Tracef("====== MY_TEST start ======")
+//URI(for gin use): [POST] -> "/my/test"
+func POST_MY_TEST(ctx *gin.Context) {
+	log.Tracef("====== POST_MY_TEST start ======")
 
-        /*
-        //Parse request
-        //TODO: Bind json to request
-        var req xxx
+	/*
+	//Parse request
+	//TODO: Bind json to request
+	var req xxx
 
-        err := ctx.BindJSON(&req)
+	err := ctx.BindJSON(&req)
 
-        if err != nil {
-                log.Warnf("ctx.BindJSON failed! error:%v", err.Error())
-                ctx.AbortWithStatusJSON(520, gin.H{"ret":-1, "msg":"Bad json body!"})
-                return
-        }
+	if err != nil {
+		log.Warnf("ctx.BindJSON failed! error:%v", err.Error())
+		ctx.AbortWithStatusJSON(520, gin.H{"ret":-1, "msg":"Bad json body!"})
+		return
+	}
 
-        //Check params
-        //TODO: Check params
-        err = checkMY_TESTParams(&req)
+	//Check params
+	//TODO: Check params
+	err = checkPOST_MY_TESTParams(&req)
 
-        if err != nil {
-                log.Warnf("checkMY_TESTParams failed! error:%v", err.Error())
-                ctx.AbortWithStatusJSON(520, gin.H{"ret":-1, "msg":fmt.Sprintf("Param invalid! error:%v", err.Error())})
-                return
-        }
-        */
+	if err != nil {
+		log.Warnf("checkPOST_MY_TESTParams failed! error:%v", err.Error())
+		ctx.AbortWithStatusJSON(520, gin.H{"ret":-1, "msg":fmt.Sprintf("Param invalid! error:%v", err.Error())})
+		return
+	}
+	*/
 
-        //Reply success
-        ctx.JSON(200, gin.H{"ret":0, "msg":"success"})
+	//Reply success
+	ctx.JSON(200, gin.H{"ret":0, "msg":"success"})
 }
 
 /*
-//TODO: Implement checkMY_TESTParams function
-func checkMY_TESTParams(req *xxx) error {
-        return nil
+//TODO: Implement checkPOST_MY_TESTParams function
+func checkPOST_MY_TESTParams(req *xxx) error {
+	return nil
 }
 */
 ```
