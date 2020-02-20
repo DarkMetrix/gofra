@@ -45,21 +45,21 @@ package {{.ServiceName}}
 import (
 	"context"
 
-	//Log package
-	//log "github.com/cihub/seelog"
+	// log package
+	// log "github.com/cihub/seelog"
 
-	//Monitor package
-	//monitor "{{.MonitorPackage}}"
+	// monitor package
+	// monitor "{{.MonitorPackage}}"
 
-	//Tracing package
-	//tracing "{{.TracingPackage}}"
+	// tracing package
+	// tracing "{{.TracingPackage}}"
 
 	pb "{{.WorkingPathRelative}}/api/protobuf_spec/{{.FileNamePrefix}}"
 )
 
 func (this {{.ServiceName}}Impl) {{.RpcName}} (ctx context.Context, req *pb.{{.Request}}) (*pb.{{.Response}}, error) {
-	//Log Example:traceid must be logged
-	//log.Infof("{{.RpcName}} begin, traceid=%v, req=%v", tracing.GetTracingId(ctx), req)
+	// log Example:traceid must be logged
+	// log.Infof("{{.RpcName}} begin, traceid=%v, req=%v", tracing.GetTracingId(ctx), req)
 
 	resp := new(pb.{{.Response}})
 
@@ -80,9 +80,9 @@ syntax = "proto3";
 
 package common.health.check;
 
-// The health check service definition.
+// the health check service definition.
 service HealthCheckService {
-    // Sends a health check request
+    // sends a health check request
     rpc HealthCheck (HealthCheckRequest) returns (HealthCheckResponse) {}
 }
 

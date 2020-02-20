@@ -61,7 +61,7 @@ var (
 )
 
 func testHealth() {
-	//Init http client
+	// init http client
 	httpInitOnce.Do(func() {
 		httpClient = &http.Client{
 			Transport: &http.Transport{
@@ -85,7 +85,7 @@ func testHealth() {
 			return
 		}
 
-		//Copy header
+		// copy header
 		httpReq.Header.Add("Content-Type", "application/json")
 
 		resp, err := httpClient.Do(httpReq)
@@ -95,7 +95,7 @@ func testHealth() {
 			return
 		}
 
-		//Make sure body is closed so that the connection could be reused
+		// make sure body is closed so that the connection could be reused
 		defer resp.Body.Close()
 
 		respBody, err := ioutil.ReadAll(resp.Body)

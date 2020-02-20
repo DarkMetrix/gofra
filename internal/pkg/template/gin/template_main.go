@@ -53,10 +53,10 @@ func main() {
 		os.Exit(-3)
 	}
 
-	fmt.Printf("Listen on port [%v]\r\n", conf.Server.HttpAddr)
+	fmt.Printf("Listen on port [%v]\r\n", conf.Server.HTTPAddr)
 
 	// run application
-	err = app.Run(conf.Server.HttpAddr)
+	err = app.Run(conf.Server.HTTPAddr)
 
 	if err != nil {
 		fmt.Printf("Application run failed! error:%v\r\n", err.Error())

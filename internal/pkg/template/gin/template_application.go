@@ -26,6 +26,7 @@ var ApplicationTemplate string = `
 package application
 
 import (
+	"fmt"
 	"time"
 	"context"
 
@@ -40,31 +41,31 @@ import (
 	"google.golang.org/grpc"
 	"github.com/grpc-ecosystem/go-grpc-middleware"
 
-	//Component
+	// component
 	logger "github.com/DarkMetrix/gofra/pkg/logger/seelog"
 	monitor "{{.MonitorPackage}}"
 	tracing "{{.TracingPackage}}"
 	performance "github.com/DarkMetrix/gofra/pkg/performance"
 
-	//Gin relative
+	// gin relative
 	"github.com/gin-gonic/gin"
 	logMiddleware "github.com/DarkMetrix/gofra/pkg/gin-utils/middleware/log_middleware/seelog"
 	monitorMiddleware "github.com/DarkMetrix/gofra/pkg/gin-utils/middleware/monitor_middleware/statsd"
 	recoveryMiddleware "github.com/DarkMetrix/gofra/pkg/gin-utils/middleware/recovery_middleware/recovery"
 
-	//gRPC relative
+	// gRPC relative
 	logInterceptor "github.com/DarkMetrix/gofra/pkg/grpc-utils/interceptor/seelog_interceptor"
 	monitorInterceptor "{{.MonitorInterceptorPackage}}"
 	tracingInterceptor "{{.TracingInterceptorPackage}}"
 
-	//Common
+	// common
 	pool "github.com/DarkMetrix/gofra/pkg/grpc-utils/pool"
 	commonUtils "github.com/DarkMetrix/gofra/pkg/utils"
 
 	"{{.WorkingPathRelative}}/internal/pkg/common"
 	"{{.WorkingPathRelative}}/internal/pkg/config"
 
-	//Http handler
+	// http handler
 	httpHandler "{{.WorkingPathRelative}}/internal/http_handler"
 )
 
@@ -74,12 +75,12 @@ type Application struct {
 	ClientOpts []grpc.DialOption
 }
 
-//New Application
+// new Application
 func newApplication() *Application {
 	return &Application{}
 }
 
-//Get singleton application
+// get singleton application
 func GetApplication() *Application {
 	if globalApplication == nil {
 		globalApplication = newApplication()
@@ -88,10 +89,10 @@ func GetApplication() *Application {
 	return globalApplication
 }
 
-//Init application
+// init application
 func (app *Application) Init(conf *config.Config) error {
-	// process conf.Server.HttpAddr
-	conf.Server.HttpAddr = commonUtils.GetRealAddrByNetwork(conf.Server.HttpAddr)
+	// process conf.Server.HTTPAddr
+	conf.Server.HTTPAddr = commonUtils.GetRealAddrByNetwork(conf.Server.HTTPAddr)
 
 	// init log
 	err := logger.Init("../configs/log.config", common.ProjectName)
@@ -100,11 +101,15 @@ func (app *Application) Init(conf *config.Config) error {
 		log.Warnf("Init logger failed! error:%v", err.Error())
 	}
 
-	//Init pprof
+	// init pprof
 	if conf.Pprof.Active != 0 {
 		go func() {
 			log.Infof("Begin pprof at addr:%v", conf.Pprof.Addr)
-			http.ListenAndServe(conf.Pprof.Addr, nil)
+			err = http.ListenAndServe(conf.Pprof.Addr, nil)
+
+			if err != nil {
+				log.Warnf("Pprof http.ListenAndServe failed! error:%v", err.Error())
+			}
 		}()
 	}
 
@@ -154,16 +159,16 @@ func (app *Application) Init(conf *config.Config) error {
 	return nil
 }
 
-//Run application
+// run application
 func (app *Application) Run(address string) error {
 	defer log.Flush()
 	defer tracing.Close()
 
 	// run to serve http
-	httpClose, err := app.runHttpServer(address)
+	httpClose, err := app.runHTTPServer(address)
 
 	if err != nil {
-		log.Warnf("app.runHttpServer failed! error:%v", err.Error())
+		log.Warnf("app.runHTTPServer failed! error:%v", err.Error())
 		return err
 	}
 
@@ -175,15 +180,20 @@ func (app *Application) Run(address string) error {
 
 	signalOccur := <- signalChannel
 
-	log.Infof("Signal occured, signal:%v", signalOccur.String())
+	log.Infof("Signal occurred, signal:%v", signalOccur.String())
 
 	return nil
 }
 
 type httpCloseFunc func()
 
-func (app *Application) runHttpServer(address string) (httpCloseFunc, error) {
-	//Set release or debug mode
+func (app *Application) runHTTPServer(address string) (httpCloseFunc, error) {
+	// check address
+	if address == "" {
+		return nil, fmt.Errorf("HTTP listen address is empty! address:%v", address)
+	}
+
+	// set release or debug mode
 	if config.GetConfig().Server.GinDebug == 0 {
 		gin.SetMode(gin.ReleaseMode)
 		log.Infof("gin runs in release mode!")
@@ -201,7 +211,7 @@ func (app *Application) runHttpServer(address string) (httpCloseFunc, error) {
 		monitorMiddleware.GetMiddleware())
 
 	// add http handler
-	//!!!DO NOT EDIT!!!
+	// !!!DO NOT EDIT!!!
 	/*@REGISTER_HTTP_STUB*/
 
 	httpServer := &http.Server{

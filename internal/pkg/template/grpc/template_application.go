@@ -55,7 +55,7 @@ import (
 	"{{.WorkingPathRelative}}/internal/pkg/common"
 	"{{.WorkingPathRelative}}/internal/pkg/config"
 
-	//!!!DO NOT EDIT!!!
+	// !!!DO NOT EDIT!!!
 	/*@PROTO_STUB*/
 	/*@HANDLER_STUB*/
 )
@@ -67,12 +67,12 @@ type Application struct {
 	ClientOpts []grpc.DialOption
 }
 
-//New Application
+// new Application
 func newApplication() *Application {
 	return &Application{}
 }
 
-//Get singleton application
+// get singleton application
 func GetApplication() *Application {
 	if globalApplication == nil {
 		globalApplication = newApplication()
@@ -81,7 +81,7 @@ func GetApplication() *Application {
 	return globalApplication
 }
 
-//Init application
+// init application
 func (app *Application) Init(conf *config.Config) error {
 	// process conf.Server.Addr
 	conf.Server.Addr = commonUtils.GetRealAddrByNetwork(conf.Server.Addr)
@@ -93,11 +93,15 @@ func (app *Application) Init(conf *config.Config) error {
 		log.Warnf("Init logger failed! error:%v", err.Error())
 	}
 
-	//Init pprof
+	// init pprof
 	if conf.Pprof.Active != 0 {
 		go func() {
 			log.Infof("Begin pprof at addr:%v", conf.Pprof.Addr)
-			http.ListenAndServe(conf.Pprof.Addr, nil)
+			err = http.ListenAndServe(conf.Pprof.Addr, nil)
+
+			if err != nil {
+				log.Warnf("Pprof http.ListenAndServe failed! error:%v", err.Error())
+			}
 		}()
 	}
 
@@ -155,16 +159,16 @@ func (app *Application) Init(conf *config.Config) error {
 	return nil
 }
 
-//Run application
+// run application
 func (app *Application) Run(address string) error {
 	defer log.Flush()
 	defer tracing.Close()
 
 	// run to serve grpc
-	grpcClose, err := app.runGrpcServer(address)
+	grpcClose, err := app.runGRPCServer(address)
 
 	if err != nil {
-		log.Warnf("app.runGrpcServer failed! error:%v", err.Error())
+		log.Warnf("app.runGRPCServer failed! error:%v", err.Error())
 		return err
 	}
 
@@ -176,14 +180,14 @@ func (app *Application) Run(address string) error {
 
 	signalOccur := <- signalChannel
 
-	log.Infof("Signal occured, signal:%v", signalOccur.String())
+	log.Infof("Signal occurred, signal:%v", signalOccur.String())
 
 	return nil
 }
 
 type grpcCloseFunc func()
 
-func (app *Application) runGrpcServer(address string) (grpcCloseFunc, error) {
+func (app *Application) runGRPCServer(address string) (grpcCloseFunc, error) {
 	// listen
 	listen, err := net.Listen("tcp", address)
 
@@ -195,7 +199,7 @@ func (app *Application) runGrpcServer(address string) (grpcCloseFunc, error) {
 	s := grpc.NewServer(app.ServerOpts ...)
 
 	// register services
-	//!!!DO NOT EDIT!!!
+	// !!!DO NOT EDIT!!!
 	health_check.RegisterHealthCheckServiceServer(s, HealthCheckServiceHandler.HealthCheckServiceImpl{})
 	/*@REGISTER_STUB*/
 

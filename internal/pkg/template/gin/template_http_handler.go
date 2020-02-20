@@ -21,25 +21,25 @@ var HttpHandlerTemplate string = `
 package http_handler
 
 import (
-	//Log package
+	// log package
 	log "github.com/cihub/seelog"
 
-	//Monitor package
-	//monitor "{{.MonitorPackage}}"
+	// monitor package
+	// monitor "{{.MonitorPackage}}"
 
-	//Tracing package
-	//tracing "{{.TracingPackage}}"
+	// tracing package
+	// tracing "{{.TracingPackage}}"
 
 	"github.com/gin-gonic/gin"
 )
 
-//URI(for gin use): [{{.Method}}] -> "{{.URI}}"
+// URI(for gin use): [{{.Method}}] -> "{{.URI}}"
 func {{.HandlerName}}(ctx *gin.Context) {
 	log.Tracef("====== {{.HandlerName}} start ======")
 
 	/*
-	//Parse request
-	//TODO: Bind json to request
+	// parse request
+	// TODO: Bind json to request
 	var req xxx
 
 	err := ctx.BindJSON(&req)
@@ -50,8 +50,8 @@ func {{.HandlerName}}(ctx *gin.Context) {
 		return
 	}
 
-	//Check params
-	//TODO: Check params
+	// check params
+	// TODO: Check params
 	err = check{{.HandlerName}}Params(&req)
 
 	if err != nil {
@@ -61,12 +61,12 @@ func {{.HandlerName}}(ctx *gin.Context) {
 	}
 	*/
 
-	//Reply success
+	// reply success
 	ctx.JSON(200, gin.H{"ret":0, "msg":"success"})
 }
 
 /*
-//TODO: Implement check{{.HandlerName}}Params function
+// TODO: Implement check{{.HandlerName}}Params function
 func check{{.HandlerName}}Params(req *xxx) error {
 	return nil
 }

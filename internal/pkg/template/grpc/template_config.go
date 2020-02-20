@@ -17,48 +17,48 @@ import (
 	"github.com/spf13/viper"
 )
 
-//Global config
+// global config
 var globalConfig *Config
 
-//pprof
+// pprof
 type PprofInfo struct {
 	Addr string "mapstructure:\"addr\" json:\"addr\""
 	Active uint32 "mapstructure:\"active\" json:\"active\""
 }
 
-//Performance info
+// performance info
 type PerformanceInfo struct {
 	Active uint32 "mapstructure:\"active\" json:\"active\""
 	Type string "mapstructure:\"type\" json:\"type\""
 }
 
-//Tracing info
+// tracing info
 type TracingInfo struct {
 	Params []string "mapstructure:\"params\" json:\"params\""
 }
 
-//Monitor info
+// monitor info
 type MonitorInfo struct {
 	Params []string "mapstructure:\"params\" json:\"params\""
 }
 
-//Server config
+// server config
 type ServerInfo struct {
 	Addr string "mapstructure:\"addr\" json:\"addr\""
 }
 
-//Client config
+// client config
 type ClientInfo struct {
 }
 
-//Pool config
+// pool config
 type PoolInfo struct {
 	InitConns int "mapstructure:\"init_conns\" json:\"init_conns\""
 	MaxConns int "mapstructure:\"max_conns\" json:\"max_conns\""
 	IdleTime int "mapstructure:\"idle_time\" json:\"idle_time\""
 }
 
-//Config sturcture
+// config structure
 type Config struct {
 	Pprof PprofInfo "mapstructure:\"pprof\" json:\"pprof\""
 	Performance PerformanceInfo "mapstructure:\"performance\" json:\"performance\""
@@ -68,12 +68,12 @@ type Config struct {
 	Client ClientInfo "mapstructure:\"client\" json:\"client\""
 }
 
-//New Config
+// new Config
 func newConfig() *Config {
 	return &Config{}
 }
 
-//Get singleton config
+// get singleton config
 func GetConfig() *Config {
 	if globalConfig == nil {
 		globalConfig = newConfig()
@@ -82,21 +82,21 @@ func GetConfig() *Config {
 	return globalConfig
 }
 
-//Init config from json file
+// init config from json file
 func (config *Config) Init (path string) error {
-	//Set viper setting
+	// set viper setting
 	viper.SetConfigType("toml")
 	viper.SetConfigFile(path)
 	viper.AddConfigPath("../configs/")
 
-	//Read in config
+	// read in config
 	err := viper.ReadInConfig()
 
 	if err != nil {
 		return err
 	}
 
-	//Unmarshal config
+	// unmarshal config
 	err = viper.Unmarshal(config)
 
 	if err != nil {
