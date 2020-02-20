@@ -20,6 +20,7 @@ import (
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"path/filepath"
 
 	gofraTemplate "github.com/DarkMetrix/gofra/internal/pkg/template"
@@ -113,6 +114,30 @@ var initCmd = &cobra.Command{
 
 		default:
 			fmt.Printf(" failed! \r\nerror:Invalid server type\r\n")
+		}
+
+		//Init go module
+		gomodPath := filepath.Join(workingPath, "go.mod")
+
+		isExist, err := commonUtils.CheckPathExists(gomodPath)
+
+		if err != nil {
+			fmt.Printf("Check go.mod file existance failed! path:%v, error:%v", gomodPath, err.Error())
+			return
+		}
+
+		if !isExist {
+			shellCmd := exec.Command("go", "mod", "init", filepath.Base(workingPath))
+
+			err = shellCmd.Run()
+
+			if err != nil {
+				fmt.Printf("go mod init %v failed! error:%v", filepath.Base(workingPath), err.Error())
+			} else {
+				fmt.Printf("go mod init %v success!", filepath.Base(workingPath))
+			}
+		} else {
+			fmt.Printf("go.mod file already exist!")
 		}
 
 		//Print application directory structure
