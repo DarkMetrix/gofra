@@ -40,7 +40,7 @@ func GenerateTemplateJsonFile(workingPath string, override bool, jsonInfo gofraT
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {
@@ -92,7 +92,7 @@ func GenerateCommonFile(workingPath string, info *gofraTemplate.TemplateInfo, ov
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {
@@ -151,7 +151,7 @@ func GenerateConfigFile(workingPath string, info *gofraTemplate.TemplateInfo, ov
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {
@@ -208,7 +208,7 @@ func GenerateConfigTomlFile(workingPath string, info *gofraTemplate.TemplateInfo
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {
@@ -267,7 +267,7 @@ func GenerateConfigLogFile(workingPath string, info *gofraTemplate.TemplateInfo,
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {
@@ -325,7 +325,7 @@ func GenerateApplicationFile(workingPath string, info *gofraTemplate.TemplateInf
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {
@@ -393,7 +393,7 @@ func GenerateMainFile(workingPath string, info *gofraTemplate.TemplateInfo, over
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {
@@ -477,7 +477,7 @@ func GenerateHealthCheckProto(workingPath string, info *gofraTemplate.TemplateIn
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {
@@ -736,7 +736,7 @@ func GenerateServiceImplementation(workingPath string, info *gofraTemplate.Templ
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {
@@ -792,7 +792,7 @@ func GenerateServiceHandler(workingPath string, info *gofraTemplate.TemplateInfo
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {
@@ -844,7 +844,7 @@ func GenerateTestClient(workingPath string, info *gofraTemplate.TemplateInfo, ov
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {

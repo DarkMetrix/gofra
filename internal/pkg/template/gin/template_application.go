@@ -202,7 +202,6 @@ func (app *Application) runHttpServer(address string) (httpCloseFunc, error) {
 
 	// add http handler
 	//!!!DO NOT EDIT!!!
-	group.POST("/health", httpHandler.HEALTH)
 	/*@REGISTER_HTTP_STUB*/
 
 	httpServer := &http.Server{

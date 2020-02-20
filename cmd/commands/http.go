@@ -16,9 +16,8 @@ package commands
 
 import (
 	"fmt"
-	"os"
-
 	"github.com/spf13/cobra"
+	"os"
 
 	"github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
@@ -45,14 +44,23 @@ var addHttpHandlerCmd = &cobra.Command{
 		err := validation.Validate(&uri, validation.Required, is.RequestURI)
 
 		if err != nil {
-			fmt.Printf("Param invalid! error:%v", err.Error())
-		} else {
-			addHttpHandler(override)
+			fmt.Printf("URI invalid! uri:%v, error:%v", uri, err.Error())
+			return
 		}
+
+		err = validation.Validate(&method, validation.Required, validation.In("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"))
+
+		if err != nil {
+			fmt.Printf("Method invalid! method:%v, error:%v", method, err.Error())
+			return
+		}
+
+		addHttpHandler(override)
 	},
 }
 
 var uri string
+var method string
 
 func init() {
 	rootCmd.AddCommand(httpCmd)
@@ -64,6 +72,7 @@ func init() {
 	// and all subcommands, e.g.:
 	// serviceCmd.PersistentFlags().String("foo", "", "A help for foo")
 	addHttpHandlerCmd.PersistentFlags().StringVar(&uri, "uri", "","Http URI, e.g.:'/health'")
+	addHttpHandlerCmd.PersistentFlags().StringVar(&method, "method", "GET","Http method, e.g.:'GET, POST, PUT, PATCH, DELETE and OPTIONS'")
 	addHttpHandlerCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
 
 	// Cobra supports local flags which will only run when this command
@@ -109,7 +118,7 @@ func addHttpHandler(override bool) error {
 
 	//Generate http handler
 	fmt.Printf("\r\nGenerating http handler code ......")
-	err = httpTemplate.GenerateHttpHandler(workingPath, templateInfo, uri, override)
+	err = httpTemplate.GenerateHttpHandler(workingPath, templateInfo, uri, method, override)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())

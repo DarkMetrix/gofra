@@ -5,6 +5,8 @@ type HttpHandlerInfo struct {
 	Time string
 
 	HandlerName string
+	URI string
+	Method string
 
 	MonitorPackage string
 	TracingPackage string
@@ -31,6 +33,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//URI(for gin use): [{{.Method}}] -> "{{.URI}}"
 func {{.HandlerName}}(ctx *gin.Context) {
 	log.Tracef("====== {{.HandlerName}} start ======")
 

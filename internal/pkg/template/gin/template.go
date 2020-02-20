@@ -32,7 +32,7 @@ func GenerateTemplateJsonFile(workingPath string, override bool, jsonInfo gofraT
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {
@@ -84,7 +84,7 @@ func GenerateCommonFile(workingPath string, info *gofraTemplate.TemplateInfo, ov
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {
@@ -143,7 +143,7 @@ func GenerateConfigFile(workingPath string, info *gofraTemplate.TemplateInfo, ov
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {
@@ -200,7 +200,7 @@ func GenerateConfigTomlFile(workingPath string, info *gofraTemplate.TemplateInfo
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {
@@ -259,7 +259,7 @@ func GenerateConfigLogFile(workingPath string, info *gofraTemplate.TemplateInfo,
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {
@@ -317,7 +317,7 @@ func GenerateApplicationFile(workingPath string, info *gofraTemplate.TemplateInf
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {
@@ -385,7 +385,7 @@ func GenerateMainFile(workingPath string, info *gofraTemplate.TemplateInfo, over
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {
@@ -433,7 +433,7 @@ func GenerateMainFile(workingPath string, info *gofraTemplate.TemplateInfo, over
 //Generate health check handler
 func GenerateHealthCheckHttpHandler(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	//Generate health check proto file
-	err := GenerateHttpHandler(workingPath, info, "/health", override)
+	err := GenerateHttpHandler(workingPath, info, "/health", "POST", override)
 
 	if err != nil {
 		return err
@@ -443,7 +443,7 @@ func GenerateHealthCheckHttpHandler(workingPath string, info *gofraTemplate.Temp
 }
 
 //Generate http service
-func GenerateHttpHandler(workingPath string, info *gofraTemplate.TemplateInfo, uri string, override bool) error {
+func GenerateHttpHandler(workingPath string, info *gofraTemplate.TemplateInfo, uri, method string, override bool) error {
 	//Generate http service
 	//Create path
 	handlerPath := filepath.Join(workingPath, "internal", "http_handler")
@@ -462,6 +462,7 @@ func GenerateHttpHandler(workingPath string, info *gofraTemplate.TemplateInfo, u
 	}
 
 	uriUpperPaths := make([]string, 0)
+	uriUpperPaths = append(uriUpperPaths, strings.ToUpper(method))
 
 	for _, item := range uriPaths {
 		if len(item) == 0 {
@@ -472,11 +473,15 @@ func GenerateHttpHandler(workingPath string, info *gofraTemplate.TemplateInfo, u
 	}
 
 	handlerName := strings.Join(uriUpperPaths, "_")
+	handlerName = strings.Replace(handlerName, ":", "", -1)
+	handlerName = strings.Replace(handlerName, "*", "", -1)
 
 	handler := &HttpHandlerInfo{
 		Author: info.Author,
 		Time: time.Now().Format("2006-01-02 15:04:05"),
 		HandlerName: handlerName,
+		URI: uri,
+		Method: method,
 		MonitorPackage: info.MonitorPackage.Package,
 		TracingPackage: info.TracingPackage.Package,
 	}
@@ -488,7 +493,7 @@ func GenerateHttpHandler(workingPath string, info *gofraTemplate.TemplateInfo, u
 	}
 
 	//Add http handler to engine in application
-	err = AddHttpHandlerToApplicationFile(workingPath, info, handler, uri)
+	err = AddHttpHandlerToApplicationFile(workingPath, info, handler, uri, method)
 
 	if err != nil {
 		return err
@@ -498,7 +503,7 @@ func GenerateHttpHandler(workingPath string, info *gofraTemplate.TemplateInfo, u
 }
 
 //Add http handler import to application file
-func AddHttpHandlerToApplicationFile(workingPath string, info *gofraTemplate.TemplateInfo, handler *HttpHandlerInfo, uri string) error {
+func AddHttpHandlerToApplicationFile(workingPath string, info *gofraTemplate.TemplateInfo, handler *HttpHandlerInfo, uri, method string) error {
 	applicationFilePath := filepath.Join(workingPath, "internal", "app", "application.go")
 
 	applicationContent, err := ioutil.ReadFile(applicationFilePath)
@@ -507,8 +512,27 @@ func AddHttpHandlerToApplicationFile(workingPath string, info *gofraTemplate.Tem
 		return err
 	}
 
-	httpHandler := fmt.Sprintf(`group.POST("%v", httpHandler.%v)`, uri, handler.HandlerName)
-	httpHandlerStub := fmt.Sprintf("%v\r\n	/*@REGISTER_HTTP_STUB*/", httpHandler)
+	httpHandler := ""
+	httpHandlerStub := ""
+
+	switch method {
+	case "GET":
+		httpHandler = fmt.Sprintf(`group.GET("%v", httpHandler.%v)`, uri, handler.HandlerName)
+	case "POST":
+		httpHandler = fmt.Sprintf(`group.POST("%v", httpHandler.%v)`, uri, handler.HandlerName)
+	case "PUT":
+		httpHandler = fmt.Sprintf(`group.PUT("%v", httpHandler.%v)`, uri, handler.HandlerName)
+	case "PATCH":
+		httpHandler = fmt.Sprintf(`group.PATCH("%v", httpHandler.%v)`, uri, handler.HandlerName)
+	case "DELETE":
+		httpHandler = fmt.Sprintf(`group.DELETE("%v", httpHandler.%v)`, uri, handler.HandlerName)
+	case "OPTIONS":
+		httpHandler = fmt.Sprintf(`group.OPTIONS("%v", httpHandler.%v)`, uri, handler.HandlerName)
+	default:
+		return fmt.Errorf("Invalid http method! method:%v", method)
+	}
+
+	httpHandlerStub = fmt.Sprintf("%v\r\n	/*@REGISTER_HTTP_STUB*/", httpHandler)
 
 	if strings.Contains(string(applicationContent), httpHandler) {
 		return nil
@@ -543,7 +567,7 @@ func GenerateHttpHandlerFile(workingPath string, info *gofraTemplate.TemplateInf
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {
@@ -555,7 +579,7 @@ func GenerateHttpHandlerFile(workingPath string, info *gofraTemplate.TemplateInf
 	}
 
 	//Parse template
-	serviceRpcTemplate, err := template.New("http_handler").Parse(HttpHandlerTemplate)
+	httpHandlerTemplate, err := template.New("http_handler").Parse(HttpHandlerTemplate)
 
 	if err != nil {
 		return err
@@ -568,7 +592,7 @@ func GenerateHttpHandlerFile(workingPath string, info *gofraTemplate.TemplateInf
 	}
 
 	//Render template to file
-	err = serviceRpcTemplate.Execute(file, handler)
+	err = httpHandlerTemplate.Execute(file, handler)
 
 	if err != nil {
 		return err
@@ -595,7 +619,7 @@ func GenerateTestClient(workingPath string, info *gofraTemplate.TemplateInfo, ov
 			return err
 		}
 
-		return errors.New(fmt.Sprintf("File:%v already exists! this operation will overide it!", filePathRel))
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
 	}
 
 	if isExist && override {
