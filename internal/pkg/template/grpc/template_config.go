@@ -139,7 +139,7 @@ var ConfigTomlTemplate string = `
 #	eg:
 #		wget http://localhost:50000/debug/pprof/profile
 [pprof]
-	active = 0
+	active=0
 	addr="localhost:50000"
 
 # performance configuration
@@ -152,7 +152,7 @@ var ConfigTomlTemplate string = `
 # performance.type
 #   Type to output the performance monitor information, available option [log, statsd]
 [performance]
-	active=1
+	active=0
 	type="log"
 
 # Monitor configuration
