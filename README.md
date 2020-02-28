@@ -374,7 +374,7 @@ $tree
 .
 |-- api
 |   `-- http_spec
-|       `-- health_check
+|       `-- post_health
 |-- build
 |-- cmd
 |   `-- main.go
@@ -387,7 +387,7 @@ $tree
 |   |-- app
 |   |   `-- application.go
 |   |-- http_handler
-|   |   `-- POST_HEALTH.go
+|   |   `-- post_health.go
 |   `-- pkg
 |       |-- common
 |       |   `-- common.go
@@ -425,7 +425,8 @@ $ tree
 .
 |-- api
 |   `-- http_spec
-|       `-- health_check
+|       |-- post_health
+|       `-- post_my_test
 |-- build
 |-- cmd
 |   `-- main.go
@@ -437,8 +438,8 @@ $ tree
 |   |-- app
 |   |   `-- application.go
 |   |-- http_handler
-|   |   |-- POST_HEALTH.go
-|   |   `-- POST_MY_TEST.go
+|   |   |-- post_health.go
+|   |   `-- post_my_test.go
 |   `-- pkg
 |       |-- common
 |       |   `-- common.go
