@@ -16,11 +16,11 @@ package commands
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
 
 	"github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
+	"github.com/spf13/cobra"
 
 	httpTemplate "github.com/DarkMetrix/gofra/internal/pkg/template/gin"
 )

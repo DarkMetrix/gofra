@@ -15,13 +15,14 @@
 package commands
 
 import (
-	"encoding/json"
 	"fmt"
-	"github.com/spf13/cobra"
-	"io/ioutil"
 	"os"
 	"os/exec"
+	"encoding/json"
+	"io/ioutil"
 	"path/filepath"
+
+	"github.com/spf13/cobra"
 
 	gofraTemplate "github.com/DarkMetrix/gofra/internal/pkg/template"
 	httpTemplate "github.com/DarkMetrix/gofra/internal/pkg/template/gin"
@@ -298,7 +299,6 @@ func InitHttpDirectoryStructure(workingPath string, info *gofraTemplate.Template
 	internalHandlerPath := filepath.Join(workingPath, "internal", "http_handler")
 
 	apiHttpPath:= filepath.Join(workingPath, "api", "http_spec")
-	apiHttpHealthCheckPath := filepath.Join(workingPath, "api", "http_spec", "health_check")
 
 	//Create root directories
 	err := commonUtils.CreatePaths(override, buildPath, confPath, logPath, cmdPath, apiPath, internalPath, testPath)
@@ -315,7 +315,7 @@ func InitHttpDirectoryStructure(workingPath string, info *gofraTemplate.Template
 	}
 
 	//Create api sub directories
-	err = commonUtils.CreatePaths(override, apiHttpPath, apiHttpHealthCheckPath)
+	err = commonUtils.CreatePaths(override, apiHttpPath)
 
 	if err != nil {
 		return err

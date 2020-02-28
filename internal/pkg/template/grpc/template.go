@@ -15,7 +15,6 @@ import (
 
 	"github.com/DarkMetrix/gofra/internal/pkg/utils/pbparser_import_provider"
 	commonUtils "github.com/DarkMetrix/gofra/pkg/utils"
-
 	gofraTemplate "github.com/DarkMetrix/gofra/internal/pkg/template"
 )
 

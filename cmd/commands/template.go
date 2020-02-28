@@ -16,8 +16,9 @@ package commands
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
+
+	"github.com/spf13/cobra"
 
 	gofraTemplate "github.com/DarkMetrix/gofra/internal/pkg/template"
 	httpTemplate "github.com/DarkMetrix/gofra/internal/pkg/template/gin"

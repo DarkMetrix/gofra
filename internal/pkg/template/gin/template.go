@@ -476,6 +476,19 @@ func GenerateHttpHandler(workingPath string, info *gofraTemplate.TemplateInfo, u
 	handlerName = strings.Replace(handlerName, ":", "", -1)
 	handlerName = strings.Replace(handlerName, "*", "", -1)
 
+	//Mkdir
+	fmt.Printf("\r\nMake dir ......")
+	httpSpecPath := filepath.Join(workingPath, "api", "http_spec", strings.ToLower(handlerName))
+
+	commonUtils.CreatePath(httpSpecPath, override)
+
+	if err != nil {
+		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
+		return err
+	} else {
+		fmt.Printf(" success! \r\n")
+	}
+
 	handler := &HttpHandlerInfo{
 		Author: info.Author,
 		Time: time.Now().Format("2006-01-02 15:04:05"),
@@ -551,7 +564,7 @@ func AddHttpHandlerToApplicationFile(workingPath string, info *gofraTemplate.Tem
 
 //Generate http handler file
 func GenerateHttpHandlerFile(workingPath string, info *gofraTemplate.TemplateInfo, handler *HttpHandlerInfo, override bool) error {
-	filePath := filepath.Join(workingPath, "internal", "http_handler", handler.HandlerName + ".go")
+	filePath := filepath.Join(workingPath, "internal", "http_handler", strings.ToLower(handler.HandlerName) + ".go")
 
 	//Check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
