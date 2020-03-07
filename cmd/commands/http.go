@@ -25,21 +25,23 @@ import (
 	httpTemplate "github.com/DarkMetrix/gofra/internal/pkg/template/gin"
 )
 
-// serviceCmd represents the service command
+// httpCmd represents the http command
 var httpCmd = &cobra.Command{
 	Use:   "http",
 	Short: "Http operations [add]",
-	Long: `Gofra is a framework using gRPC/gin as the communication layer.\r\nhttp command will help to generate http frame & handler.`,
+	Long: `Gofra is a framework using gRPC/gin as the communication layer.
+http command will help to generate http frame & handler.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
 	},
 }
 
-// addServiceCmd represents the service command
+// addhttpCmd represents the http add command
 var addHttpHandlerCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add http handler to project",
-	Long: `Gofra is a framework using gRPC/gin as the communication layer.\r\nadd command will help to generate http frame & handler.`,
+	Long: `Gofra is a framework using gRPC/gin as the communication layer.
+http add command will help to generate http frame & handler.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		err := validation.Validate(&uri, validation.Required, is.RequestURI)
 

@@ -50,7 +50,7 @@ var JsonTemplate string = `
 {
     "author":"{{.Author}}",
     "project":"{{.Project}}",
-    "version":"0.0.1",
+    "version":"v1.0.0",
     "type":"{{.Type}}",
     "server":
     {

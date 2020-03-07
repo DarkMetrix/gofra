@@ -29,19 +29,21 @@ import (
 var templateCmd = &cobra.Command{
 	Use:   "template",
 	Short: "Template operations [init]",
-	Long: `Gofra is a framework using gRPC/gin as the communication layer.\r\ntemplate command will help to generate template.json.default file.`,
+	Long: `Gofra is a framework using gRPC/gin as the communication layer.
+template command will help to generate template.json file.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
 	},
 }
 
-// templateCmd represents the template command
+// initTemplateCmd represents the template init command
 var initTemplateCmd = &cobra.Command{
 	Use:   "init",
-	Short: "Template initialization, a template.json.default file will be generated",
-	Long: `Gofra is a framework using gRPC/gin as the communication layer.\r\ninit command will help to initialize template.json.default file.`,
+	Short: "Template initialization, a template.json file will be generated",
+	Long: `Gofra is a framework using gRPC/gin as the communication layer.
+template init command will help to initialize template.json file.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("====== Gofra service add ======")
+		fmt.Println("====== Gofra template initializing ======")
 
 		//Check path
 		fmt.Printf("\r\nGet Working Path ......")

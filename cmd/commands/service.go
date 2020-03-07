@@ -31,27 +31,30 @@ import (
 var serviceCmd = &cobra.Command{
 	Use:   "service",
 	Short: "Service operations [add, update]",
-	Long: `Gofra is a framework using gRPC/gin as the communication layer.\r\nservice command will help to manipulate .proto file to generate service frame & handler.`,
+	Long: `Gofra is a framework using gRPC/gin as the communication layer.
+service command will help to manipulate .proto file to generate service frame & handler.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
 	},
 }
 
-// addServiceCmd represents the service command
+// addServiceCmd represents the service add command
 var addServiceCmd = &cobra.Command{
 	Use:   "add",
 	Short: "Add service (*.proto) to project",
-	Long: `Gofra is a framework using gRPC/gin as the communication layer.\r\nservice add command will help to manipulate .proto file to add service frame & handler.`,
+	Long: `Gofra is a framework using gRPC/gin as the communication layer.
+service add command will help to manipulate .proto file to add service frame & handler.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		addService(servicePath, false, false)
 	},
 }
 
-// updateServiceCmd represents the service command
+// updateServiceCmd represents the service update command
 var updateServiceCmd = &cobra.Command{
 	Use:   "update",
 	Short: "Update service (*.proto) to project",
-	Long: `Gofra is a framework using gRPC/gin as the communication layer.\r\nservice update command will help to manipulate .proto file to update service frame & handler.`,
+	Long: `Gofra is a framework using gRPC/gin as the communication layer.
+service update command will help to manipulate .proto file to update service frame & handler.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		addService(servicePath, override, true)
 	},

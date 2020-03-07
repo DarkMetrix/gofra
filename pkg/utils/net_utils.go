@@ -3,21 +3,17 @@ package utils
 import (
 	"fmt"
 	"net"
-	"strings"
 )
 
 //Utils to help get real ip like using this kind of format 'eth1:8088'
 func GetRealAddrByNetwork(addr string) string {
-	parts := strings.Split(addr, ":")
+	host, port, err := net.SplitHostPort(addr)
 
-	if len(parts) != 2 {
+	if err != nil {
 		return addr
 	}
 
-	name := parts[0]
-	port := parts[1]
-
-	ip, err := GetRealIPv4ByNetwork(name)
+	ip, err := GetRealIPv4ByNetwork(host)
 
 	if err != nil {
 		return addr
