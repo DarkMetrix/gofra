@@ -37,6 +37,7 @@ import (
 	_ "net/http/pprof"
 
 	log "github.com/cihub/seelog"
+	viper "github.com/spf13/viper"
 
 	"google.golang.org/grpc"
 	"github.com/grpc-ecosystem/go-grpc-middleware"
@@ -95,7 +96,7 @@ func (app *Application) Init(conf *config.Config) error {
 	conf.Server.HTTPAddr = commonUtils.GetRealAddrByNetwork(conf.Server.HTTPAddr)
 
 	// init log
-	err := logger.Init("../configs/log.config", common.ProjectName)
+	err := logger.Init(viper.GetString("log.config.path"), common.ProjectName)
 
 	if err != nil {
 		log.Warnf("Init logger failed! error:%v", err.Error())

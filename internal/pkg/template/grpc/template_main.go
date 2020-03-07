@@ -20,6 +20,9 @@ import (
 	"fmt"
 	"os"
 
+	viper "github.com/spf13/viper"
+	pflag "github.com/spf13/pflag"
+
 	config "{{.WorkingPathRelative}}/internal/pkg/config"
 	application "{{.WorkingPathRelative}}/internal/app"
 )
@@ -28,10 +31,18 @@ func main() {
 	// start
 	fmt.Println("====== Server [{{.Project}}] Start ======")
 
+	// init flags
+	pflag.String("config.path", "../configs/config.toml", "Config file path, default '../configs/config.toml'")
+	pflag.String("log.config.path", "../configs/log.config", "Log config file path, default '../configs/log.config'")
+
+	pflag.Parse()
+
+	viper.BindPFlags(pflag.CommandLine)
+
 	// init config
 	conf := config.GetConfig()
 
-	err := conf.Init("../configs/config.toml")
+	err := conf.Init(viper.GetString("config.path"))
 
 	if err != nil {
 		fmt.Printf("Init config failed! error:%v\r\n", err.Error())

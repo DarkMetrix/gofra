@@ -58,8 +58,7 @@ import (
 )
 
 func (this {{.ServiceName}}Impl) {{.RpcName}} (ctx context.Context, req *pb.{{.Request}}) (*pb.{{.Response}}, error) {
-	// log Example:traceid must be logged
-	// log.Infof("{{.RpcName}} begin, traceid=%v, req=%v", tracing.GetTracingId(ctx), req)
+	// log.Infof("====== {{.RpcName}} start ======")
 
 	resp := new(pb.{{.Response}})
 
