@@ -56,6 +56,26 @@ func (connPool *ConnectionPool) Init(clientOpts []grpc.DialOption) error {
 	return nil
 }
 
+//Close connection pool
+func (connPool *ConnectionPool) Close() {
+	for _, pool := range connPool.pools {
+		if pool == nil {
+			continue
+		}
+
+		for _, connection := range pool.Conns {
+			if connection == nil {
+				continue
+			}
+
+			connection.Close()
+			connection = nil
+		}
+
+		pool = nil
+	}
+}
+
 //Get connection from pool
 func (connPool *ConnectionPool) GetConnection(ctx context.Context, addr string) (*grpc.ClientConn, error) {
 	connPool.mtx.Lock()

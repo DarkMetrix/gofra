@@ -164,6 +164,7 @@ func (app *Application) Init(conf *config.Config) error {
 func (app *Application) Run(address string) error {
 	defer log.Flush()
 	defer tracing.Close()
+	defer pool.GetConnectionPool().Close()
 
 	// run to serve grpc
 	grpcClose, err := app.runGRPCServer(address)
