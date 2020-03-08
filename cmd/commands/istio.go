@@ -21,55 +21,55 @@ import (
 
 	"github.com/spf13/cobra"
 
-	kubeTemplate "github.com/DarkMetrix/gofra/internal/pkg/template/kubenetes"
+	istioTemplate "github.com/DarkMetrix/gofra/internal/pkg/template/istio"
 	commonUtils "github.com/DarkMetrix/gofra/pkg/utils"
 )
 
-// kubeCmd represents the kube command
-var kubeCmd = &cobra.Command{
-	Use:   "kube",
-	Short: "kubenetes operations [deployment, service]",
+// istioCmd represents the istio command
+var istioCmd = &cobra.Command{
+	Use:   "istio",
+	Short: "istio operations [virtual-service, destination-rule]",
 	Long: `Gofra is a framework using gRPC/gin as the communication layer. 
-kube command will help to generate kubernetes deployment and service yaml file.`,
+istio command will help to generate istio virtual service and destination rule yaml file.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
 	},
 }
 
-// deploymentKubeCmd represents the kube deployment command
-var deploymentKubeCmd = &cobra.Command{
-	Use:   "deployment",
-	Short: "Add generated kubernetes deployment.yaml to project",
+// virtualServiceCmd represents the istio virtual-service command
+var virtualServiceCmd = &cobra.Command{
+	Use:   "virtual-service",
+	Short: "Add generated istio virtual-service.yaml to project",
 	Long: `Gofra is a framework using gRPC/gin as the communication layer. 
-kube deployment command will help to generate kubernetes deployment file.`,
+istio virtual-service command will help to generate istio virtual service yaml file.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		deploymentKube(override)
+		virtualServiceIstio(override)
 	},
 }
 
-// serviceKubeCmd represents the kube service command
-var serviceKubeCmd = &cobra.Command{
-	Use:   "service",
-	Short: "Add generated kubernetes service.yaml to project",
+// destinationRuleCmd represents the istio destination-rule command
+var destinationRuleCmd = &cobra.Command{
+	Use:   "destination-rule",
+	Short: "Add generated istio destination-rule.yaml to project",
 	Long: `Gofra is a framework using gRPC/gin as the communication layer. 
-kube service command will help to generate kubernetes service yaml file.`,
+istio destination-rule command will help to generate istio destination rule yaml file.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		serviceKube(override)
+		destinationRuleIstio(override)
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(kubeCmd)
-	kubeCmd.AddCommand(deploymentKubeCmd)
-	kubeCmd.AddCommand(serviceKubeCmd)
+	rootCmd.AddCommand(istioCmd)
+	istioCmd.AddCommand(virtualServiceCmd)
+	istioCmd.AddCommand(destinationRuleCmd)
 
 	// Here you will define your flags and configuration settings.
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	deploymentKubeCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
+	virtualServiceCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
 
-	serviceKubeCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
+	destinationRuleCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
@@ -77,8 +77,8 @@ func init() {
 
 }
 
-func deploymentKube(override bool) error {
-	fmt.Println("====== Gofra kubernetes deployment ======")
+func virtualServiceIstio(override bool) error {
+	fmt.Println("====== Gofra istio virtual-service ======")
 
 	//Check path
 	fmt.Printf("\r\nChecking Path ......")
@@ -109,9 +109,9 @@ func deploymentKube(override bool) error {
 
 	//Mkdir
 	fmt.Printf("\r\nMake dir ......")
-	kubernetesPath := filepath.Join(workingPath, "kubernetes")
+	istioPath := filepath.Join(workingPath, "istio")
 
-	commonUtils.CreatePath(kubernetesPath, override)
+	commonUtils.CreatePath(istioPath, override)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
@@ -120,14 +120,9 @@ func deploymentKube(override bool) error {
 		fmt.Printf(" success! \r\n")
 	}
 
-	//Input image path
-	var imagePath string
-	fmt.Print("Image path:")
-	fmt.Scanln(&imagePath)
-
-	//Generate deployment yaml file
-	fmt.Printf("\r\nGenerating kubernetes deployment yaml file ......")
-	err = kubeTemplate.GenerateKubeDeploymentYAMLFile(workingPath, imagePath, templateInfo, override)
+	//Generate virtual service yaml file
+	fmt.Printf("\r\nGenerating istio virtual service yaml file ......")
+	err = istioTemplate.GenerateIstioVirtaulServiceYAMLFile(workingPath, templateInfo, override)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
@@ -139,8 +134,8 @@ func deploymentKube(override bool) error {
 	return nil
 }
 
-func serviceKube(override bool) error {
-	fmt.Println("====== Gofra kubernetes service ======")
+func destinationRuleIstio(override bool) error {
+	fmt.Println("====== Gofra istio destination-rule ======")
 
 	//Check path
 	fmt.Printf("\r\nChecking Path ......")
@@ -171,9 +166,9 @@ func serviceKube(override bool) error {
 
 	//Mkdir
 	fmt.Printf("\r\nMake dir ......")
-	kubernetesPath := filepath.Join(workingPath, "kubernetes")
+	istioPath := filepath.Join(workingPath, "istio")
 
-	commonUtils.CreatePath(kubernetesPath, override)
+	commonUtils.CreatePath(istioPath, override)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
@@ -182,9 +177,9 @@ func serviceKube(override bool) error {
 		fmt.Printf(" success! \r\n")
 	}
 
-	//Generate service yaml file
-	fmt.Printf("\r\nGenerating kubernetes service yaml file ......")
-	err = kubeTemplate.GenerateKubeServiceYAMLFile(workingPath, templateInfo, override)
+	//Generate virtual service yaml file
+	fmt.Printf("\r\nGenerating istio destination rule yaml file ......")
+	err = istioTemplate.GenerateIstioDestinationRuleYAMLFile(workingPath, templateInfo, override)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
@@ -195,3 +190,4 @@ func serviceKube(override bool) error {
 
 	return nil
 }
+

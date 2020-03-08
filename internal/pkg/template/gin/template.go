@@ -14,11 +14,11 @@ import (
 	commonUtils "github.com/DarkMetrix/gofra/pkg/utils"
 )
 
-//Generate template.json
+// generate template.json
 func GenerateTemplateJsonFile(workingPath string, override bool, jsonInfo gofraTemplate.JsonInfo) error {
 	filePath := filepath.Join(workingPath, "template.json")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -43,7 +43,7 @@ func GenerateTemplateJsonFile(workingPath string, override bool, jsonInfo gofraT
 		}
 	}
 
-	//Parse template
+	// parse template
 	jsonTemplate, err := template.New("template_json").Parse(gofraTemplate.JsonTemplate)
 
 	if err != nil {
@@ -56,7 +56,7 @@ func GenerateTemplateJsonFile(workingPath string, override bool, jsonInfo gofraT
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = jsonTemplate.Execute(file, jsonInfo)
 
 	if err != nil {
@@ -66,11 +66,11 @@ func GenerateTemplateJsonFile(workingPath string, override bool, jsonInfo gofraT
 	return nil
 }
 
-//Generate common.go
+// generate common.go
 func GenerateCommonFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "internal", "pkg", "common", "common.go")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -95,7 +95,7 @@ func GenerateCommonFile(workingPath string, info *gofraTemplate.TemplateInfo, ov
 		}
 	}
 
-	//Parse template
+	// parse template
 	commonTemplate, err := template.New("common").Parse(CommonTemplate)
 
 	if err != nil {
@@ -115,7 +115,7 @@ func GenerateCommonFile(workingPath string, info *gofraTemplate.TemplateInfo, ov
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = commonTemplate.Execute(file, commonInfo)
 
 	if err != nil {
@@ -125,11 +125,11 @@ func GenerateCommonFile(workingPath string, info *gofraTemplate.TemplateInfo, ov
 	return nil
 }
 
-//Generate config.go
+// generate config.go
 func GenerateConfigFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "internal", "pkg", "config", "config.go")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -154,7 +154,7 @@ func GenerateConfigFile(workingPath string, info *gofraTemplate.TemplateInfo, ov
 		}
 	}
 
-	//Parse template
+	// parse template
 	configTemplate, err := template.New("config").Parse(ConfigTemplate)
 
 	if err != nil {
@@ -172,7 +172,7 @@ func GenerateConfigFile(workingPath string, info *gofraTemplate.TemplateInfo, ov
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = configTemplate.Execute(file, configInfo)
 
 	if err != nil {
@@ -182,11 +182,11 @@ func GenerateConfigFile(workingPath string, info *gofraTemplate.TemplateInfo, ov
 	return nil
 }
 
-//Generate config.toml
+// generate config.toml
 func GenerateConfigTomlFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "configs", "config.toml")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -211,7 +211,7 @@ func GenerateConfigTomlFile(workingPath string, info *gofraTemplate.TemplateInfo
 		}
 	}
 
-	//Parse template
+	// parse template
 	configTomlTemplate, err := template.New("config_toml").Parse(ConfigTomlTemplate)
 
 	if err != nil {
@@ -231,7 +231,7 @@ func GenerateConfigTomlFile(workingPath string, info *gofraTemplate.TemplateInfo
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = configTomlTemplate.Execute(file, configTomlInfo)
 
 	if err != nil {
@@ -241,11 +241,11 @@ func GenerateConfigTomlFile(workingPath string, info *gofraTemplate.TemplateInfo
 	return nil
 }
 
-//Generate log.config
+// generate log.config
 func GenerateConfigLogFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "configs", "log.config")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -270,7 +270,7 @@ func GenerateConfigLogFile(workingPath string, info *gofraTemplate.TemplateInfo,
 		}
 	}
 
-	//Parse template
+	// parse template
 	configLogTemplate, err := template.New("config_log").Parse(LogTemplate)
 
 	if err != nil {
@@ -289,7 +289,7 @@ func GenerateConfigLogFile(workingPath string, info *gofraTemplate.TemplateInfo,
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = configLogTemplate.Execute(file, configLogInfo)
 
 	if err != nil {
@@ -299,11 +299,11 @@ func GenerateConfigLogFile(workingPath string, info *gofraTemplate.TemplateInfo,
 	return nil
 }
 
-//Generate application.go
+// generate application.go
 func GenerateApplicationFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "internal", "app", "application.go")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -328,10 +328,9 @@ func GenerateApplicationFile(workingPath string, info *gofraTemplate.TemplateInf
 		}
 	}
 
-	//workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "internal") + "/")
 	workingPathRelative := filepath.Base(workingPath)
 
-	//Parse template
+	// parse template
 	applicationTemplate, err := template.New("application").Parse(ApplicationTemplate)
 
 	if err != nil {
@@ -357,7 +356,7 @@ func GenerateApplicationFile(workingPath string, info *gofraTemplate.TemplateInf
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = applicationTemplate.Execute(file, applicationInfo)
 
 	if err != nil {
@@ -367,11 +366,11 @@ func GenerateApplicationFile(workingPath string, info *gofraTemplate.TemplateInf
 	return nil
 }
 
-//Generate main.go
+// generate main.go
 func GenerateMainFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "cmd", "main.go")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -396,7 +395,6 @@ func GenerateMainFile(workingPath string, info *gofraTemplate.TemplateInfo, over
 		}
 	}
 
-	//workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "cmd") + "/")
 	workingPathRelative := filepath.Base(workingPath)
 
 	//Parse template

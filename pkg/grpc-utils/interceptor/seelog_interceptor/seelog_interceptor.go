@@ -41,7 +41,7 @@ func GofraClientInterceptorFunc(ctx context.Context, method string, req, reply i
 var GofraServerInterceptor grpc.UnaryServerInterceptor = GofraServerInterceptorFunc
 
 func GofraServerInterceptorFunc(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (reply interface{}, err error) {
-	// Process
+	// process
 	reply, err = handler(ctx, req)
 
 	ctxInfo := fmt.Sprintf("%v", ctx)

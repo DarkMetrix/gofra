@@ -27,6 +27,6 @@ func NullClientInterceptorFunc(ctx context.Context, method string, req, reply in
 var NullServerInterceptor grpc.UnaryServerInterceptor = NullServerInterceptorFunc
 
 func NullServerInterceptorFunc(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (reply interface{}, err error) {
-	// Process
+	// process
 	return handler(ctx, req)
 }

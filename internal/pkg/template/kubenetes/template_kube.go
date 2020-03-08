@@ -1,6 +1,6 @@
 package kubenetes
 
-//Deployment config
+// deployment config
 type KubeDeploymentInfo struct {
 	Project string
 	Version string
@@ -47,9 +47,15 @@ spec:
           ports:
             - containerPort: {{.ContainerPort}}
       restartPolicy: Always
+
+  ##########################################
+  # More features and details, please visit 
+  #     'https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.17/'
+  # to get more information, this URL is for kubernetes v1.17 only
+  ##########################################
 `
 
-//Service config
+// service config
 type KubeServiceInfo struct {
 	Project string
 	Type string				// grpc or http
@@ -81,5 +87,11 @@ spec:
 
   selector:
     app: {{.Project}}
+
+  ##########################################
+  # More features and details, please visit 
+  #     'https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.17/'
+  # to get more information, this URL is for kubernetes v1.17 only
+  ##########################################
 `
 

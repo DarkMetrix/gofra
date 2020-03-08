@@ -8,7 +8,7 @@ import (
 
 func GetMiddleware() gin.HandlerFunc{
 	return func (ctx *gin.Context) {
-		//Before request
+		// before request
 		header := ctx.Request.Header
 		host := ctx.Request.Host
 		remoteAddr := ctx.Request.RemoteAddr
@@ -16,10 +16,10 @@ func GetMiddleware() gin.HandlerFunc{
 
 		log.Tracef("Handle begin! URI:%v, Host:%v, Remote address:%v, header:%v", uri, host, remoteAddr, header)
 
-		//Switch to another middleware handler
+		// switch to another middleware handler
 		ctx.Next()
 
-		//After request
+		// after request
 		status := ctx.Writer.Status()
 
 		if status != 200 {

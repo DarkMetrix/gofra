@@ -9,14 +9,14 @@ import (
 	"github.com/alexcesaro/statsd"
 )
 
-//Statsd client
+// statsd client
 var client *statsd.Client = nil
 var addr string = "localhost:8125"
 var project string = "Default"
 
-//Init statsd client, if addr is empty, using default setting
+// init statsd client, if addr is empty, using default setting
 func InitStatsd(addr string, project string) error {
-	//If addr is empty, use default addr setting which is ":8125" in udp
+	// if addr is empty, use default addr setting which is ":8125" in udp
 	var err error
 	if len(addr) == 0 {
 		client, err = statsd.New()
@@ -42,7 +42,7 @@ func InitStatsd(addr string, project string) error {
 	return nil
 }
 
-//Get statsd client
+// get statsd client
 func GetStatsd() *statsd.Client {
 	if client == nil {
 		err := InitStatsd(addr, project)
@@ -55,7 +55,7 @@ func GetStatsd() *statsd.Client {
 	return client
 }
 
-//Init
+// init
 func Init(args... string) error {
 	if len(args) < 2 {
 		return errors.New(fmt.Sprintf("param invalid! args:%v", args))
@@ -73,7 +73,7 @@ func Init(args... string) error {
 	return nil
 }
 
-//Increment
+// increment
 func Increment(bucket string) {
 	statsd := GetStatsd()
 
@@ -87,7 +87,7 @@ func Increment(bucket string) {
 	statsd.Increment(bucket)
 }
 
-//Count
+// count
 func Count(bucket string, number interface{}) {
 	statsd := GetStatsd()
 
@@ -101,7 +101,7 @@ func Count(bucket string, number interface{}) {
 	statsd.Count(bucket, number)
 }
 
-//Gauge
+// gauge
 func Gauge(bucket string, value interface{}) {
 	statsd := GetStatsd()
 
@@ -119,7 +119,7 @@ type MonitorTiming struct {
 	statsd.Timing
 }
 
-//Timing
+// timing
 func NewTiming() *MonitorTiming {
 	statsd := GetStatsd()
 
@@ -134,7 +134,7 @@ func NewTiming() *MonitorTiming {
 	return &MonitorTiming{timing}
 }
 
-//Sent timing
+// sent timing
 func (timing *MonitorTiming) SendTiming(bucket string) {
 	log.Tracef("monitor SendTiming success! bucket:%v", bucket)
 
