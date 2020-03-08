@@ -20,7 +20,7 @@ kind: Deployment
 metadata:
   name: {{.Project}}
   labels:
-    app: {{.Version}}
+    app: {{.Project}}
     version: {{.Version}}
 
 # specification
@@ -42,7 +42,7 @@ spec:
 
     spec:
       containers:
-        - name: {{.Version}}
+        - name: {{.Project}}
           image: {{.ImagePath}}
           ports:
             - containerPort: {{.ContainerPort}}

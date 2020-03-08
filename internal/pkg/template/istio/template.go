@@ -34,7 +34,7 @@ func GenerateIstioVirtaulServiceYAMLFile(workingPath string, info *gofraTemplate
 	}
 
 	if isExist && override {
-		err := os.RemoveAll(filePath)
+		err := os.Remove(filePath)
 
 		if err != nil {
 			return err
@@ -98,7 +98,7 @@ func GenerateIstioDestinationRuleYAMLFile(workingPath string, info *gofraTemplat
 	}
 
 	if isExist && override {
-		err := os.RemoveAll(filePath)
+		err := os.Remove(filePath)
 
 		if err != nil {
 			return err

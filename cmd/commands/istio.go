@@ -111,7 +111,7 @@ func virtualServiceIstio(override bool) error {
 	fmt.Printf("\r\nMake dir ......")
 	istioPath := filepath.Join(workingPath, "istio")
 
-	commonUtils.CreatePath(istioPath, override)
+	commonUtils.CreatePath(istioPath, false)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
@@ -168,7 +168,7 @@ func destinationRuleIstio(override bool) error {
 	fmt.Printf("\r\nMake dir ......")
 	istioPath := filepath.Join(workingPath, "istio")
 
-	commonUtils.CreatePath(istioPath, override)
+	commonUtils.CreatePath(istioPath, false)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())

@@ -34,7 +34,7 @@ func GenerateKubeDeploymentYAMLFile(workingPath, imagePath string, info *gofraTe
 	}
 
 	if isExist && override {
-		err := os.RemoveAll(filePath)
+		err := os.Remove(filePath)
 
 		if err != nil {
 			return err
@@ -99,7 +99,7 @@ func GenerateKubeServiceYAMLFile(workingPath string, info *gofraTemplate.Templat
 	}
 
 	if isExist && override {
-		err := os.RemoveAll(filePath)
+		err := os.Remove(filePath)
 
 		if err != nil {
 			return err

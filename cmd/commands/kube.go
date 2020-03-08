@@ -111,7 +111,7 @@ func deploymentKube(override bool) error {
 	fmt.Printf("\r\nMake dir ......")
 	kubernetesPath := filepath.Join(workingPath, "kubernetes")
 
-	commonUtils.CreatePath(kubernetesPath, override)
+	commonUtils.CreatePath(kubernetesPath, false)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
@@ -173,7 +173,7 @@ func serviceKube(override bool) error {
 	fmt.Printf("\r\nMake dir ......")
 	kubernetesPath := filepath.Join(workingPath, "kubernetes")
 
-	commonUtils.CreatePath(kubernetesPath, override)
+	commonUtils.CreatePath(kubernetesPath, false)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())

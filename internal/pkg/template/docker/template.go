@@ -33,7 +33,7 @@ func GenerateDockerFile(workingPath string, info *gofraTemplate.TemplateInfo, ov
 	}
 
 	if isExist && override {
-		err := os.RemoveAll(filePath)
+		err := os.Remove(filePath)
 
 		if err != nil {
 			return err

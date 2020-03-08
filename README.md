@@ -46,7 +46,7 @@ You need to type Author Name, Project Name, Project Address & Server Type.
 {
     "author":"Author Name",
     "project":"Project Name",
-    "version":"v1.0.0",
+    "version":"v1",
     "type":"grpc",
     "server":
     {

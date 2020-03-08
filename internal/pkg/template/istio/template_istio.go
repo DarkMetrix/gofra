@@ -19,26 +19,26 @@ spec:
     - {{.Project}}            # hosts will be interpreted as ${hosts}.${k8s-namespace}.svc.cluster.local in k8s environment
   http:
     - route:
-	  # destination works with host and subset defined in destination rule
-	  # if using destination rule to manage traffic policy, then you could use subset to manage route rule
-	  - destination:
+      # destination works with host and subset defined in destination rule
+      # if using destination rule to manage traffic policy, then you could use subset to manage route rule
+      - destination:
           host: {{.Project}} # host will be interpreted as ${hosts}.${k8s-namespace}.svc.cluster.local in k8s environment
-		  subset: {{.Version}}
-
-	  timeout: 2s
-
+          subset: {{.Version}}
+      
+      timeout: 2s
+      
       # destination works with host and port
       #- destination:
       #    host: {{.Project}}  # host will be interpreted as ${hosts}.${k8s-namespace}.svc.cluster.local in k8s environment
-	  #	  port: 
-	  #	    number: {{.Port}} # port defined in kubernetes service
-
-	  # retry setting, use it as business needs
-	  #retries:
+      #	  port: 
+      #	    number: {{.Port}} # port defined in kubernetes service
+      
+      # retry setting, use it as business needs
+      #retries:
       #  attempts: 2
       #  perTryTimeout: 2s
-
-	  # There's a lot of features, such as traffic mirroring, weighted routing etc.
+      
+      # There's a lot of features, such as traffic mirroring, weighted routing etc.
 
   ##########################################
   # More features and details, such as:
