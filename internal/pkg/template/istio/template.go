@@ -1,4 +1,4 @@
-package kubenetes
+package istio
 
 import (
 	"errors"

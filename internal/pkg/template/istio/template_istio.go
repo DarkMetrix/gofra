@@ -1,4 +1,4 @@
-package kubenetes
+package istio
 
 // istio virtual service config
 type IstioVirtaulServiceInfo struct {
