@@ -10,11 +10,10 @@ import (
 	"github.com/opentracing/opentracing-go"
 )
 
-var tracer opentracing.Tracer
-var closer io.Closer = nil
+var globalCloser io.Closer = nil
 
 func Init(args... string) error {
-	if len(args) < 1 {
+	if len(args) < 2 {
 		return errors.New(fmt.Sprintf("param invalid! args:%v", args))
 	}
 
@@ -27,14 +26,12 @@ func Init(args... string) error {
 		return err
 	}
 
-	opentracing.InitGlobalTracer(tracer)
-
 	return nil
 }
 
 func Close() error {
-	if closer != nil {
-		return closer.Close()
+	if globalCloser != nil {
+		return globalCloser.Close()
 	}
 
 	return nil
@@ -55,11 +52,14 @@ func InitJaeger(addr string,  serviceName string) error {
 	reporter := jaeger.NewRemoteReporter(transport)
 
 	// new tracer
-	tracer, closer = jaeger.NewTracer(serviceName, sampler, reporter)
+	tracer, closer := jaeger.NewTracer(serviceName, sampler, reporter)
+	globalCloser = closer
+
+	opentracing.SetGlobalTracer(tracer)
 
 	return nil
 }
 
 func GetTracer() opentracing.Tracer {
-	return tracer
+	return opentracing.GlobalTracer()
 }

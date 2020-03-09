@@ -183,6 +183,14 @@ var ConfigTomlTemplate string = `
 #		2.the project's name
 #	eg:
 #		params=["127.0.0.1:6831", "demo"]
+#
+#   You could change the tracing package before 'gofra init'
+#	If changed to zipkin, the params has 3 parts(all in a string array)
+#		1.zipkin's report URL
+#		2.Host and port
+#		3.Service name
+#	eg:
+#		params=["http://127.0.0.1:9411/api/v2/spans", "127.0.0.1:12345", demo"]
 [tracing]
     params=[{{.TracingInitParams}}]
 `
