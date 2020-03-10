@@ -52,7 +52,7 @@ import (
 	// monitor "{{.MonitorPackage}}"
 
 	// tracing package
-	// tracing "{{.TracingPackage}}"
+	// opentracing "github.com/opentracing/opentracing-go"
 
 	pb "{{.WorkingPathRelative}}/api/protobuf_spec/{{.FileNamePrefix}}"
 )

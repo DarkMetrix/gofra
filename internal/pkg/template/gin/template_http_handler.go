@@ -28,7 +28,7 @@ import (
 	// monitor "{{.MonitorPackage}}"
 
 	// tracing package
-	// tracing "{{.TracingPackage}}"
+	// opentracing "github.com/opentracing/opentracing-go"
 
 	"github.com/gin-gonic/gin"
 )

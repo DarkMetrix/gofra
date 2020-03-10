@@ -247,7 +247,6 @@ func InitGrpcDirectoryStructure(workingPath string, info *gofraTemplate.Template
 	cmdPath := filepath.Join(workingPath, "cmd")
 	apiPath := filepath.Join(workingPath, "api")
 	internalPath := filepath.Join(workingPath, "internal")
-	testPath := filepath.Join(workingPath, "test")
 
 	internalAppPath := filepath.Join(workingPath, "internal", "app")
 	internalPkgPath := filepath.Join(workingPath, "internal", "pkg")
@@ -259,7 +258,7 @@ func InitGrpcDirectoryStructure(workingPath string, info *gofraTemplate.Template
 	apiProtobufHealthCheckPath := filepath.Join(workingPath, "api", "protobuf_spec", "health_check")
 
 	//Create root directories
-	err := commonUtils.CreatePaths(override, buildPath, confPath, logPath, cmdPath, apiPath, internalPath, testPath)
+	err := commonUtils.CreatePaths(override, buildPath, confPath, logPath, cmdPath, apiPath, internalPath)
 
 	if err != nil {
 		return err
@@ -290,7 +289,6 @@ func InitHttpDirectoryStructure(workingPath string, info *gofraTemplate.Template
 	cmdPath := filepath.Join(workingPath, "cmd")
 	apiPath := filepath.Join(workingPath, "api")
 	internalPath := filepath.Join(workingPath, "internal")
-	testPath := filepath.Join(workingPath, "test")
 
 	internalAppPath := filepath.Join(workingPath, "internal", "app")
 	internalPkgPath := filepath.Join(workingPath, "internal", "pkg")
@@ -301,7 +299,7 @@ func InitHttpDirectoryStructure(workingPath string, info *gofraTemplate.Template
 	apiHttpPath:= filepath.Join(workingPath, "api", "http_spec")
 
 	//Create root directories
-	err := commonUtils.CreatePaths(override, buildPath, confPath, logPath, cmdPath, apiPath, internalPath, testPath)
+	err := commonUtils.CreatePaths(override, buildPath, confPath, logPath, cmdPath, apiPath, internalPath)
 
 	if err != nil {
 		return err
@@ -373,12 +371,6 @@ func InitGrpcAllFiles(workingPath string, info *gofraTemplate.TemplateInfo) erro
 		return err
 	}
 
-	err = grpcTemplate.GenerateTestClient(workingPath, info, override)
-
-	if err != nil {
-		return err
-	}
-
 	return nil
 }
 
@@ -421,12 +413,6 @@ func InitHttpAllFiles(workingPath string, info *gofraTemplate.TemplateInfo) erro
 	}
 
 	err = httpTemplate.GenerateHealthCheckHttpHandler(workingPath, info, override)
-
-	if err != nil {
-		return err
-	}
-
-	err = httpTemplate.GenerateTestClient(workingPath, info, override)
 
 	if err != nil {
 		return err
