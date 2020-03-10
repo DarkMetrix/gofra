@@ -431,7 +431,7 @@ func GenerateMainFile(workingPath string, info *gofraTemplate.TemplateInfo, over
 //Generate health check handler
 func GenerateHealthCheckHttpHandler(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	//Generate health check proto file
-	err := GenerateHttpHandler(workingPath, info, "/health", "POST", override)
+	err := GenerateHttpHandler(workingPath, info, "/health", "GET", override)
 
 	if err != nil {
 		return err

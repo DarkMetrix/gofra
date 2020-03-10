@@ -38,6 +38,6 @@ func {{.HandlerName}}(ctx *gin.Context) {
 	log.Tracef("====== {{.HandlerName}} start ======")
 
 	// reply success
-	ctx.JSON(200, gin.H{"ret":0, "msg":"success"})
+	ctx.JSON(200, gin.H{"msg":"success"})
 }
-
+`
