@@ -141,3 +141,59 @@ func GenerateKubeServiceYAMLFile(workingPath string, info *gofraTemplate.Templat
 
 	return nil
 }
+
+//Generate kubernetes configmap yaml file
+func GenerateKubeConfigmapYAMLFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
+	filePath := filepath.Join(workingPath, "kubernetes", "configmap.sh")
+
+	//Check file is exist or not
+	isExist, err := commonUtils.CheckPathExists(filePath)
+
+	if err != nil {
+		return err
+	}
+
+	if isExist && !override {
+		filePathRel, err := filepath.Rel(workingPath, filePath)
+
+		if err != nil {
+			return err
+		}
+
+		return errors.New(fmt.Sprintf("File:%v already exists! this operation will override it!", filePathRel))
+	}
+
+	if isExist && override {
+		err := os.Remove(filePath)
+
+		if err != nil {
+			return err
+		}
+	}
+
+	//Parse template
+	kubeConfigmapTemplate , err := template.New("kube_configmap").Parse(kubeConfigmapTemplate)
+
+	if err != nil {
+		return err
+	}
+
+	kubeConfigmapInfo := &KubeConfigmapInfo {
+		Project: info.Project,
+	}
+
+	file, err := os.OpenFile(filePath, os.O_RDWR | os.O_CREATE, 0755)
+
+	if err != nil {
+		return err
+	}
+
+	//Render template to file
+	err = kubeConfigmapTemplate.Execute(file, kubeConfigmapInfo)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

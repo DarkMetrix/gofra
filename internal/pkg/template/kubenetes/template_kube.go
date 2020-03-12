@@ -41,12 +41,31 @@ spec:
         version: {{.Version}}
 
     spec:
+      restartPolicy: Always
       containers:
         - name: {{.Project}}
           image: {{.ImagePath}}
           ports:
             - containerPort: {{.ContainerPort}}
-      restartPolicy: Always
+
+      ##########################################
+      # if you would like to use config map to keep the config.toml and log.config
+      # below configuration could mount config files to /app/{{.Project}}/configs directory
+      # config map YAML file could be generated using 'gofra kube configmap' command
+      ##########################################
+
+      #    volumeMounts:
+      #      - name: configs
+      #        mountPath: /app/{{.Project}}/configs/config.toml
+      #        subPath: config.toml
+      #      - name: configs
+      #        mountPath: /app/{{.Project}}/configs/log.config
+      #        subPath: log.config
+      # volumes:
+      #   - name: configs
+      #     configMap:
+      #       name: {{.Project}}
+
 
   ##########################################
   # More features and details, please visit 
@@ -93,5 +112,44 @@ spec:
   #     'https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.17/'
   # to get more information, this URL is for kubernetes v1.17 only
   ##########################################
+`
+
+// config config
+type KubeConfigmapInfo struct {
+	Project string
+}
+
+var kubeConfigmapTemplate string = `#!/bin/bash
+
+case $1 in
+
+"create")
+  echo "configmap '{{.Project}}' creating..."
+  kubectl create configmap {{.Project}} --from-file=../configs
+  ;;
+
+"update")
+  echo "configmap '{{.Project}}' deleting..."
+  kubectl delete configmap {{.Project}}
+
+  echo "configmap '{{.Project}}' creating..."
+  kubectl create configmap {{.Project}} --from-file=../configs
+  ;;
+
+"delete")
+  echo "configmap '{{.Project}}' deleting..."
+  kubectl delete configmap {{.Project}}
+  ;;
+
+"get")
+  echo "configmap '{{.Project}}' getting..."
+  kubectl describe configmap {{.Project}}
+  ;;
+
+"")
+  echo "no command found! command list [create, update, delete]"
+  ;;
+
+esac
 `
 
