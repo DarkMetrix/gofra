@@ -21,11 +21,11 @@ import (
 //protoc command path
 var ProtocPath string = "protoc"
 
-//Generate template.json
+// generate template.json
 func GenerateTemplateJsonFile(workingPath string, override bool, jsonInfo gofraTemplate.JsonInfo) error {
 	filePath := filepath.Join(workingPath, "template.json")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -50,7 +50,7 @@ func GenerateTemplateJsonFile(workingPath string, override bool, jsonInfo gofraT
 		}
 	}
 
-	//Parse template
+	// parse template
 	jsonTemplate, err := template.New("template_json").Parse(gofraTemplate.JsonTemplate)
 
 	if err != nil {
@@ -63,7 +63,7 @@ func GenerateTemplateJsonFile(workingPath string, override bool, jsonInfo gofraT
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = jsonTemplate.Execute(file, jsonInfo)
 
 	if err != nil {
@@ -73,11 +73,11 @@ func GenerateTemplateJsonFile(workingPath string, override bool, jsonInfo gofraT
 	return nil
 }
 
-//Generate common.go
+// generate common.go
 func GenerateCommonFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "internal", "pkg", "common", "common.go")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -102,7 +102,7 @@ func GenerateCommonFile(workingPath string, info *gofraTemplate.TemplateInfo, ov
 		}
 	}
 
-	//Parse template
+	// parse template
 	commonTemplate, err := template.New("common").Parse(CommonTemplate)
 
 	if err != nil {
@@ -122,7 +122,7 @@ func GenerateCommonFile(workingPath string, info *gofraTemplate.TemplateInfo, ov
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = commonTemplate.Execute(file, commonInfo)
 
 	if err != nil {
@@ -132,11 +132,11 @@ func GenerateCommonFile(workingPath string, info *gofraTemplate.TemplateInfo, ov
 	return nil
 }
 
-//Generate config.go
+// generate config.go
 func GenerateConfigFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "internal", "pkg", "config", "config.go")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -161,7 +161,7 @@ func GenerateConfigFile(workingPath string, info *gofraTemplate.TemplateInfo, ov
 		}
 	}
 
-	//Parse template
+	// parse template
 	configTemplate, err := template.New("config").Parse(ConfigTemplate)
 
 	if err != nil {
@@ -179,7 +179,7 @@ func GenerateConfigFile(workingPath string, info *gofraTemplate.TemplateInfo, ov
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = configTemplate.Execute(file, configInfo)
 
 	if err != nil {
@@ -189,11 +189,11 @@ func GenerateConfigFile(workingPath string, info *gofraTemplate.TemplateInfo, ov
 	return nil
 }
 
-//Generate config.toml
+// generate config.toml
 func GenerateConfigTomlFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "configs", "config.toml")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -218,7 +218,7 @@ func GenerateConfigTomlFile(workingPath string, info *gofraTemplate.TemplateInfo
 		}
 	}
 
-	//Parse template
+	// parse template
 	configTomlTemplate, err := template.New("config_toml").Parse(ConfigTomlTemplate)
 
 	if err != nil {
@@ -238,7 +238,7 @@ func GenerateConfigTomlFile(workingPath string, info *gofraTemplate.TemplateInfo
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = configTomlTemplate.Execute(file, configTomlInfo)
 
 	if err != nil {
@@ -248,11 +248,11 @@ func GenerateConfigTomlFile(workingPath string, info *gofraTemplate.TemplateInfo
 	return nil
 }
 
-//Generate log.config
+// generate log.config
 func GenerateConfigLogFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "configs", "log.config")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -277,7 +277,7 @@ func GenerateConfigLogFile(workingPath string, info *gofraTemplate.TemplateInfo,
 		}
 	}
 
-	//Parse template
+	// parse template
 	configLogTemplate, err := template.New("config_log").Parse(LogTemplate)
 
 	if err != nil {
@@ -296,7 +296,7 @@ func GenerateConfigLogFile(workingPath string, info *gofraTemplate.TemplateInfo,
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = configLogTemplate.Execute(file, configLogInfo)
 
 	if err != nil {
@@ -306,11 +306,11 @@ func GenerateConfigLogFile(workingPath string, info *gofraTemplate.TemplateInfo,
 	return nil
 }
 
-//Generate application.go
+// generate application.go
 func GenerateApplicationFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "internal", "app", "application.go")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -338,7 +338,7 @@ func GenerateApplicationFile(workingPath string, info *gofraTemplate.TemplateInf
 	//workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "src") + "/")
 	workingPathRelative := filepath.Base(workingPath)
 
-	//Parse template
+	// parse template
 	applicationTemplate, err := template.New("application").Parse(ApplicationTemplate)
 
 	if err != nil {
@@ -364,7 +364,7 @@ func GenerateApplicationFile(workingPath string, info *gofraTemplate.TemplateInf
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = applicationTemplate.Execute(file, applicationInfo)
 
 	if err != nil {
@@ -374,11 +374,11 @@ func GenerateApplicationFile(workingPath string, info *gofraTemplate.TemplateInf
 	return nil
 }
 
-//Generate main.go
+// generate main.go
 func GenerateMainFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "cmd", "main.go")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -406,7 +406,7 @@ func GenerateMainFile(workingPath string, info *gofraTemplate.TemplateInfo, over
 	//workingPathRelative := strings.TrimPrefix(workingPath, filepath.Join(goPath, "src") + "/")
 	workingPathRelative := filepath.Base(workingPath)
 
-	//Parse template
+	// parse template
 	mainTemplate, err := template.New("main").Parse(MainTemplate)
 
 	if err != nil {
@@ -427,7 +427,7 @@ func GenerateMainFile(workingPath string, info *gofraTemplate.TemplateInfo, over
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = mainTemplate.Execute(file, mainInfo)
 
 	if err != nil {
@@ -437,9 +437,9 @@ func GenerateMainFile(workingPath string, info *gofraTemplate.TemplateInfo, over
 	return nil
 }
 
-//Generate health check handler
+// generate health check handler
 func GenerateHealthCheckHandler(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
-	//Generate health check proto file
+	// generate health check proto file
 	err := GenerateHealthCheckProto(workingPath, info, override)
 
 	if err != nil {
@@ -457,12 +457,12 @@ func GenerateHealthCheckHandler(workingPath string, info *gofraTemplate.Template
 	return nil
 }
 
-//Generate health check service proto
+// generate health check service proto
 func GenerateHealthCheckProto(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "api", "protobuf_spec", "health_check", "health_check.proto")
 	filePathRelative := filepath.Join(".", "api", "protobuf_spec", "health_check", "health_check.proto")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -487,7 +487,7 @@ func GenerateHealthCheckProto(workingPath string, info *gofraTemplate.TemplateIn
 		}
 	}
 
-	//Parse template
+	// parse template
 	healthCheckServiceProtoTemplate, err := template.New("health_check").Parse(HealthCheckServiceProtoTemplate)
 
 	if err != nil {
@@ -505,14 +505,14 @@ func GenerateHealthCheckProto(workingPath string, info *gofraTemplate.TemplateIn
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = healthCheckServiceProtoTemplate.Execute(file, mainInfo)
 
 	if err != nil {
 		return err
 	}
 
-	//Execute protoc to generate .pb.go file
+	// execute protoc to generate .pb.go file
 	shellCmd := exec.Command(ProtocPath, "--go_out=plugins=grpc:.", filePathRelative)
 
 	err = shellCmd.Run()
@@ -525,9 +525,9 @@ func GenerateHealthCheckProto(workingPath string, info *gofraTemplate.TemplateIn
 	return nil
 }
 
-//Generate service
+// generate service
 func GenerateService(workingPath string, protoFileIncludePath []string, info *gofraTemplate.TemplateInfo, protoPath string, override bool, update bool) error {
-	//Parse proto file
+	// parse proto file
 	raw, err := ioutil.ReadFile(protoPath)
 
 	if err != nil {
@@ -551,9 +551,9 @@ func GenerateService(workingPath string, protoFileIncludePath []string, info *go
 	workingPathRelative := filepath.Base(workingPath)
 	protoFileNamePrefix := strings.TrimSuffix(filepath.Base(protoPath), filepath.Ext(protoPath))
 
-	//Generate service and handler
+	// generate service and handler
 	for _, elem := range pf.Services {
-		//Create path
+		// create path
 		handlerPath := filepath.Join(workingPath, "internal", "grpc_handler", elem.Name)
 
 		err := commonUtils.CreatePath(handlerPath, override)
@@ -567,28 +567,28 @@ func GenerateService(workingPath string, protoFileIncludePath []string, info *go
 			Time: time.Now().Format("2006-01-02 15:04:05"),
 			ServiceName: elem.Name}
 
-		//Create implementation file
+		// create implementation file
 		err = GenerateServiceImplementation(workingPath, info, service, override, update)
 
 		if err != nil {
 			return err
 		}
 
-		//Add service handler import to application
+		// add service handler import to application
 		err = AddServiceHandlerToApplicationFileImport(workingPath, info, service.ServiceName)
 
 		if err != nil {
 			return err
 		}
 
-		//Add service register to application
+		// add service register to application
 		err = AddServiceRegisterToApplicationFile(workingPath, info, protoPath, service.ServiceName)
 
 		if err != nil {
 			return err
 		}
 
-		//Create handlers
+		// create handlers
 		for _, rpc := range elem.RPCs {
 			rpc := &RpcInfo{
 				Author: info.Author,
@@ -610,7 +610,7 @@ func GenerateService(workingPath string, protoFileIncludePath []string, info *go
 		}
 	}
 
-	//Add service proto import to application
+	// add service proto import to application
 	err = AddServiceProtoToApplicationFileImport(workingPath, info, protoPath)
 
 	if err != nil {
@@ -620,7 +620,7 @@ func GenerateService(workingPath string, protoFileIncludePath []string, info *go
 	return nil
 }
 
-//Add service proto import to application file
+// add service proto import to application file
 func AddServiceProtoToApplicationFileImport(workingPath string, info *gofraTemplate.TemplateInfo, protoPath string) error {
 	applicationFilePath := filepath.Join(workingPath, "internal", "app", "application.go")
 
@@ -652,7 +652,7 @@ func AddServiceProtoToApplicationFileImport(workingPath string, info *gofraTempl
 	return nil
 }
 
-//Add service handler import to application file
+// add service handler import to application file
 func AddServiceHandlerToApplicationFileImport(workingPath string, info *gofraTemplate.TemplateInfo, serviceName string) error {
 	applicationFilePath := filepath.Join(workingPath, "internal", "app", "application.go")
 
@@ -683,7 +683,7 @@ func AddServiceHandlerToApplicationFileImport(workingPath string, info *gofraTem
 	return nil
 }
 
-//Add service handler import to application file
+// add service handler import to application file
 func AddServiceRegisterToApplicationFile(workingPath string, info *gofraTemplate.TemplateInfo, protoPath, serviceName string) error {
 	applicationFilePath := filepath.Join(workingPath, "internal", "app", "application.go")
 
@@ -713,11 +713,11 @@ func AddServiceRegisterToApplicationFile(workingPath string, info *gofraTemplate
 	return nil
 }
 
-//Generate service implementation
+// generate service implementation
 func GenerateServiceImplementation(workingPath string, info *gofraTemplate.TemplateInfo, service *ServiceInfo, override bool, update bool) error {
 	filePath := filepath.Join(workingPath, "internal", "grpc_handler", service.ServiceName, service.ServiceName + ".go")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -746,7 +746,7 @@ func GenerateServiceImplementation(workingPath string, info *gofraTemplate.Templ
 		}
 	}
 
-	//Parse template
+	// parse template
 	serviceTemplate, err := template.New("implementation").Parse(ServiceTemplate)
 
 	if err != nil {
@@ -759,7 +759,7 @@ func GenerateServiceImplementation(workingPath string, info *gofraTemplate.Templ
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = serviceTemplate.Execute(file, service)
 
 	if err != nil {
@@ -769,11 +769,11 @@ func GenerateServiceImplementation(workingPath string, info *gofraTemplate.Templ
 	return nil
 }
 
-//Generate service handler
+// generate service handler
 func GenerateServiceHandler(workingPath string, info *gofraTemplate.TemplateInfo, rpc *RpcInfo, override bool, update bool) error {
 	filePath := filepath.Join(workingPath, "internal", "grpc_handler", rpc.ServiceName, rpc.RpcName + ".go")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -802,7 +802,7 @@ func GenerateServiceHandler(workingPath string, info *gofraTemplate.TemplateInfo
 		}
 	}
 
-	//Parse template
+	// parse template
 	serviceRpcTemplate, err := template.New("handler").Parse(ServiceRpcTemplate)
 
 	if err != nil {
@@ -815,7 +815,7 @@ func GenerateServiceHandler(workingPath string, info *gofraTemplate.TemplateInfo
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = serviceRpcTemplate.Execute(file, rpc)
 
 	if err != nil {

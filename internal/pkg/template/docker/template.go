@@ -11,11 +11,11 @@ import (
 	commonUtils "github.com/DarkMetrix/gofra/pkg/utils"
 )
 
-//Generate docker file
+// generate docker file
 func GenerateDockerFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "Dockerfile")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -40,7 +40,7 @@ func GenerateDockerFile(workingPath string, info *gofraTemplate.TemplateInfo, ov
 		}
 	}
 
-	//Parse template
+	// parse template
 	dockerFileTemplate, err := template.New("docker_file").Parse(DockerFileTemplate)
 
 	if err != nil {
@@ -58,7 +58,7 @@ func GenerateDockerFile(workingPath string, info *gofraTemplate.TemplateInfo, ov
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = dockerFileTemplate.Execute(file, dockerFileInfo)
 
 	if err != nil {

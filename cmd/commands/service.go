@@ -91,12 +91,12 @@ func init() {
 func addService(path string, override, update bool) error {
 	fmt.Println("====== Gofra service add ======")
 
-	//Set protoc binary path
+	// set protoc binary path
 	if len(protocPath) != 0 {
 		grpcTemplate.ProtocPath = protocPath
 	}
 
-	//Check path
+	// check path
 	fmt.Printf("\r\nChecking Path ......")
 	workingPath, err := os.Getwd()
 
@@ -107,7 +107,7 @@ func addService(path string, override, update bool) error {
 		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
 	}
 
-	//Read template
+	// read template
 	fmt.Printf("\r\nReading template ......")
 	if len(templatePath) == 0 {
 		fmt.Printf(" failed! \r\nerror:Template file path is empty!\r\n")
@@ -123,13 +123,13 @@ func addService(path string, override, update bool) error {
 		fmt.Printf(" success! \r\n")
 	}
 
-	//Check server type
+	// check server type
 	if templateInfo.Type != "grpc" {
 		fmt.Printf(" failed! \r\nerror:Server type is not 'grpc'!\r\n")
 		return err
 	}
 
-	//Mkdir
+	// mkdir
 	fmt.Printf("\r\nMake dir ......")
 	filename := filepath.Base(path)
 	protoPath := filepath.Join(workingPath, "api", "protobuf_spec", strings.TrimSuffix(filename, ".proto"))
@@ -143,7 +143,7 @@ func addService(path string, override, update bool) error {
 		fmt.Printf(" success! \r\n")
 	}
 
-	//Copy proto file path & generate .pb.go file
+	// copy proto file path & generate .pb.go file
 	fmt.Printf("\r\nCopy proto file ......")
 	protoFilePath := filepath.Join(workingPath, "api", "protobuf_spec", strings.TrimSuffix(filename, ".proto"), filename)
 	protoFilePathRelative := filepath.Join(".", "api", "protobuf_spec", strings.TrimSuffix(filename, ".proto"), filename)
@@ -157,7 +157,7 @@ func addService(path string, override, update bool) error {
 		fmt.Printf(" success! \r\n")
 	}
 
-	//Execute protoc to generate .pb.go file
+	// execute protoc to generate .pb.go file
 	fmt.Printf("\r\nCompile proto file ......")
 
 	args := []string{}
@@ -190,7 +190,7 @@ func addService(path string, override, update bool) error {
 		fmt.Printf(" success! cmd:%v %v\r\n", grpcTemplate.ProtocPath, args)
 	}
 
-	//Generate service
+	// generate service
 	fmt.Printf("\r\nGenerating service code ......")
 	err = grpcTemplate.GenerateService(workingPath, protoFileIncludePath, templateInfo, protoFilePathRelative, override, update)
 

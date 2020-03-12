@@ -95,7 +95,7 @@ func init() {
 func deploymentKube(override bool) error {
 	fmt.Println("====== Gofra kubernetes deployment ======")
 
-	//Check path
+	// check path
 	fmt.Printf("\r\nChecking Path ......")
 	workingPath, err := os.Getwd()
 
@@ -106,7 +106,7 @@ func deploymentKube(override bool) error {
 		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
 	}
 
-	//Read template
+	// read template
 	fmt.Printf("\r\nReading template ......")
 	if len(templatePath) == 0 {
 		fmt.Printf(" failed! \r\nerror:Template file path is empty!\r\n")
@@ -122,7 +122,7 @@ func deploymentKube(override bool) error {
 		fmt.Printf(" success! \r\n")
 	}
 
-	//Mkdir
+	// mkdir
 	fmt.Printf("\r\nMake dir ......")
 	kubernetesPath := filepath.Join(workingPath, "kubernetes")
 
@@ -135,12 +135,12 @@ func deploymentKube(override bool) error {
 		fmt.Printf(" success! \r\n")
 	}
 
-	//Input image path
+	// input image path
 	var imagePath string
 	fmt.Print("Image path:")
 	fmt.Scanln(&imagePath)
 
-	//Generate deployment yaml file
+	// generate deployment yaml file
 	fmt.Printf("\r\nGenerating kubernetes deployment yaml file ......")
 	err = kubeTemplate.GenerateKubeDeploymentYAMLFile(workingPath, imagePath, templateInfo, override)
 
@@ -157,7 +157,7 @@ func deploymentKube(override bool) error {
 func serviceKube(override bool) error {
 	fmt.Println("====== Gofra kubernetes service ======")
 
-	//Check path
+	// check path
 	fmt.Printf("\r\nChecking Path ......")
 	workingPath, err := os.Getwd()
 
@@ -168,7 +168,7 @@ func serviceKube(override bool) error {
 		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
 	}
 
-	//Read template
+	// read template
 	fmt.Printf("\r\nReading template ......")
 	if len(templatePath) == 0 {
 		fmt.Printf(" failed! \r\nerror:Template file path is empty!\r\n")
@@ -184,7 +184,7 @@ func serviceKube(override bool) error {
 		fmt.Printf(" success! \r\n")
 	}
 
-	//Mkdir
+	// mkdir
 	fmt.Printf("\r\nMake dir ......")
 	kubernetesPath := filepath.Join(workingPath, "kubernetes")
 
@@ -197,7 +197,7 @@ func serviceKube(override bool) error {
 		fmt.Printf(" success! \r\n")
 	}
 
-	//Generate service yaml file
+	// generate service yaml file
 	fmt.Printf("\r\nGenerating kubernetes service yaml file ......")
 	err = kubeTemplate.GenerateKubeServiceYAMLFile(workingPath, templateInfo, override)
 
@@ -214,7 +214,7 @@ func serviceKube(override bool) error {
 func configmapKube(override bool) error {
 	fmt.Println("====== Gofra kubernetes configmap ======")
 
-	//Check path
+	// check path
 	fmt.Printf("\r\nChecking Path ......")
 	workingPath, err := os.Getwd()
 
@@ -225,7 +225,7 @@ func configmapKube(override bool) error {
 		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
 	}
 
-	//Read template
+	// read template
 	fmt.Printf("\r\nReading template ......")
 	if len(templatePath) == 0 {
 		fmt.Printf(" failed! \r\nerror:Template file path is empty!\r\n")
@@ -241,7 +241,7 @@ func configmapKube(override bool) error {
 		fmt.Printf(" success! \r\n")
 	}
 
-	//Mkdir
+	// mkdir
 	fmt.Printf("\r\nMake dir ......")
 	kubernetesPath := filepath.Join(workingPath, "kubernetes")
 
@@ -254,7 +254,7 @@ func configmapKube(override bool) error {
 		fmt.Printf(" success! \r\n")
 	}
 
-	//Generate service yaml file
+	// generate service yaml file
 	fmt.Printf("\r\nGenerating kubernetes service yaml file ......")
 	err = kubeTemplate.GenerateKubeConfigmapYAMLFile(workingPath, templateInfo, override)
 

@@ -12,11 +12,11 @@ import (
 	commonUtils "github.com/DarkMetrix/gofra/pkg/utils"
 )
 
-//Generate istio virtual service yaml file
+// generate istio virtual service yaml file
 func GenerateIstioVirtaulServiceYAMLFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "istio", "virtual-service.yml")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -41,7 +41,7 @@ func GenerateIstioVirtaulServiceYAMLFile(workingPath string, info *gofraTemplate
 		}
 	}
 
-	//Parse template
+	// parse template
 	istioVirtualServiceTemplate, err := template.New("istio_virtual_service").Parse(IstioVirtualServiceTemplate)
 
 	if err != nil {
@@ -66,7 +66,7 @@ func GenerateIstioVirtaulServiceYAMLFile(workingPath string, info *gofraTemplate
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = istioVirtualServiceTemplate.Execute(file, istioVirtualServiceInfo)
 
 	if err != nil {
@@ -76,11 +76,11 @@ func GenerateIstioVirtaulServiceYAMLFile(workingPath string, info *gofraTemplate
 	return nil
 }
 
-//Generate istio destination rule yaml file
+// generate istio destination rule yaml file
 func GenerateIstioDestinationRuleYAMLFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "istio", "destination-rule.yml")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -105,7 +105,7 @@ func GenerateIstioDestinationRuleYAMLFile(workingPath string, info *gofraTemplat
 		}
 	}
 
-	//Parse template
+	// parse template
 	istioDestinationRuleTemplate, err := template.New("istio_destination_rule").Parse(IstioDestinationRuleTemplate)
 
 	if err != nil {
@@ -123,7 +123,7 @@ func GenerateIstioDestinationRuleYAMLFile(workingPath string, info *gofraTemplat
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = istioDestinationRuleTemplate.Execute(file, istioDestinationRuleInfo)
 
 	if err != nil {

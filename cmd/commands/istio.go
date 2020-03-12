@@ -80,7 +80,7 @@ func init() {
 func virtualServiceIstio(override bool) error {
 	fmt.Println("====== Gofra istio virtual-service ======")
 
-	//Check path
+	// check path
 	fmt.Printf("\r\nChecking Path ......")
 	workingPath, err := os.Getwd()
 
@@ -91,7 +91,7 @@ func virtualServiceIstio(override bool) error {
 		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
 	}
 
-	//Read template
+	// read template
 	fmt.Printf("\r\nReading template ......")
 	if len(templatePath) == 0 {
 		fmt.Printf(" failed! \r\nerror:Template file path is empty!\r\n")
@@ -107,7 +107,7 @@ func virtualServiceIstio(override bool) error {
 		fmt.Printf(" success! \r\n")
 	}
 
-	//Mkdir
+	// mkdir
 	fmt.Printf("\r\nMake dir ......")
 	istioPath := filepath.Join(workingPath, "istio")
 
@@ -120,7 +120,7 @@ func virtualServiceIstio(override bool) error {
 		fmt.Printf(" success! \r\n")
 	}
 
-	//Generate virtual service yaml file
+	// generate virtual service yaml file
 	fmt.Printf("\r\nGenerating istio virtual service yaml file ......")
 	err = istioTemplate.GenerateIstioVirtaulServiceYAMLFile(workingPath, templateInfo, override)
 
@@ -137,7 +137,7 @@ func virtualServiceIstio(override bool) error {
 func destinationRuleIstio(override bool) error {
 	fmt.Println("====== Gofra istio destination-rule ======")
 
-	//Check path
+	// check path
 	fmt.Printf("\r\nChecking Path ......")
 	workingPath, err := os.Getwd()
 
@@ -148,7 +148,7 @@ func destinationRuleIstio(override bool) error {
 		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
 	}
 
-	//Read template
+	// read template
 	fmt.Printf("\r\nReading template ......")
 	if len(templatePath) == 0 {
 		fmt.Printf(" failed! \r\nerror:Template file path is empty!\r\n")
@@ -164,7 +164,7 @@ func destinationRuleIstio(override bool) error {
 		fmt.Printf(" success! \r\n")
 	}
 
-	//Mkdir
+	// mkdir
 	fmt.Printf("\r\nMake dir ......")
 	istioPath := filepath.Join(workingPath, "istio")
 
@@ -177,7 +177,7 @@ func destinationRuleIstio(override bool) error {
 		fmt.Printf(" success! \r\n")
 	}
 
-	//Generate virtual service yaml file
+	// generate virtual service yaml file
 	fmt.Printf("\r\nGenerating istio destination rule yaml file ......")
 	err = istioTemplate.GenerateIstioDestinationRuleYAMLFile(workingPath, templateInfo, override)
 

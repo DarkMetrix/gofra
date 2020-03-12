@@ -26,33 +26,33 @@ func GofraClientInterceptorFunc(ctx context.Context, method string, req, reply i
 	if client != nil {
 		defer monitor.GetStatsd().NewTiming().Send(method + "|Time,type=Client.Time")
 
-		//Monitor method enter total
+		// monitor method enter total
 		monitor.Increment(method + ",type=Client.Total")
 
 		// Invoke remote
 		err := invoker(ctx, method, req, reply, cc, opts...)
 
 		if err != nil {
-			//Monitor method fail total
+			// monitor method fail total
 			monitor.Increment(method + ",type=Client.Fail")
 		} else {
-			//Monitor method success total
+			// monitor method success total
 			monitor.Increment(method + ",type=Client.Success")
 		}
 
 		return err
 	} else {
-		//Monitor method enter total
+		// monitor method enter total
 		monitor.Increment(method + ",type=Client.Total")
 
 		// Invoke remote
 		err := invoker(ctx, method, req, reply, cc, opts...)
 
 		if err != nil {
-			//Monitor method fail total
+			// monitor method fail total
 			monitor.Increment(method + ",type=Client.Fail")
 		} else {
-			//Monitor method success total
+			// monitor method success total
 			monitor.Increment(method + ",type=Client.Success")
 		}
 
@@ -70,33 +70,33 @@ func GofraServerInterceptorFunc(ctx context.Context, req interface{}, info *grpc
 	if client != nil {
 		defer monitor.GetStatsd().NewTiming().Send(info.FullMethod + "|Time,type=Server.Time")
 
-		//Monitor method enter total
+		// monitor method enter total
 		monitor.Increment(info.FullMethod + ",type=Server.Total")
 
 		// Process
 		reply, err = handler(ctx, req)
 
 		if err != nil {
-			//Monitor method fail total
+			// monitor method fail total
 			monitor.Increment(info.FullMethod + ",type=Server.Fail")
 		} else {
-			//Monitor method success total
+			// monitor method success total
 			monitor.Increment(info.FullMethod + ",type=Server.Success")
 		}
 
 		return reply, err
 	} else {
-		//Monitor method enter total
+		// monitor method enter total
 		monitor.Increment(info.FullMethod + ",type=Server.Total")
 
 		// Process
 		reply, err = handler(ctx, req)
 
 		if err != nil {
-			//Monitor method fail total
+			// monitor method fail total
 			monitor.Increment(info.FullMethod + ",type=Server.Fail")
 		} else {
-			//Monitor method success total
+			// monitor method success total
 			monitor.Increment(info.FullMethod + ",type=Server.Success")
 		}
 

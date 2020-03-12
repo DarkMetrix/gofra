@@ -38,7 +38,7 @@ var initCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("====== Gofra init ======")
 
-		//Check path
+		// check path
 		fmt.Printf("\r\nChecking Path ......")
 		workingPath, err := os.Getwd()
 
@@ -49,7 +49,7 @@ var initCmd = &cobra.Command{
 			fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
 		}
 
-		//Read template
+		// read template
 		fmt.Printf("\r\nReading template ......")
 		if len(templatePath) == 0 {
 			fmt.Printf(" failed! \r\nerror:Template file path is empty!\r\n")
@@ -65,12 +65,12 @@ var initCmd = &cobra.Command{
 			fmt.Printf(" success! \r\nTemplate:\r\n%v\r\n", jsonBuffer)
 		}
 
-		//Init directory structure
+		// init directory structure
 		fmt.Printf("\r\nInitializing directory structure ......")
 
 		switch templateInfo.Type {
 		case "grpc":
-			//Init directory structure for grpc
+			// init directory structure for grpc
 			err = InitGrpcDirectoryStructure(workingPath, templateInfo)
 
 			if err != nil {
@@ -80,7 +80,7 @@ var initCmd = &cobra.Command{
 				fmt.Printf(" success!\r\n")
 			}
 
-			//Init all files
+			// init all files
 			fmt.Printf("\r\nInitializing all files ......")
 			err = InitGrpcAllFiles(workingPath, templateInfo)
 
@@ -92,7 +92,7 @@ var initCmd = &cobra.Command{
 			}
 
 		case "http":
-			//Init directory structure for http
+			// init directory structure for http
 			err = InitHttpDirectoryStructure(workingPath, templateInfo)
 
 			if err != nil {
@@ -102,7 +102,7 @@ var initCmd = &cobra.Command{
 				fmt.Printf(" success!\r\n")
 			}
 
-			//Init all files
+			// init all files
 			fmt.Printf("\r\nInitializing all files ......")
 			err = InitHttpAllFiles(workingPath, templateInfo)
 
@@ -117,7 +117,7 @@ var initCmd = &cobra.Command{
 			fmt.Printf(" failed! \r\nerror:Invalid server type\r\n")
 		}
 
-		//Init go module
+		// init go module
 		gomodPath := filepath.Join(workingPath, "go.mod")
 
 		isExist, err := commonUtils.CheckPathExists(gomodPath)
@@ -141,7 +141,7 @@ var initCmd = &cobra.Command{
 			fmt.Printf("go.mod file already exist!")
 		}
 
-		//Print application directory structure
+		// print application directory structure
 		fmt.Printf("\r\nApplication '%v' directory structure", templateInfo.Project)
 		filepath.Walk(workingPath, func(path string, info os.FileInfo, err error) error {
 			relPath, err := filepath.Rel(workingPath, path)
@@ -161,35 +161,35 @@ var protocPath string
 var protoFileIncludePath []string
 var override bool
 
-//Server config
+// server config
 type ServerInfo struct {
 	Addr string `json:"addr"`
 }
 
-//Client config
+// client config
 type ClientInfo struct {
 	Pool PoolInfo `json:"pool"`
 }
 
-//Pool config
+// pool config
 type PoolInfo struct {
 	InitConns int `json:"init_conns"`
 	MaxConns int `json:"max_conns"`
 	IdleTime int `json:"idle_time"`
 }
 
-//Monitor package
+// monitor package
 type MonitorPackageInfo struct {
 	Package string `json:"package"`
 	InitParam string `json:"init_param"`
 }
 
-//Interceptor package
+// interceptor package
 type InterceptorPackageInfo struct {
 	Package string `json:"package"`
 }
 
-//Template info
+// template info
 type TemplateInfo struct {
 	Author string `json:"author"`
 	Project string `json:"project"`
@@ -216,7 +216,7 @@ func init() {
 	// initCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 }
 
-//Read template json file to ge information about how to generate the application
+// read template json file to ge information about how to generate the application
 func ReadTemplate(templatePath string) (*gofraTemplate.TemplateInfo, string, error) {
 	data, err := ioutil.ReadFile(templatePath)
 
@@ -239,7 +239,7 @@ func ReadTemplate(templatePath string) (*gofraTemplate.TemplateInfo, string, err
 	return info, string(data), nil
 }
 
-//Init application directory structure for grpc
+// init application directory structure for grpc
 func InitGrpcDirectoryStructure(workingPath string, info *gofraTemplate.TemplateInfo) error {
 	buildPath := filepath.Join(workingPath, "build")
 	confPath := filepath.Join(workingPath, "configs")
@@ -257,21 +257,21 @@ func InitGrpcDirectoryStructure(workingPath string, info *gofraTemplate.Template
 	apiProtobufPath := filepath.Join(workingPath, "api", "protobuf_spec")
 	apiProtobufHealthCheckPath := filepath.Join(workingPath, "api", "protobuf_spec", "health_check")
 
-	//Create root directories
+	// create root directories
 	err := commonUtils.CreatePaths(override, buildPath, confPath, logPath, cmdPath, apiPath, internalPath)
 
 	if err != nil {
 		return err
 	}
 
-	//Create internal sub directories
+	// create internal sub directories
 	err = commonUtils.CreatePaths(override, internalAppPath, internalPkgPath, internalCommonPath, internalConfigPath, internalHandlerPath)
 
 	if err != nil {
 		return err
 	}
 
-	//Create api sub directories
+	// create api sub directories
 	err = commonUtils.CreatePaths(override, apiProtobufPath, apiProtobufHealthCheckPath)
 
 	if err != nil {
@@ -281,7 +281,7 @@ func InitGrpcDirectoryStructure(workingPath string, info *gofraTemplate.Template
 	return nil
 }
 
-//Init application directory structure for http
+// init application directory structure for http
 func InitHttpDirectoryStructure(workingPath string, info *gofraTemplate.TemplateInfo) error {
 	buildPath := filepath.Join(workingPath, "build")
 	confPath := filepath.Join(workingPath, "configs")
@@ -298,21 +298,21 @@ func InitHttpDirectoryStructure(workingPath string, info *gofraTemplate.Template
 
 	apiHttpPath:= filepath.Join(workingPath, "api", "http_spec")
 
-	//Create root directories
+	// create root directories
 	err := commonUtils.CreatePaths(override, buildPath, confPath, logPath, cmdPath, apiPath, internalPath)
 
 	if err != nil {
 		return err
 	}
 
-	//Create internal sub directories
+	// create internal sub directories
 	err = commonUtils.CreatePaths(override, internalAppPath, internalPkgPath, internalCommonPath, internalConfigPath, internalHandlerPath)
 
 	if err != nil {
 		return err
 	}
 
-	//Create api sub directories
+	// create api sub directories
 	err = commonUtils.CreatePaths(override, apiHttpPath)
 
 	if err != nil {
@@ -322,9 +322,9 @@ func InitHttpDirectoryStructure(workingPath string, info *gofraTemplate.Template
 	return nil
 }
 
-//Init all go file with template for grpc
+// init all go file with template for grpc
 func InitGrpcAllFiles(workingPath string, info *gofraTemplate.TemplateInfo) error {
-	//Set protoc binary path
+	// set protoc binary path
 	if len(protocPath) != 0 {
 		grpcTemplate.ProtocPath = protocPath
 	}
@@ -374,7 +374,7 @@ func InitGrpcAllFiles(workingPath string, info *gofraTemplate.TemplateInfo) erro
 	return nil
 }
 
-//Init all go file with template for http
+// init all go file with template for http
 func InitHttpAllFiles(workingPath string, info *gofraTemplate.TemplateInfo) error {
 	err := httpTemplate.GenerateCommonFile(workingPath, info, override)
 

@@ -12,11 +12,11 @@ import (
 	commonUtils "github.com/DarkMetrix/gofra/pkg/utils"
 )
 
-//Generate kubernetes deployment yaml file
+// generate kubernetes deployment yaml file
 func GenerateKubeDeploymentYAMLFile(workingPath, imagePath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "kubernetes", "deployment.yml")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -41,7 +41,7 @@ func GenerateKubeDeploymentYAMLFile(workingPath, imagePath string, info *gofraTe
 		}
 	}
 
-	//Parse template
+	// parse template
 	kubeDeploymentTemplate, err := template.New("kube_deployment").Parse(KubeDeploymentTemplate)
 
 	if err != nil {
@@ -67,7 +67,7 @@ func GenerateKubeDeploymentYAMLFile(workingPath, imagePath string, info *gofraTe
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = kubeDeploymentTemplate.Execute(file, kubeDeploymentInfo)
 
 	if err != nil {
@@ -77,11 +77,11 @@ func GenerateKubeDeploymentYAMLFile(workingPath, imagePath string, info *gofraTe
 	return nil
 }
 
-//Generate kubernetes service yaml file
+// generate kubernetes service yaml file
 func GenerateKubeServiceYAMLFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "kubernetes", "service.yml")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -106,7 +106,7 @@ func GenerateKubeServiceYAMLFile(workingPath string, info *gofraTemplate.Templat
 		}
 	}
 
-	//Parse template
+	// parse template
 	kubeServiceTemplate , err := template.New("kube_service").Parse(kubeServiceTemplate)
 
 	if err != nil {
@@ -132,7 +132,7 @@ func GenerateKubeServiceYAMLFile(workingPath string, info *gofraTemplate.Templat
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = kubeServiceTemplate.Execute(file, kubeServiceInfo)
 
 	if err != nil {
@@ -142,11 +142,11 @@ func GenerateKubeServiceYAMLFile(workingPath string, info *gofraTemplate.Templat
 	return nil
 }
 
-//Generate kubernetes configmap yaml file
+// generate kubernetes configmap yaml file
 func GenerateKubeConfigmapYAMLFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "kubernetes", "configmap.sh")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -171,7 +171,7 @@ func GenerateKubeConfigmapYAMLFile(workingPath string, info *gofraTemplate.Templ
 		}
 	}
 
-	//Parse template
+	// parse template
 	kubeConfigmapTemplate , err := template.New("kube_configmap").Parse(kubeConfigmapTemplate)
 
 	if err != nil {
@@ -188,7 +188,7 @@ func GenerateKubeConfigmapYAMLFile(workingPath string, info *gofraTemplate.Templ
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = kubeConfigmapTemplate.Execute(file, kubeConfigmapInfo)
 
 	if err != nil {

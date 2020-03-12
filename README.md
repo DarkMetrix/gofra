@@ -441,11 +441,11 @@ import (
    "github.com/gin-gonic/gin"
 )
 
-//URI(for gin use): [POST] -> "/my/test"
+// URI(for gin use): [POST] -> "/my/test"
 func POST_MY_TEST(ctx *gin.Context) {
    log.Tracef("====== POST_MY_TEST start ======")
 
-   //Reply success
+   // reply success
    ctx.JSON(200, gin.H{"msg":"success"})
 }
 

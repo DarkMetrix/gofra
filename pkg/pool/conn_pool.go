@@ -9,10 +9,10 @@ import (
 	commonPool "github.com/silenceper/pool"
 )
 
-//Global connection pool instance
+// global connection pool instance
 var globalConnectionPool *ConnectionPool = nil
 
-//Get connection pool instance
+// get connection pool instance
 func GetConnectionPool() *ConnectionPool {
 	if globalConnectionPool == nil {
 		globalConnectionPool = NewConnectionPool()
@@ -21,37 +21,37 @@ func GetConnectionPool() *ConnectionPool {
 	return globalConnectionPool
 }
 
-//Connection pool
+// connection pool
 type ConnectionPool struct {
-	mtx sync.Mutex									//Mutex to protect from race condition
+	mtx sync.Mutex									// mutex to protect from race condition
 
-	pools map[string]commonPool.Pool				//Pool map to save all connections
+	pools map[string]commonPool.Pool				// pool map to save all connections
 
-	initConnections int								//Initial connection count per addr
-	maxConnections int								//Max connection count per addr
-	idleTimeout time.Duration						//Idle timeout for connection
+	initConnections int								// initial connection count per addr
+	maxConnections int								// max connection count per addr
+	idleTimeout time.Duration						// idle timeout for connection
 }
 
-//Conn is the wrapper for a net.Conn
+// conn is the wrapper for a net.Conn
 type Conn struct {
 	net.Conn
 	connPool  commonPool.Pool
 	unhealthy bool
 }
 
-//Get returns the real connection to use
+// get returns the real connection to use
 func (conn *Conn) Get() net.Conn {
 	return conn.Conn
 }
 
-//Unhealthy mark the connection as unhealthy
-//When recycle called it will be closed and won't be put back to the pool
+// unhealthy mark the connection as unhealthy
+// when recycle called it will be closed and won't be put back to the pool
 func (conn *Conn) Unhealthy() {
 	conn.unhealthy = true
 }
 
-//Recycle returns the connection to the pool
-//If the unhealthy mark is set, close and it won't be put back to the pool
+// recycle returns the connection to the pool
+// if the unhealthy mark is set, close and it won't be put back to the pool
 func (conn *Conn) Recycle() error {
 	if conn.unhealthy {
 		conn.connPool.Close(conn)
@@ -76,7 +76,7 @@ func NewConnectionPool() *ConnectionPool {
 	}
 }
 
-//Init connection pool
+// init connection pool
 func (connPool *ConnectionPool) Init(initConnections, maxConnections int, idleTimeout time.Duration) error {
 	connPool.mtx.Lock()
 	defer connPool.mtx.Unlock()
@@ -88,7 +88,7 @@ func (connPool *ConnectionPool) Init(initConnections, maxConnections int, idleTi
 	return nil
 }
 
-//Get connection from pool
+// get connection from pool
 func (connPool *ConnectionPool) GetConnection(ctx context.Context, addr string) (*Conn, error) {
 	connPool.mtx.Lock()
 	defer connPool.mtx.Unlock()

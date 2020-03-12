@@ -85,7 +85,7 @@ func init() {
 func addHttpHandler(override bool) error {
 	fmt.Println("====== Gofra http add ======")
 
-	//Check path
+	// check path
 	fmt.Printf("\r\nChecking Path ......")
 	workingPath, err := os.Getwd()
 
@@ -96,7 +96,7 @@ func addHttpHandler(override bool) error {
 		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
 	}
 
-	//Read template
+	// read template
 	fmt.Printf("\r\nReading template ......")
 	if len(templatePath) == 0 {
 		fmt.Printf(" failed! \r\nerror:Template file path is empty!\r\n")
@@ -112,13 +112,13 @@ func addHttpHandler(override bool) error {
 		fmt.Printf(" success! \r\n")
 	}
 
-	//Check server type
+	// check server type
 	if templateInfo.Type != "http" {
 		fmt.Printf(" failed! \r\nerror:Server type is not 'http'!\r\n")
 		return err
 	}
 
-	//Generate http handler
+	// generate http handler
 	fmt.Printf("\r\nGenerating http handler code ......")
 	err = httpTemplate.GenerateHttpHandler(workingPath, templateInfo, uri, method, override)
 

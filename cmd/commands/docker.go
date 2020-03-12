@@ -63,7 +63,7 @@ func init() {
 func generateDocker(override bool) error {
 	fmt.Println("====== Gofra docker generate ======")
 
-	//Check path
+	// check path
 	fmt.Printf("\r\nChecking Path ......")
 	workingPath, err := os.Getwd()
 
@@ -74,7 +74,7 @@ func generateDocker(override bool) error {
 		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
 	}
 
-	//Read template
+	// read template
 	fmt.Printf("\r\nReading template ......")
 	if len(templatePath) == 0 {
 		fmt.Printf(" failed! \r\nerror:Template file path is empty!\r\n")
@@ -90,7 +90,7 @@ func generateDocker(override bool) error {
 		fmt.Printf(" success! \r\n")
 	}
 
-	//Generate docker file
+	// generate docker file
 	fmt.Printf("\r\nGenerating docker file ......")
 	err = dockerTemplate.GenerateDockerFile(workingPath, templateInfo, override)
 

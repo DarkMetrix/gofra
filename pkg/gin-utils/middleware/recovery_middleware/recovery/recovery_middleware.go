@@ -17,7 +17,7 @@ func GetMiddleware() gin.HandlerFunc{
 			}
 		}()
 
-		//Switch to another middleware handler
+		// switch to another middleware handler
 		ctx.Next()
 	}
 }

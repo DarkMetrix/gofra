@@ -1,29 +1,29 @@
 package template
 
-//Server config
+// server config
 type ServerInfo struct {
 	Addr string `json:"addr"`
 }
 
-//Monitor package
+// monitor package
 type MonitorPackageInfo struct {
 	Package string `json:"package"`
 	InitParam string `json:"init_param"`
 }
 
-//Tracing package
+// tracing package
 type TracingPackageInfo struct {
 	Package string `json:"package"`
 	InitParam string `json:"init_param"`
 }
 
-//Interceptor package
+// interceptor package
 type InterceptorPackageInfo struct {
 	MonitorPackage string `json:"monitor_package"`
 	TracingPackage string `json:"tracing_package"`
 }
 
-//Template info
+// template info
 type TemplateInfo struct {
 	Author string `json:"author"`
 	Project string `json:"project"`

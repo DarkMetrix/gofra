@@ -7,7 +7,7 @@ import (
 	log "github.com/cihub/seelog"
 )
 
-//Default log setting
+// default log setting
 var defaultSetting string = `
 	<seelog>
         <outputs formatid="main">
@@ -22,9 +22,9 @@ var defaultSetting string = `
 var path string = ""
 var project string = ""
 
-//Init seelog using config file path, if empty using default setting
+// init seelog using config file path, if empty using default setting
 func Init(args ... string) error {
-	//If path is empty, use default setting
+	// if path is empty, use default setting
 	var logger log.LoggerInterface
 	var err error
 

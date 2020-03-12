@@ -13,15 +13,15 @@ func GetMiddleware() gin.HandlerFunc{
 		client := monitor.GetStatsd()
 
 		if client != nil {
-			//Before request
+			// before request
 			defer monitor.GetStatsd().NewTiming().Send(fmt.Sprintf("%v|Time,type=Server.Time", ctx.Request.RequestURI))
 
 			monitor.Increment(fmt.Sprintf("%v,type=Server.Total", ctx.Request.RequestURI))
 
-			//Switch to another middleware handler
+			// switch to another middleware handler
 			ctx.Next()
 
-			//After request
+			// after request
 			status := ctx.Writer.Status()
 
 			if status != 200 {
@@ -32,10 +32,10 @@ func GetMiddleware() gin.HandlerFunc{
 		} else {
 			monitor.Increment(fmt.Sprintf("%v,type=Server.Total", ctx.Request.RequestURI))
 
-			//Switch to another middleware handler
+			// switch to another middleware handler
 			ctx.Next()
 
-			//After request
+			// after request
 			status := ctx.Writer.Status()
 
 			if status != 200 {

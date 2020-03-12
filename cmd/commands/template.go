@@ -45,7 +45,7 @@ template init command will help to initialize template.json file.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("====== Gofra template initializing ======")
 
-		//Check path
+		// check path
 		fmt.Printf("\r\nGet Working Path ......")
 		workingPath, err := os.Getwd()
 
@@ -56,7 +56,7 @@ template init command will help to initialize template.json file.`,
 			fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
 		}
 
-		//Generate template.json
+		// generate template.json
 		fmt.Printf("\r\nGenerating template.json ...... \r\n")
 
 		var jsonInfo gofraTemplate.JsonInfo

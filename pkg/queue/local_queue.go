@@ -12,19 +12,19 @@ var (
 	ErrImproperType = errors.New("interface{} is not this type")
 )
 
-//Local message queue to buffer message
+// local message queue to buffer message
 type LocalMessageQueue struct {
 	queueChannel chan interface{}
 }
 
-//New local message queue function
+// new local message queue function
 func NewLocalMessageQueue(bufferSize uint32) *LocalMessageQueue {
 	return &LocalMessageQueue{
 		queueChannel: make(chan interface{}, bufferSize),
 	}
 }
 
-//Push message to queue
+// push message to queue
 func (queue *LocalMessageQueue) Push(item interface{}) error {
 	select {
 	case queue.queueChannel <- item:
@@ -34,7 +34,7 @@ func (queue *LocalMessageQueue) Push(item interface{}) error {
 	}
 }
 
-//Pop message from queue
+// pop message from queue
 func (queue *LocalMessageQueue) Pop(ms time.Duration) (interface{}, error) {
 	select {
 	case item, ok := <- queue.queueChannel:
@@ -48,7 +48,7 @@ func (queue *LocalMessageQueue) Pop(ms time.Duration) (interface{}, error) {
 	}
 }
 
-//Pop message from queue as []byte
+// pop message from queue as []byte
 func (queue *LocalMessageQueue) PopAsBytes(ms time.Duration) ([]byte, error) {
 	item, err := queue.Pop(ms)
 
@@ -64,7 +64,7 @@ func (queue *LocalMessageQueue) PopAsBytes(ms time.Duration) ([]byte, error) {
 	}
 }
 
-//Pop message from queue as string
+// pop message from queue as string
 func (queue *LocalMessageQueue) PopAsString(ms time.Duration) (string, error) {
 	item, err := queue.Pop(ms)
 
@@ -80,7 +80,7 @@ func (queue *LocalMessageQueue) PopAsString(ms time.Duration) (string, error) {
 	}
 }
 
-//Pop message from queue as int
+// pop message from queue as int
 func (queue *LocalMessageQueue) PopAsInt(ms time.Duration) (int, error) {
 	item, err := queue.Pop(ms)
 
@@ -96,7 +96,7 @@ func (queue *LocalMessageQueue) PopAsInt(ms time.Duration) (int, error) {
 	}
 }
 
-//Pop message from queue as int32
+// pop message from queue as int32
 func (queue *LocalMessageQueue) PopAsInt32(ms time.Duration) (int32, error) {
 	item, err := queue.Pop(ms)
 
@@ -112,7 +112,7 @@ func (queue *LocalMessageQueue) PopAsInt32(ms time.Duration) (int32, error) {
 	}
 }
 
-//Pop message from queue as int64
+// pop message from queue as int64
 func (queue *LocalMessageQueue) PopAsInt64(ms time.Duration) (int64, error) {
 	item, err := queue.Pop(ms)
 
@@ -128,7 +128,7 @@ func (queue *LocalMessageQueue) PopAsInt64(ms time.Duration) (int64, error) {
 	}
 }
 
-//Pop message from queue as float32
+// pop message from queue as float32
 func (queue *LocalMessageQueue) PopAsFloat32(ms time.Duration) (float32, error) {
 	item, err := queue.Pop(ms)
 
@@ -144,7 +144,7 @@ func (queue *LocalMessageQueue) PopAsFloat32(ms time.Duration) (float32, error) 
 	}
 }
 
-//Pop message from queue as float64
+// pop message from queue as float64
 func (queue *LocalMessageQueue) PopAsFloat64(ms time.Duration) (float64, error) {
 	item, err := queue.Pop(ms)
 
@@ -160,7 +160,7 @@ func (queue *LocalMessageQueue) PopAsFloat64(ms time.Duration) (float64, error) 
 	}
 }
 
-//Get message channel
+// get message channel
 func (queue *LocalMessageQueue) Chan() chan interface{} {
 	return queue.queueChannel
 }

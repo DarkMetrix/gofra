@@ -5,7 +5,7 @@ import (
 	"net"
 )
 
-//Utils to help get real ip like using this kind of format 'eth1:8088'
+// utils to help get real ip like using this kind of format 'eth1:8088'
 func GetRealAddrByNetwork(addr string) string {
 	host, port, err := net.SplitHostPort(addr)
 
@@ -22,7 +22,7 @@ func GetRealAddrByNetwork(addr string) string {
 	}
 }
 
-//Utils to help get real ip using name like 'eth1'
+// utils to help get real ip using name like 'eth1'
 func GetRealIPv4ByNetwork(name string) (string, error) {
 	i, err := net.InterfaceByName(name)
 

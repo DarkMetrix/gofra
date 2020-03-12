@@ -10,10 +10,10 @@ import (
 	"google.golang.org/grpc"
 )
 
-//Global connection pool instance
+// global connection pool instance
 var globalConnectionPool *ConnectionPool = nil
 
-//Get connection pool instance
+// get connection pool instance
 func GetConnectionPool() *ConnectionPool {
 	if globalConnectionPool == nil {
 		globalConnectionPool = NewConnectionPool()
@@ -22,20 +22,20 @@ func GetConnectionPool() *ConnectionPool {
 	return globalConnectionPool
 }
 
-//Connection pool
+// connection pool
 type ConnectionPool struct {
-	mtx sync.Mutex									//Mutex to protect from race condition
+	mtx sync.Mutex									// mutex to protect from race condition
 
-	pools map[string]*ConnectionInfo				//Pool map to save all connections
+	pools map[string]*ConnectionInfo				// pool map to save all connections
 	clientOpts []grpc.DialOption
 
-	maxConnectionPerAddr int						//Max connections for each address
+	maxConnectionPerAddr int						// max connections for each address
 }
 
-//Connection info
+// connection info
 type ConnectionInfo struct {
-	Conns []*grpc.ClientConn						//Connections
-	Index int64										//Index of the next connection
+	Conns []*grpc.ClientConn						// connections
+	Index int64										// index of the next connection
 }
 
 func NewConnectionPool() *ConnectionPool {
@@ -46,7 +46,7 @@ func NewConnectionPool() *ConnectionPool {
 	}
 }
 
-//Init connection pool
+// init connection pool
 func (connPool *ConnectionPool) Init(clientOpts []grpc.DialOption) error {
 	connPool.mtx.Lock()
 	defer connPool.mtx.Unlock()
@@ -56,7 +56,7 @@ func (connPool *ConnectionPool) Init(clientOpts []grpc.DialOption) error {
 	return nil
 }
 
-//Close connection pool
+// close connection pool
 func (connPool *ConnectionPool) Close() {
 	for _, pool := range connPool.pools {
 		if pool == nil {
@@ -76,7 +76,7 @@ func (connPool *ConnectionPool) Close() {
 	}
 }
 
-//Get connection from pool
+// get connection from pool
 func (connPool *ConnectionPool) GetConnection(ctx context.Context, addr string) (*grpc.ClientConn, error) {
 	connPool.mtx.Lock()
 	defer connPool.mtx.Unlock()
@@ -84,7 +84,7 @@ func (connPool *ConnectionPool) GetConnection(ctx context.Context, addr string) 
 	connInfo, ok := connPool.pools[addr]
 
 	if !ok {
-		//Init connection info
+		// init connection info
 		connInfo = &ConnectionInfo{
 			Conns: make([]*grpc.ClientConn, connPool.maxConnectionPerAddr),
 			Index: 0,
@@ -95,12 +95,12 @@ func (connPool *ConnectionPool) GetConnection(ctx context.Context, addr string) 
 
 	curIndex := connInfo.Index % int64(len(connInfo.Conns))
 
-	//Get connection
+	// get connection
 	if connInfo.Conns[curIndex] != nil {
 		connInfo.Index++
 		return connInfo.Conns[curIndex], nil
 	} else {
-		//Get grpc Client connection
+		// get grpc Client connection
 		conn, err := getClientConn(addr, connPool.clientOpts)
 
 		if err != nil {

@@ -397,7 +397,7 @@ func GenerateMainFile(workingPath string, info *gofraTemplate.TemplateInfo, over
 
 	workingPathRelative := filepath.Base(workingPath)
 
-	//Parse template
+	// parse template
 	mainTemplate, err := template.New("main").Parse(MainTemplate)
 
 	if err != nil {
@@ -418,7 +418,7 @@ func GenerateMainFile(workingPath string, info *gofraTemplate.TemplateInfo, over
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = mainTemplate.Execute(file, mainInfo)
 
 	if err != nil {
@@ -428,9 +428,9 @@ func GenerateMainFile(workingPath string, info *gofraTemplate.TemplateInfo, over
 	return nil
 }
 
-//Generate health check handler
+// generate health check handler
 func GenerateHealthCheckHttpHandler(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
-	//Generate health check proto file
+	// generate health check proto file
 	err := GenerateHttpHandler(workingPath, info, "/health", "GET", override)
 
 	if err != nil {
@@ -440,10 +440,10 @@ func GenerateHealthCheckHttpHandler(workingPath string, info *gofraTemplate.Temp
 	return nil
 }
 
-//Generate http service
+// generate http service
 func GenerateHttpHandler(workingPath string, info *gofraTemplate.TemplateInfo, uri, method string, override bool) error {
-	//Generate http service
-	//Create path
+	// generate http service
+	// create path
 	handlerPath := filepath.Join(workingPath, "internal", "http_handler")
 
 	err := commonUtils.CreatePath(handlerPath, false)
@@ -452,7 +452,7 @@ func GenerateHttpHandler(workingPath string, info *gofraTemplate.TemplateInfo, u
 		return err
 	}
 
-	//Add http handler
+	// add http handler
 	uriPaths := strings.Split(uri, "/")
 
 	if len(uriPaths) == 0 {
@@ -474,7 +474,7 @@ func GenerateHttpHandler(workingPath string, info *gofraTemplate.TemplateInfo, u
 	handlerName = strings.Replace(handlerName, ":", "", -1)
 	handlerName = strings.Replace(handlerName, "*", "", -1)
 
-	//Mkdir
+	// mkdir
 	fmt.Printf("\r\nMake dir ......")
 	httpSpecPath := filepath.Join(workingPath, "api", "http_spec", strings.ToLower(handlerName))
 
@@ -503,7 +503,7 @@ func GenerateHttpHandler(workingPath string, info *gofraTemplate.TemplateInfo, u
 		return err
 	}
 
-	//Add http handler to engine in application
+	// add http handler to engine in application
 	err = AddHttpHandlerToApplicationFile(workingPath, info, handler, uri, method)
 
 	if err != nil {
@@ -513,7 +513,7 @@ func GenerateHttpHandler(workingPath string, info *gofraTemplate.TemplateInfo, u
 	return nil
 }
 
-//Add http handler import to application file
+// add http handler import to application file
 func AddHttpHandlerToApplicationFile(workingPath string, info *gofraTemplate.TemplateInfo, handler *HttpHandlerInfo, uri, method string) error {
 	applicationFilePath := filepath.Join(workingPath, "internal", "app", "application.go")
 
@@ -560,11 +560,11 @@ func AddHttpHandlerToApplicationFile(workingPath string, info *gofraTemplate.Tem
 	return nil
 }
 
-//Generate http handler file
+// generate http handler file
 func GenerateHttpHandlerFile(workingPath string, info *gofraTemplate.TemplateInfo, handler *HttpHandlerInfo, override bool) error {
 	filePath := filepath.Join(workingPath, "internal", "http_handler", strings.ToLower(handler.HandlerName) + ".go")
 
-	//Check file is exist or not
+	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
 
 	if err != nil {
@@ -589,7 +589,7 @@ func GenerateHttpHandlerFile(workingPath string, info *gofraTemplate.TemplateInf
 		}
 	}
 
-	//Parse template
+	// parse template
 	httpHandlerTemplate, err := template.New("http_handler").Parse(HttpHandlerTemplate)
 
 	if err != nil {
@@ -602,7 +602,7 @@ func GenerateHttpHandlerFile(workingPath string, info *gofraTemplate.TemplateInf
 		return err
 	}
 
-	//Render template to file
+	// render template to file
 	err = httpHandlerTemplate.Execute(file, handler)
 
 	if err != nil {
