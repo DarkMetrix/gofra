@@ -39,7 +39,7 @@ istio command will help to generate istio virtual service and destination rule y
 // virtualServiceCmd represents the istio virtual-service command
 var virtualServiceCmd = &cobra.Command{
 	Use:   "virtual-service",
-	Short: "Add generated istio virtual-service.yaml to project",
+	Short: "Add generated istio virtual-service.yml to project",
 	Long: `Gofra is a framework using gRPC/gin as the communication layer. 
 istio virtual-service command will help to generate istio virtual service yaml file.`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -50,7 +50,7 @@ istio virtual-service command will help to generate istio virtual service yaml f
 // destinationRuleCmd represents the istio destination-rule command
 var destinationRuleCmd = &cobra.Command{
 	Use:   "destination-rule",
-	Short: "Add generated istio destination-rule.yaml to project",
+	Short: "Add generated istio destination-rule.yml to project",
 	Long: `Gofra is a framework using gRPC/gin as the communication layer. 
 istio destination-rule command will help to generate istio destination rule yaml file.`,
 	Run: func(cmd *cobra.Command, args []string) {

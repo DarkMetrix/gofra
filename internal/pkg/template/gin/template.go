@@ -279,7 +279,7 @@ func GenerateConfigLogFile(workingPath string, info *gofraTemplate.TemplateInfo,
 
 	configLogInfo := &LogInfo{
 		Path: fmt.Sprintf("../log/%v.log", info.Project),
-		MaxSize: 524288000,
+		MaxSize: 100 * 1024 * 1024,
 		MaxRolls: 10,
 	}
 

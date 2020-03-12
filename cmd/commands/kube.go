@@ -30,7 +30,7 @@ var kubeCmd = &cobra.Command{
 	Use:   "kube",
 	Short: "kubenetes operations [deployment, service]",
 	Long: `Gofra is a framework using gRPC/gin as the communication layer. 
-kube command will help to generate kubernetes deployment and service yaml file.`,
+kube command will help to generate kubernetes deployment, service yaml file and configmap command shell script.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
 	},
@@ -39,7 +39,7 @@ kube command will help to generate kubernetes deployment and service yaml file.`
 // deploymentKubeCmd represents the kube deployment command
 var deploymentKubeCmd = &cobra.Command{
 	Use:   "deployment",
-	Short: "Add generated kubernetes deployment.yaml to project",
+	Short: "Add generated kubernetes deployment.yml to project",
 	Long: `Gofra is a framework using gRPC/gin as the communication layer. 
 kube deployment command will help to generate kubernetes deployment file.`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -50,7 +50,7 @@ kube deployment command will help to generate kubernetes deployment file.`,
 // serviceKubeCmd represents the kube service command
 var serviceKubeCmd = &cobra.Command{
 	Use:   "service",
-	Short: "Add generated kubernetes service.yaml to project",
+	Short: "Add generated kubernetes service.yml to project",
 	Long: `Gofra is a framework using gRPC/gin as the communication layer. 
 kube service command will help to generate kubernetes service yaml file.`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -58,10 +58,23 @@ kube service command will help to generate kubernetes service yaml file.`,
 	},
 }
 
+// configmapKubeCmd represents the kube configmap command
+var configmapKubeCmd = &cobra.Command{
+	Use:   "configmap",
+	Short: "Add generated kubernetes configmap.yml to project",
+	Long: `Gofra is a framework using gRPC/gin as the communication layer. 
+kube configmap command will help to generate kubernetes configmap shell script.
+configmap.sh offers 'create', 'update', 'delete' and 'get' commands to help manage the configmap`,
+	Run: func(cmd *cobra.Command, args []string) {
+		configmapKube(override)
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(kubeCmd)
 	kubeCmd.AddCommand(deploymentKubeCmd)
 	kubeCmd.AddCommand(serviceKubeCmd)
+	kubeCmd.AddCommand(configmapKubeCmd)
 
 	// Here you will define your flags and configuration settings.
 
@@ -70,6 +83,8 @@ func init() {
 	deploymentKubeCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
 
 	serviceKubeCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
+
+	configmapKubeCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
@@ -185,6 +200,63 @@ func serviceKube(override bool) error {
 	//Generate service yaml file
 	fmt.Printf("\r\nGenerating kubernetes service yaml file ......")
 	err = kubeTemplate.GenerateKubeServiceYAMLFile(workingPath, templateInfo, override)
+
+	if err != nil {
+		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
+		return err
+	} else {
+		fmt.Printf(" success! \r\n")
+	}
+
+	return nil
+}
+
+func configmapKube(override bool) error {
+	fmt.Println("====== Gofra kubernetes configmap ======")
+
+	//Check path
+	fmt.Printf("\r\nChecking Path ......")
+	workingPath, err := os.Getwd()
+
+	if err != nil {
+		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
+		return err
+	} else {
+		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
+	}
+
+	//Read template
+	fmt.Printf("\r\nReading template ......")
+	if len(templatePath) == 0 {
+		fmt.Printf(" failed! \r\nerror:Template file path is empty!\r\n")
+		return err
+	}
+
+	templateInfo, _, err := ReadTemplate(templatePath)
+
+	if err != nil {
+		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
+		return err
+	} else {
+		fmt.Printf(" success! \r\n")
+	}
+
+	//Mkdir
+	fmt.Printf("\r\nMake dir ......")
+	kubernetesPath := filepath.Join(workingPath, "kubernetes")
+
+	commonUtils.CreatePath(kubernetesPath, false)
+
+	if err != nil {
+		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
+		return err
+	} else {
+		fmt.Printf(" success! \r\n")
+	}
+
+	//Generate service yaml file
+	fmt.Printf("\r\nGenerating kubernetes service yaml file ......")
+	err = kubeTemplate.GenerateKubeConfigmapYAMLFile(workingPath, templateInfo, override)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
