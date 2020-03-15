@@ -22,8 +22,8 @@ var globalConfig *Config
 
 // pprof
 type PprofInfo struct {
-	Addr string "mapstructure:\"addr\" json:\"addr\""
 	Active uint32 "mapstructure:\"active\" json:\"active\""
+	Addr string "mapstructure:\"addr\" json:\"addr\""
 }
 
 // performance info
@@ -34,11 +34,13 @@ type PerformanceInfo struct {
 
 // tracing info
 type TracingInfo struct {
+	Active uint32 "mapstructure:\"active\" json:\"active\""
 	Params []string "mapstructure:\"params\" json:\"params\""
 }
 
 // monitor info
 type MonitorInfo struct {
+	Active uint32 "mapstructure:\"active\" json:\"active\""
 	Params []string "mapstructure:\"params\" json:\"params\""
 }
 
@@ -129,7 +131,7 @@ var ConfigTomlTemplate string = `
 #	gin's debug flag, 0=release mode, other=debug mode
 [server]
     http_addr="{{.Addr}}"
-	gin_debug=1
+    gin_debug=1
 
 # Client configuration
 # [client]
@@ -144,8 +146,8 @@ var ConfigTomlTemplate string = `
 #	eg:
 #		wget http://localhost:50000/debug/pprof/profile
 [pprof]
-	active=0
-	addr="localhost:50000"
+    active=0
+    addr="localhost:50000"
 
 # performance configuration
 # 	Performance will collect memory, gc, goroutine information periodically
@@ -157,8 +159,8 @@ var ConfigTomlTemplate string = `
 # performance.type
 #   Type to output the performance monitor information, available option [log, statsd]
 [performance]
-	active=0
-	type="log"
+    active=0
+    type="log"
 
 # Monitor configuration
 #
@@ -170,7 +172,13 @@ var ConfigTomlTemplate string = `
 #		2.the project's name
 #	eg:
 #		params=["127.0.0.1:8125", "demo"]
+#
+# monitor.active
+#	Is monitor active or not, 0 = not active, otherwise active
+#   If not active, the applicaton won't initialize the connection to the monitor server
+#   and the gRPC client monitor interceptor will not be integrated
 [monitor]
+    active=0
     params=[{{.MonitorInitParams}}]
 
 # Tracing configuration
@@ -191,7 +199,13 @@ var ConfigTomlTemplate string = `
 #		3.Service name
 #	eg:
 #		params=["http://127.0.0.1:9411/api/v2/spans", "127.0.0.1:12345", demo"]
+#
+# tracing.active
+#	Is tracing active or not, 0 = not active, otherwise active
+#   If not active, the applicaton won't initialize the tracing component
+#   and the gRPC client tracing interceptor will not be integrated
 [tracing]
+    active=0
     params=[{{.TracingInitParams}}]
 `
 

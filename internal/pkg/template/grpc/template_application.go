@@ -107,33 +107,54 @@ func (app *Application) Init(conf *config.Config) error {
 	}
 
 	// init monitor
-	err = monitor.Init(config.GetConfig().Monitor.Params...)
-
-	if err != nil {
-		log.Warnf("Init monitor failed! error:%v", err.Error())
-	}
+	if conf.Monitor.Active != 0 {
+    	err = monitor.Init(conf.Monitor.Params...)
+    
+    	if err != nil {
+    		log.Warnf("Init monitor failed! error:%v", err.Error())
+    	}
+    }
 
 	// init tracing
-	err = tracing.Init(config.GetConfig().Tracing.Params...)
-
-	if err != nil {
-		log.Warnf("Init tracing failed! error:%v", err.Error())
-	}
+	if conf.Tracing.Active != 0 {
+    	err = tracing.Init(conf.Tracing.Params...)
+    
+    	if err != nil {
+    		log.Warnf("Init tracing failed! error:%v", err.Error())
+    	}
+    }
 
 	// set server interceptor
-	app.ServerOpts = append(app.ServerOpts, grpc.UnaryInterceptor(
-		grpc_middleware.ChainUnaryServer(
-			recoverInterceptor.GetServerInterceptor(),
-			tracingInterceptor.GetServerInterceptor(),
-			logInterceptor.GetServerInterceptor(),
-			monitorInterceptor.GetServerInterceptor())))
+	var serverInterceptors []grpc.UnaryServerInterceptor
+	serverInterceptors = append(serverInterceptors, recoverInterceptor.GetServerInterceptor())
+	serverInterceptors = append(serverInterceptors, logInterceptor.GetServerInterceptor())
+
+	if conf.Monitor.Active != 0 {
+		serverInterceptors = append(serverInterceptors, monitorInterceptor.GetServerInterceptor())
+	}
+
+	if conf.Tracing.Active != 0 {
+		serverInterceptors = append(serverInterceptors, tracingInterceptor.GetServerInterceptor())
+	}
+
+	app.ServerOpts = append(app.ServerOpts, 
+		grpc.UnaryInterceptor(grpc_middleware.ChainUnaryServer(serverInterceptors...)))
 
 	// set client interceptor
-	app.ClientOpts = append(app.ClientOpts, grpc.WithUnaryInterceptor(
-		grpc_middleware.ChainUnaryClient(
-			tracingInterceptor.GetClientInterceptor(),
-			logInterceptor.GetClientInterceptor(),
-			monitorInterceptor.GetClientInterceptor())), grpc.WithInsecure())
+    var clientInterceptors []grpc.UnaryClientInterceptor
+	clientInterceptors = append(clientInterceptors, logInterceptor.GetClientInterceptor())
+	
+	if conf.Monitor.Active != 0 {
+		clientInterceptors = append(clientInterceptors, monitorInterceptor.GetClientInterceptor())
+	}
+	
+	if conf.Tracing.Active != 0 {
+		clientInterceptors = append(clientInterceptors, tracingInterceptor.GetClientInterceptor())
+	}
+
+	app.ClientOpts = append(app.ClientOpts, 
+		grpc.WithUnaryInterceptor(grpc_middleware.ChainUnaryClient(clientInterceptors...)), 
+		grpc.WithInsecure())
 
 	// init pool
 	err = pool.GetConnectionPool().Init(app.ClientOpts)
