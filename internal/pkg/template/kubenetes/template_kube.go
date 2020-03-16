@@ -156,7 +156,7 @@ case $1 in
   ;;
 
 "")
-  echo "no command found! command list [create, update, delete]"
+  echo "no command found! command list [create, update, delete, get]"
   ;;
 
 esac

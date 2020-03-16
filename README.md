@@ -615,6 +615,51 @@ spec:
   ##########################################
 ```
 
+### Configmap Shell Script Generation
+
+```bash
+$ gofra kube configmap
+```
+
+Then a **./kubernetes/configmap.sh** file is generated.
+
+```bash
+#!/bin/bash
+
+case $1 in
+
+"create")
+  echo "configmap 'configmap-test' creating..."
+  kubectl create configmap configmap-test --namespace='' --from-file=../configs
+  ;;
+
+"update")
+  echo "configmap 'configmap-test' deleting..."
+  kubectl delete configmap configmap-test --namespace=''
+
+  echo "configmap 'configmap-test' creating..."
+  kubectl create configmap configmap-test --namespace='' --from-file=../configs
+  ;;
+
+"delete")
+  echo "configmap 'configmap-test' deleting..."
+  kubectl delete configmap configmap-test --namespace=''
+  ;;
+
+"get")
+  echo "configmap 'configmap-test' getting..."
+  kubectl describe configmap configmap-test --namespace=''
+  ;;
+
+"")
+  echo "no command found! command list [create, update, delete, get]"
+  ;;
+
+esac
+```
+
+
+
 ## Istio
 
 ### Virtual Service YAML Generation
