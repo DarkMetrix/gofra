@@ -13,8 +13,14 @@ import (
 )
 
 // generate kubernetes deployment yaml file
-func GenerateKubeDeploymentYAMLFile(workingPath, imagePath string, info *gofraTemplate.TemplateInfo, override bool) error {
-	filePath := filepath.Join(workingPath, "kubernetes", "deployment.yml")
+func GenerateKubeDeploymentYAMLFile(workingPath, imagePath, namespace string, info *gofraTemplate.TemplateInfo, override bool) error {
+	var filePath string
+
+	if namespace == "" {
+		filePath = filepath.Join(workingPath, "kubernetes", "deployment.yml")
+	} else {
+		filePath = filepath.Join(workingPath, "kubernetes", fmt.Sprintf("deployment-%v.yml", namespace))
+	}
 
 	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
@@ -55,6 +61,7 @@ func GenerateKubeDeploymentYAMLFile(workingPath, imagePath string, info *gofraTe
 	}
 
 	kubeDeploymentInfo := &KubeDeploymentInfo {
+		Namespace: namespace,
 		Project: info.Project,
 		Version: info.Version,
 		ImagePath: imagePath,
@@ -78,8 +85,14 @@ func GenerateKubeDeploymentYAMLFile(workingPath, imagePath string, info *gofraTe
 }
 
 // generate kubernetes service yaml file
-func GenerateKubeServiceYAMLFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
-	filePath := filepath.Join(workingPath, "kubernetes", "service.yml")
+func GenerateKubeServiceYAMLFile(workingPath, namespace string, info *gofraTemplate.TemplateInfo, override bool) error {
+	var filePath string
+
+	if namespace == "" {
+		filePath = filepath.Join(workingPath, "kubernetes", "service.yml")
+	} else {
+		filePath = filepath.Join(workingPath, "kubernetes", fmt.Sprintf("service-%v.yml", namespace))
+	}
 
 	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
@@ -120,6 +133,7 @@ func GenerateKubeServiceYAMLFile(workingPath string, info *gofraTemplate.Templat
 	}
 
 	kubeServiceInfo := &KubeServiceInfo {
+		Namespace: namespace,
 		Project: info.Project,
 		Type: info.Type,
 		Port: port,
@@ -143,8 +157,14 @@ func GenerateKubeServiceYAMLFile(workingPath string, info *gofraTemplate.Templat
 }
 
 // generate kubernetes configmap yaml file
-func GenerateKubeConfigmapYAMLFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
-	filePath := filepath.Join(workingPath, "kubernetes", "configmap.sh")
+func GenerateKubeConfigmapYAMLFile(workingPath, namespace string, info *gofraTemplate.TemplateInfo, override bool) error {
+	var filePath string
+
+	if namespace == "" {
+		filePath = filepath.Join(workingPath, "kubernetes", "configmap.sh")
+	} else {
+		filePath = filepath.Join(workingPath, "kubernetes", fmt.Sprintf("configmap-%v.sh", namespace))
+	}
 
 	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
@@ -179,6 +199,7 @@ func GenerateKubeConfigmapYAMLFile(workingPath string, info *gofraTemplate.Templ
 	}
 
 	kubeConfigmapInfo := &KubeConfigmapInfo {
+		Namespace: namespace,
 		Project: info.Project,
 	}
 

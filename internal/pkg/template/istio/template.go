@@ -13,8 +13,14 @@ import (
 )
 
 // generate istio virtual service yaml file
-func GenerateIstioVirtaulServiceYAMLFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
-	filePath := filepath.Join(workingPath, "istio", "virtual-service.yml")
+func GenerateIstioVirtaulServiceYAMLFile(workingPath, namespace string, info *gofraTemplate.TemplateInfo, override bool) error {
+	var filePath string
+
+	if namespace == "" {
+		filePath = filepath.Join(workingPath, "istio", "virtual-service.yml")
+	} else {
+		filePath = filepath.Join(workingPath, "istio", fmt.Sprintf("virtual-service-%v.yml", namespace))
+	}
 
 	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
@@ -55,6 +61,7 @@ func GenerateIstioVirtaulServiceYAMLFile(workingPath string, info *gofraTemplate
 	}
 
 	istioVirtualServiceInfo := &IstioVirtaulServiceInfo {
+		Namespace: namespace,
 		Project: info.Project,
 		Version: info.Version,
 		Port: port,
@@ -77,8 +84,14 @@ func GenerateIstioVirtaulServiceYAMLFile(workingPath string, info *gofraTemplate
 }
 
 // generate istio destination rule yaml file
-func GenerateIstioDestinationRuleYAMLFile(workingPath string, info *gofraTemplate.TemplateInfo, override bool) error {
-	filePath := filepath.Join(workingPath, "istio", "destination-rule.yml")
+func GenerateIstioDestinationRuleYAMLFile(workingPath, namespace string, info *gofraTemplate.TemplateInfo, override bool) error {
+	var filePath string
+
+	if namespace == "" {
+		filePath = filepath.Join(workingPath, "istio", "destination-rule.yml")
+	} else {
+		filePath = filepath.Join(workingPath, "istio", fmt.Sprintf("destination-rule-%v.yml", namespace))
+	}
 
 	// check file is exist or not
 	isExist, err := commonUtils.CheckPathExists(filePath)
@@ -113,6 +126,7 @@ func GenerateIstioDestinationRuleYAMLFile(workingPath string, info *gofraTemplat
 	}
 
 	istioDestinationRuleInfo := &IstioDestinationRuleInfo {
+		Namespace: namespace,
 		Project: info.Project,
 		Version: info.Version,
 	}

@@ -43,7 +43,7 @@ var virtualServiceCmd = &cobra.Command{
 	Long: `Gofra is a framework using gRPC/gin as the communication layer. 
 istio virtual-service command will help to generate istio virtual service yaml file.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		virtualServiceIstio(override)
+		virtualServiceIstio(namespace, override)
 	},
 }
 
@@ -54,7 +54,7 @@ var destinationRuleCmd = &cobra.Command{
 	Long: `Gofra is a framework using gRPC/gin as the communication layer. 
 istio destination-rule command will help to generate istio destination rule yaml file.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		destinationRuleIstio(override)
+		destinationRuleIstio(namespace, override)
 	},
 }
 
@@ -68,8 +68,10 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	virtualServiceCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
+	virtualServiceCmd.PersistentFlags().StringVar(&namespace, "namespace", "","Kubernetes namespace, default is ''")
 
 	destinationRuleCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
+	destinationRuleCmd.PersistentFlags().StringVar(&namespace, "namespace", "","Kubernetes namespace, default is ''")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
@@ -77,7 +79,7 @@ func init() {
 
 }
 
-func virtualServiceIstio(override bool) error {
+func virtualServiceIstio(namespace string, override bool) error {
 	fmt.Println("====== Gofra istio virtual-service ======")
 
 	// check path
@@ -122,7 +124,7 @@ func virtualServiceIstio(override bool) error {
 
 	// generate virtual service yaml file
 	fmt.Printf("\r\nGenerating istio virtual service yaml file ......")
-	err = istioTemplate.GenerateIstioVirtaulServiceYAMLFile(workingPath, templateInfo, override)
+	err = istioTemplate.GenerateIstioVirtaulServiceYAMLFile(workingPath, namespace, templateInfo, override)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
@@ -134,7 +136,7 @@ func virtualServiceIstio(override bool) error {
 	return nil
 }
 
-func destinationRuleIstio(override bool) error {
+func destinationRuleIstio(namespace string, override bool) error {
 	fmt.Println("====== Gofra istio destination-rule ======")
 
 	// check path
@@ -179,7 +181,7 @@ func destinationRuleIstio(override bool) error {
 
 	// generate virtual service yaml file
 	fmt.Printf("\r\nGenerating istio destination rule yaml file ......")
-	err = istioTemplate.GenerateIstioDestinationRuleYAMLFile(workingPath, templateInfo, override)
+	err = istioTemplate.GenerateIstioDestinationRuleYAMLFile(workingPath, namespace, templateInfo, override)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())

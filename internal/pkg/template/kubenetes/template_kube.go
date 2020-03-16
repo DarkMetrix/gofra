@@ -2,6 +2,7 @@ package kubenetes
 
 // deployment config
 type KubeDeploymentInfo struct {
+	Namespace string
 	Project string
 	Version string
 
@@ -19,6 +20,9 @@ kind: Deployment
 # metadata of the deployment
 metadata:
   name: {{.Project}}
+  {{if ne .Namespace ""}}
+  namespace: {{.Namespace}}
+  {{end}}
   labels:
     app: {{.Project}}
     version: {{.Version}}
@@ -76,6 +80,7 @@ spec:
 
 // service config
 type KubeServiceInfo struct {
+	Namespace string
 	Project string
 	Type string				// grpc or http
 
@@ -93,6 +98,9 @@ kind: Service
 # metadata of the service
 metadata:
   name: {{.Project}} 
+  {{if ne .Namespace ""}}
+  namespace: {{.Namespace}}
+  {{end}}
 
 # specification
 spec:
@@ -116,6 +124,7 @@ spec:
 
 // config config
 type KubeConfigmapInfo struct {
+	Namespace string
 	Project string
 }
 
@@ -125,25 +134,25 @@ case $1 in
 
 "create")
   echo "configmap '{{.Project}}' creating..."
-  kubectl create configmap {{.Project}} --from-file=../configs
+  kubectl create configmap {{.Project}} --namespace='{{.Namespace}}' --from-file=../configs
   ;;
 
 "update")
   echo "configmap '{{.Project}}' deleting..."
-  kubectl delete configmap {{.Project}}
+  kubectl delete configmap {{.Project}} --namespace='{{.Namespace}}'
 
   echo "configmap '{{.Project}}' creating..."
-  kubectl create configmap {{.Project}} --from-file=../configs
+  kubectl create configmap {{.Project}} --namespace='{{.Namespace}}' --from-file=../configs
   ;;
 
 "delete")
   echo "configmap '{{.Project}}' deleting..."
-  kubectl delete configmap {{.Project}}
+  kubectl delete configmap {{.Project}} --namespace='{{.Namespace}}'
   ;;
 
 "get")
   echo "configmap '{{.Project}}' getting..."
-  kubectl describe configmap {{.Project}}
+  kubectl describe configmap {{.Project}} --namespace='{{.Namespace}}'
   ;;
 
 "")

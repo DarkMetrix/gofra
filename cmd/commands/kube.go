@@ -43,7 +43,7 @@ var deploymentKubeCmd = &cobra.Command{
 	Long: `Gofra is a framework using gRPC/gin as the communication layer. 
 kube deployment command will help to generate kubernetes deployment file.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		deploymentKube(override)
+		deploymentKube(namespace, override)
 	},
 }
 
@@ -54,7 +54,7 @@ var serviceKubeCmd = &cobra.Command{
 	Long: `Gofra is a framework using gRPC/gin as the communication layer. 
 kube service command will help to generate kubernetes service yaml file.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		serviceKube(override)
+		serviceKube(namespace, override)
 	},
 }
 
@@ -66,9 +66,11 @@ var configmapKubeCmd = &cobra.Command{
 kube configmap command will help to generate kubernetes configmap shell script.
 configmap.sh offers 'create', 'update', 'delete' and 'get' commands to help manage the configmap`,
 	Run: func(cmd *cobra.Command, args []string) {
-		configmapKube(override)
+		configmapKube(namespace, override)
 	},
 }
+
+var namespace string
 
 func init() {
 	rootCmd.AddCommand(kubeCmd)
@@ -81,10 +83,13 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	deploymentKubeCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
+	deploymentKubeCmd.PersistentFlags().StringVar(&namespace, "namespace", "","Kubernetes namespace, default is ''")
 
 	serviceKubeCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
+	serviceKubeCmd.PersistentFlags().StringVar(&namespace, "namespace", "","Kubernetes namespace, default is ''")
 
 	configmapKubeCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
+	configmapKubeCmd.PersistentFlags().StringVar(&namespace, "namespace", "","Kubernetes namespace, default is ''")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
@@ -92,7 +97,7 @@ func init() {
 
 }
 
-func deploymentKube(override bool) error {
+func deploymentKube(namespace string, override bool) error {
 	fmt.Println("====== Gofra kubernetes deployment ======")
 
 	// check path
@@ -142,7 +147,7 @@ func deploymentKube(override bool) error {
 
 	// generate deployment yaml file
 	fmt.Printf("\r\nGenerating kubernetes deployment yaml file ......")
-	err = kubeTemplate.GenerateKubeDeploymentYAMLFile(workingPath, imagePath, templateInfo, override)
+	err = kubeTemplate.GenerateKubeDeploymentYAMLFile(workingPath, imagePath, namespace, templateInfo, override)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
@@ -154,7 +159,7 @@ func deploymentKube(override bool) error {
 	return nil
 }
 
-func serviceKube(override bool) error {
+func serviceKube(namespace string, override bool) error {
 	fmt.Println("====== Gofra kubernetes service ======")
 
 	// check path
@@ -199,7 +204,7 @@ func serviceKube(override bool) error {
 
 	// generate service yaml file
 	fmt.Printf("\r\nGenerating kubernetes service yaml file ......")
-	err = kubeTemplate.GenerateKubeServiceYAMLFile(workingPath, templateInfo, override)
+	err = kubeTemplate.GenerateKubeServiceYAMLFile(workingPath, namespace, templateInfo, override)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
@@ -211,7 +216,7 @@ func serviceKube(override bool) error {
 	return nil
 }
 
-func configmapKube(override bool) error {
+func configmapKube(namespace string, override bool) error {
 	fmt.Println("====== Gofra kubernetes configmap ======")
 
 	// check path
@@ -256,7 +261,7 @@ func configmapKube(override bool) error {
 
 	// generate service yaml file
 	fmt.Printf("\r\nGenerating kubernetes service yaml file ......")
-	err = kubeTemplate.GenerateKubeConfigmapYAMLFile(workingPath, templateInfo, override)
+	err = kubeTemplate.GenerateKubeConfigmapYAMLFile(workingPath, namespace, templateInfo, override)
 
 	if err != nil {
 		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())

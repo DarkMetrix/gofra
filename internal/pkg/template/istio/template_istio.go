@@ -2,6 +2,7 @@ package istio
 
 // istio virtual service config
 type IstioVirtaulServiceInfo struct {
+	Namespace string
 	Project string
 	Version string
 
@@ -13,6 +14,9 @@ apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   name: {{.Project}}
+  {{if ne .Namespace ""}}
+  namespace: {{.Namespace}}
+  {{end}}
 
 spec:
   hosts:
@@ -57,6 +61,7 @@ spec:
 
 // istio destination rule config
 type IstioDestinationRuleInfo struct {
+	Namespace string
 	Project string
 	Version string
 }
@@ -66,6 +71,10 @@ apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
   name: {{.Project}}
+  {{if ne .Namespace ""}}
+  namespace: {{.Namespace}}
+  {{end}}
+
 spec:
   host: {{.Project}} # host will be interpreted as ${hosts}.${k8s-namespace}.svc.cluster.local in k8s environment
 
