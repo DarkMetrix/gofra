@@ -1,12 +1,40 @@
 package istio
 
-// istio virtual service config
-type IstioVirtaulServiceInfo struct {
-	Namespace string
-	Project string
-	Version string
+import (
+	"github.com/DarkMetrix/gofra/internal/pkg/option"
+	"github.com/DarkMetrix/gofra/internal/pkg/templates"
+	"golang.org/x/xerrors"
+)
 
-	Port string
+// IstioVirtaulServiceInfo represents istio virtual-service information
+type IstioVirtaulServiceInfo struct {
+	Opts      *option.Options
+	Project   string
+	Namespace string
+	Version   string
+	Port      string
+}
+
+// NewIstioVirtaulServiceInfo returns a new IstioVirtaulServiceInfo pointer
+func NewIstioVirtaulServiceInfo(opts ...option.Option) *IstioVirtaulServiceInfo {
+	// init options
+	newOpts := option.NewOptions(opts...)
+	return &IstioVirtaulServiceInfo{
+		Opts:      newOpts,
+		Project:   newOpts.Project,
+		Namespace: newOpts.Namespace,
+		Version:   newOpts.Version,
+		Port:      newOpts.Port,
+	}
+}
+
+// RenderFile render template and output to file
+func (info *IstioVirtaulServiceInfo) RenderFile(outputPath string) error {
+	if err := templates.RenderToFile(outputPath, info.Opts.Override, info.Opts.IgnoreExist,
+		"template-istio-virtual-service", IstioVirtualServiceTemplate, info); err != nil {
+		return xerrors.Errorf("RenderToFile failed! error:%w", err)
+	}
+	return nil
 }
 
 var IstioVirtualServiceTemplate string = `
@@ -59,11 +87,33 @@ spec:
   ##########################################
 `
 
-// istio destination rule config
+// IstioDestinationRuleInfo represents istio destination rule information
 type IstioDestinationRuleInfo struct {
+	Opts      *option.Options
 	Namespace string
-	Project string
-	Version string
+	Project   string
+	Version   string
+}
+
+// NewIstioDestinationRuleInfo returns a new IstioDestinationRuleInfo pointer
+func NewIstioDestinationRuleInfo(opts ...option.Option) *IstioDestinationRuleInfo {
+	// init options
+	newOpts := option.NewOptions(opts...)
+	return &IstioDestinationRuleInfo{
+		Opts:      newOpts,
+		Project:   newOpts.Project,
+		Namespace: newOpts.Namespace,
+		Version:   newOpts.Version,
+	}
+}
+
+// RenderFile render template and output to file
+func (info *IstioDestinationRuleInfo) RenderFile(outputPath string) error {
+	if err := templates.RenderToFile(outputPath, info.Opts.Override, info.Opts.IgnoreExist,
+		"template-istio-destination-rule", IstioDestinationRuleTemplate, info); err != nil {
+		return xerrors.Errorf("RenderToFile failed! error:%w", err)
+	}
+	return nil
 }
 
 var IstioDestinationRuleTemplate string = `
@@ -101,4 +151,3 @@ spec:
   # to get more information
   ##########################################
 `
-

@@ -16,10 +16,9 @@ package commands
 
 import (
 	"fmt"
-	"github.com/spf13/cobra"
 	"os"
 
-	dockerTemplate "github.com/DarkMetrix/gofra/internal/pkg/template/docker"
+	"github.com/spf13/cobra"
 )
 
 // dockerCmd represents the docker command
@@ -52,7 +51,7 @@ func init() {
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	generateDockerCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
+	generateDockerCmd.PersistentFlags().BoolVar(&override, "override", false, "If override when file exists")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
@@ -74,33 +73,5 @@ func generateDocker(override bool) error {
 		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
 	}
 
-	// read template
-	fmt.Printf("\r\nReading template ......")
-	if len(templatePath) == 0 {
-		fmt.Printf(" failed! \r\nerror:Template file path is empty!\r\n")
-		return err
-	}
-
-	templateInfo, _, err := ReadTemplate(templatePath)
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\n")
-	}
-
-	// generate docker file
-	fmt.Printf("\r\nGenerating docker file ......")
-	err = dockerTemplate.GenerateDockerFile(workingPath, templateInfo, override)
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\n")
-	}
-
 	return nil
 }
-

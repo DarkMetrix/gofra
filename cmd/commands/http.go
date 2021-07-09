@@ -18,11 +18,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/go-ozzo/ozzo-validation"
+	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
 	"github.com/spf13/cobra"
-
-	httpTemplate "github.com/DarkMetrix/gofra/internal/pkg/template/gin"
 )
 
 // httpCmd represents the http command
@@ -73,9 +71,9 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// serviceCmd.PersistentFlags().String("foo", "", "A help for foo")
-	addHttpHandlerCmd.PersistentFlags().StringVar(&uri, "uri", "","Http URI, e.g.:'/health'")
-	addHttpHandlerCmd.PersistentFlags().StringVar(&method, "method", "GET","Http method, e.g.:'GET, POST, PUT, PATCH, DELETE and OPTIONS'")
-	addHttpHandlerCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
+	addHttpHandlerCmd.PersistentFlags().StringVar(&uri, "uri", "", "Http URI, e.g.:'/health'")
+	addHttpHandlerCmd.PersistentFlags().StringVar(&method, "method", "GET", "Http method, e.g.:'GET, POST, PUT, PATCH, DELETE and OPTIONS'")
+	addHttpHandlerCmd.PersistentFlags().BoolVar(&override, "override", false, "If override when file exists")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
@@ -94,39 +92,6 @@ func addHttpHandler(override bool) error {
 		return err
 	} else {
 		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
-	}
-
-	// read template
-	fmt.Printf("\r\nReading template ......")
-	if len(templatePath) == 0 {
-		fmt.Printf(" failed! \r\nerror:Template file path is empty!\r\n")
-		return err
-	}
-
-	templateInfo, _, err := ReadTemplate(templatePath)
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\n")
-	}
-
-	// check server type
-	if templateInfo.Type != "http" {
-		fmt.Printf(" failed! \r\nerror:Server type is not 'http'!\r\n")
-		return err
-	}
-
-	// generate http handler
-	fmt.Printf("\r\nGenerating http handler code ......")
-	err = httpTemplate.GenerateHttpHandler(workingPath, templateInfo, uri, method, override)
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\n")
 	}
 
 	return nil

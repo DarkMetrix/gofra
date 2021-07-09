@@ -1,13 +1,42 @@
 package kubenetes
 
-// deployment config
-type KubeDeploymentInfo struct {
-	Namespace string
-	Project string
-	Version string
+import (
+	"github.com/DarkMetrix/gofra/internal/pkg/option"
+	"github.com/DarkMetrix/gofra/internal/pkg/templates"
+	"golang.org/x/xerrors"
+)
 
-	ImagePath string
+// KubeDeploymentInfo represents kubernetes deployment information
+type KubeDeploymentInfo struct {
+	Opts          *option.Options
+	Namespace     string
+	Project       string
+	Version       string
+	ImagePath     string
 	ContainerPort string
+}
+
+// NewKubeDeploymentInfo returns a new KubeDeploymentInfo pointer
+func NewKubeDeploymentInfo(opts ...option.Option) *KubeDeploymentInfo {
+	// init options
+	newOpts := option.NewOptions(opts...)
+	return &KubeDeploymentInfo{
+		Opts:          newOpts,
+		Project:       newOpts.Project,
+		Namespace:     newOpts.Namespace,
+		Version:       newOpts.Version,
+		ImagePath:     newOpts.ImagePath,
+		ContainerPort: newOpts.Port,
+	}
+}
+
+// RenderFile render template and output to file
+func (info *KubeDeploymentInfo) RenderFile(outputPath string) error {
+	if err := templates.RenderToFile(outputPath, info.Opts.Override, info.Opts.IgnoreExist,
+		"template-k8s-deployment", KubeDeploymentTemplate, info); err != nil {
+		return xerrors.Errorf("RenderToFile failed! error:%w", err)
+	}
+	return nil
 }
 
 var KubeDeploymentTemplate string = `
@@ -37,8 +66,8 @@ spec:
       app: {{.Project}}
       version: {{.Version}}
 
-  # using this template to create pod
-  template:
+  # using this templates to create pod
+  templates:
     metadata:
       labels:
         app: {{.Project}}
@@ -78,17 +107,40 @@ spec:
   ##########################################
 `
 
-// service config
+// KubeServiceInfo represents kubernetes service information
 type KubeServiceInfo struct {
-	Namespace string
-	Project string
-	Type string				// grpc or http
-
-	Port string
+	Opts       *option.Options
+	Namespace  string
+	Project    string
+	Type       string // grpc or http
+	Port       string
 	TargetPort string
 }
 
-var kubeServiceTemplate string = `
+// NewKubeServiceInfo returns a new KubeServiceInfo pointer
+func NewKubeServiceInfo(opts ...option.Option) *KubeServiceInfo {
+	// init options
+	newOpts := option.NewOptions(opts...)
+	return &KubeServiceInfo{
+		Opts:       newOpts,
+		Project:    newOpts.Project,
+		Namespace:  newOpts.Namespace,
+		Type:       "grpc",
+		Port:       newOpts.Port,
+		TargetPort: newOpts.TargetPort,
+	}
+}
+
+// RenderFile render template and output to file
+func (info *KubeServiceInfo) RenderFile(outputPath string) error {
+	if err := templates.RenderToFile(outputPath, info.Opts.Override, info.Opts.IgnoreExist,
+		"template-k8s-service", KubeServiceTemplate, info); err != nil {
+		return xerrors.Errorf("RenderToFile failed! error:%w", err)
+	}
+	return nil
+}
+
+var KubeServiceTemplate string = `
 # API version
 apiVersion: v1
 
@@ -122,13 +174,34 @@ spec:
   ##########################################
 `
 
-// config config
+// KubeConfigmapInfo represents kubernetes config map information
 type KubeConfigmapInfo struct {
+	Opts      *option.Options
 	Namespace string
-	Project string
+	Project   string
 }
 
-var kubeConfigmapTemplate string = `#!/bin/bash
+// NewKubeConfigmapInfo returns a new KubeConfigmapInfo pointer
+func NewKubeConfigmapInfo(opts ...option.Option) *KubeConfigmapInfo {
+	// init options
+	newOpts := option.NewOptions(opts...)
+	return &KubeConfigmapInfo{
+		Opts:      newOpts,
+		Project:   newOpts.Project,
+		Namespace: newOpts.Namespace,
+	}
+}
+
+// RenderFile render template and output to file
+func (info *KubeConfigmapInfo) RenderFile(outputPath string) error {
+	if err := templates.RenderToFile(outputPath, info.Opts.Override, info.Opts.IgnoreExist,
+		"template-k8s-config-map", KubeConfigmapTemplate, info); err != nil {
+		return xerrors.Errorf("RenderToFile failed! error:%w", err)
+	}
+	return nil
+}
+
+var KubeConfigmapTemplate string = `#!/bin/bash
 
 case $1 in
 
@@ -161,4 +234,3 @@ case $1 in
 
 esac
 `
-

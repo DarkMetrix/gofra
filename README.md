@@ -37,7 +37,7 @@ $ go get -u github.com/DarkMetrix/gofra/gofra
 First initialize default template file as below.
 
 ```bash
-$ gofra template init
+$ gofra templates init
 ```
 
 You need to type Author Name, Project Name, Project Address & Server Type.
@@ -99,7 +99,7 @@ You need to type Author Name, Project Name, Project Address & Server Type.
 ### gRPC Service Generation
 
 ```bash
-$ gofra init --path=./template.json
+$ gofra init --path=./templates.json
 ```
 
 All files needed are generated.
@@ -131,7 +131,7 @@ $tree
 |       `-- config
 |           `-- config.go
 |-- log
-`-- template.json
+`-- templates.json
 ```
 
 
@@ -207,7 +207,7 @@ $ tree
 |       `-- config
 |           `-- config.go
 |-- log
-`-- template.json
+`-- templates.json
 ```
 
 #### Update Service
@@ -331,7 +331,7 @@ Listen on port [:58888]
 ### Http Service Generation
 
 ```bash
-$ gofra init --path=./template.json
+$ gofra init --path=./templates.json
 ```
 
 All files needed are generated.
@@ -361,7 +361,7 @@ $tree
 |       `-- config
 |           `-- config.go
 |-- log
-`-- template.json
+`-- templates.json
 ```
 
 ### Add Http Handlers
@@ -407,7 +407,7 @@ $ tree
 |       `-- config
 |           `-- config.go
 |-- log
-`-- template.json
+`-- templates.json
 ```
 
 ### Implement Http Methods
@@ -552,7 +552,7 @@ spec:
       app: test_gofra
       version: v1
 
-  # using this template to create pod
+  # using this templates to create pod
   template:
     metadata:
       labels:

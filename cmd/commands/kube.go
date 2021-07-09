@@ -17,12 +17,8 @@ package commands
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/spf13/cobra"
-
-	kubeTemplate "github.com/DarkMetrix/gofra/internal/pkg/template/kubenetes"
-	commonUtils "github.com/DarkMetrix/gofra/pkg/utils"
 )
 
 // kubeCmd represents the kube command
@@ -82,14 +78,14 @@ func init() {
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	deploymentKubeCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
-	deploymentKubeCmd.PersistentFlags().StringVar(&namespace, "namespace", "","Kubernetes namespace, default is ''")
+	deploymentKubeCmd.PersistentFlags().BoolVar(&override, "override", false, "If override when file exists")
+	deploymentKubeCmd.PersistentFlags().StringVar(&namespace, "namespace", "", "Kubernetes namespace, default is ''")
 
-	serviceKubeCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
-	serviceKubeCmd.PersistentFlags().StringVar(&namespace, "namespace", "","Kubernetes namespace, default is ''")
+	serviceKubeCmd.PersistentFlags().BoolVar(&override, "override", false, "If override when file exists")
+	serviceKubeCmd.PersistentFlags().StringVar(&namespace, "namespace", "", "Kubernetes namespace, default is ''")
 
-	configmapKubeCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
-	configmapKubeCmd.PersistentFlags().StringVar(&namespace, "namespace", "","Kubernetes namespace, default is ''")
+	configmapKubeCmd.PersistentFlags().BoolVar(&override, "override", false, "If override when file exists")
+	configmapKubeCmd.PersistentFlags().StringVar(&namespace, "namespace", "", "Kubernetes namespace, default is ''")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
@@ -111,51 +107,6 @@ func deploymentKube(namespace string, override bool) error {
 		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
 	}
 
-	// read template
-	fmt.Printf("\r\nReading template ......")
-	if len(templatePath) == 0 {
-		fmt.Printf(" failed! \r\nerror:Template file path is empty!\r\n")
-		return err
-	}
-
-	templateInfo, _, err := ReadTemplate(templatePath)
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\n")
-	}
-
-	// mkdir
-	fmt.Printf("\r\nMake dir ......")
-	kubernetesPath := filepath.Join(workingPath, "kubernetes")
-
-	commonUtils.CreatePath(kubernetesPath, false)
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\n")
-	}
-
-	// input image path
-	var imagePath string
-	fmt.Print("Image path:")
-	fmt.Scanln(&imagePath)
-
-	// generate deployment yaml file
-	fmt.Printf("\r\nGenerating kubernetes deployment yaml file ......")
-	err = kubeTemplate.GenerateKubeDeploymentYAMLFile(workingPath, imagePath, namespace, templateInfo, override)
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\n")
-	}
-
 	return nil
 }
 
@@ -173,46 +124,6 @@ func serviceKube(namespace string, override bool) error {
 		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
 	}
 
-	// read template
-	fmt.Printf("\r\nReading template ......")
-	if len(templatePath) == 0 {
-		fmt.Printf(" failed! \r\nerror:Template file path is empty!\r\n")
-		return err
-	}
-
-	templateInfo, _, err := ReadTemplate(templatePath)
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\n")
-	}
-
-	// mkdir
-	fmt.Printf("\r\nMake dir ......")
-	kubernetesPath := filepath.Join(workingPath, "kubernetes")
-
-	commonUtils.CreatePath(kubernetesPath, false)
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\n")
-	}
-
-	// generate service yaml file
-	fmt.Printf("\r\nGenerating kubernetes service yaml file ......")
-	err = kubeTemplate.GenerateKubeServiceYAMLFile(workingPath, namespace, templateInfo, override)
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\n")
-	}
-
 	return nil
 }
 
@@ -228,46 +139,6 @@ func configmapKube(namespace string, override bool) error {
 		return err
 	} else {
 		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
-	}
-
-	// read template
-	fmt.Printf("\r\nReading template ......")
-	if len(templatePath) == 0 {
-		fmt.Printf(" failed! \r\nerror:Template file path is empty!\r\n")
-		return err
-	}
-
-	templateInfo, _, err := ReadTemplate(templatePath)
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\n")
-	}
-
-	// mkdir
-	fmt.Printf("\r\nMake dir ......")
-	kubernetesPath := filepath.Join(workingPath, "kubernetes")
-
-	commonUtils.CreatePath(kubernetesPath, false)
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\n")
-	}
-
-	// generate service yaml file
-	fmt.Printf("\r\nGenerating kubernetes service yaml file ......")
-	err = kubeTemplate.GenerateKubeConfigmapYAMLFile(workingPath, namespace, templateInfo, override)
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\n")
 	}
 
 	return nil

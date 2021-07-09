@@ -1,41 +1,34 @@
 package utils
 
 import (
-	"os"
-	"io/ioutil"
 	"errors"
+	"io/ioutil"
+	"os"
 )
 
-// copy file from src to dest
+// CopyFile copies file from src to dest
 func CopyFile(src, dest string) error {
 	data, err := ioutil.ReadFile(src)
-
 	if err != nil {
 		return err
 	}
 
-	err = ioutil.WriteFile(dest, data, os.ModePerm)
-
-	if err != nil {
+	if err = ioutil.WriteFile(dest, data, os.ModePerm); err != nil {
 		return err
 	}
-
 	return nil
 }
 
-// check if the path is exist or not
+// CheckPathExists checks if the path is exist or not
 func CheckPathExists(path string) (bool, error) {
-	_, err := os.Stat(path)
-
-	if err == nil {
+	if _, err := os.Stat(path); err != nil {
 		return true, nil
+	} else {
+		if os.IsNotExist(err) {
+			return false, nil
+		}
+		return false, err
 	}
-
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-
-	return false, err
 }
 
 // create dir using path
@@ -70,7 +63,7 @@ func CreatePath(path string, override bool) error {
 }
 
 // create dirs using paths
-func CreatePaths(override bool, paths... string) error {
+func CreatePaths(override bool, paths ...string) error {
 	for _, path := range paths {
 		err := CreatePath(path, override)
 

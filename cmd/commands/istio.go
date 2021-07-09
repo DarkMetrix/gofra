@@ -17,12 +17,8 @@ package commands
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
 	"github.com/spf13/cobra"
-
-	istioTemplate "github.com/DarkMetrix/gofra/internal/pkg/template/istio"
-	commonUtils "github.com/DarkMetrix/gofra/pkg/utils"
 )
 
 // istioCmd represents the istio command
@@ -67,11 +63,11 @@ func init() {
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	virtualServiceCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
-	virtualServiceCmd.PersistentFlags().StringVar(&namespace, "namespace", "","Kubernetes namespace, default is ''")
+	virtualServiceCmd.PersistentFlags().BoolVar(&override, "override", false, "If override when file exists")
+	virtualServiceCmd.PersistentFlags().StringVar(&namespace, "namespace", "", "Kubernetes namespace, default is ''")
 
-	destinationRuleCmd.PersistentFlags().BoolVar(&override, "override", false,"If override when file exists")
-	destinationRuleCmd.PersistentFlags().StringVar(&namespace, "namespace", "","Kubernetes namespace, default is ''")
+	destinationRuleCmd.PersistentFlags().BoolVar(&override, "override", false, "If override when file exists")
+	destinationRuleCmd.PersistentFlags().StringVar(&namespace, "namespace", "", "Kubernetes namespace, default is ''")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
@@ -93,46 +89,6 @@ func virtualServiceIstio(namespace string, override bool) error {
 		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
 	}
 
-	// read template
-	fmt.Printf("\r\nReading template ......")
-	if len(templatePath) == 0 {
-		fmt.Printf(" failed! \r\nerror:Template file path is empty!\r\n")
-		return err
-	}
-
-	templateInfo, _, err := ReadTemplate(templatePath)
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\n")
-	}
-
-	// mkdir
-	fmt.Printf("\r\nMake dir ......")
-	istioPath := filepath.Join(workingPath, "istio")
-
-	commonUtils.CreatePath(istioPath, false)
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\n")
-	}
-
-	// generate virtual service yaml file
-	fmt.Printf("\r\nGenerating istio virtual service yaml file ......")
-	err = istioTemplate.GenerateIstioVirtaulServiceYAMLFile(workingPath, namespace, templateInfo, override)
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\n")
-	}
-
 	return nil
 }
 
@@ -150,46 +106,5 @@ func destinationRuleIstio(namespace string, override bool) error {
 		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
 	}
 
-	// read template
-	fmt.Printf("\r\nReading template ......")
-	if len(templatePath) == 0 {
-		fmt.Printf(" failed! \r\nerror:Template file path is empty!\r\n")
-		return err
-	}
-
-	templateInfo, _, err := ReadTemplate(templatePath)
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\n")
-	}
-
-	// mkdir
-	fmt.Printf("\r\nMake dir ......")
-	istioPath := filepath.Join(workingPath, "istio")
-
-	commonUtils.CreatePath(istioPath, false)
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\n")
-	}
-
-	// generate virtual service yaml file
-	fmt.Printf("\r\nGenerating istio destination rule yaml file ......")
-	err = istioTemplate.GenerateIstioDestinationRuleYAMLFile(workingPath, namespace, templateInfo, override)
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\n")
-	}
-
 	return nil
 }
-
