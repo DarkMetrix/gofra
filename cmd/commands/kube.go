@@ -25,7 +25,7 @@ import (
 var kubeCmd = &cobra.Command{
 	Use:   "kube",
 	Short: "kubenetes operations [deployment, service]",
-	Long: `Gofra is a framework using gRPC/gin as the communication layer. 
+	Long: `Gofra is a framework using gRPC as the communication layer. 
 kube command will help to generate kubernetes deployment, service yaml file and configmap command shell script.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		cmd.Help()
@@ -36,7 +36,7 @@ kube command will help to generate kubernetes deployment, service yaml file and 
 var deploymentKubeCmd = &cobra.Command{
 	Use:   "deployment",
 	Short: "Add generated kubernetes deployment.yml to project",
-	Long: `Gofra is a framework using gRPC/gin as the communication layer. 
+	Long: `Gofra is a framework using gRPC as the communication layer. 
 kube deployment command will help to generate kubernetes deployment file.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		deploymentKube(namespace, override)
@@ -47,7 +47,7 @@ kube deployment command will help to generate kubernetes deployment file.`,
 var serviceKubeCmd = &cobra.Command{
 	Use:   "service",
 	Short: "Add generated kubernetes service.yml to project",
-	Long: `Gofra is a framework using gRPC/gin as the communication layer. 
+	Long: `Gofra is a framework using gRPC as the communication layer. 
 kube service command will help to generate kubernetes service yaml file.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		serviceKube(namespace, override)
@@ -58,7 +58,7 @@ kube service command will help to generate kubernetes service yaml file.`,
 var configmapKubeCmd = &cobra.Command{
 	Use:   "configmap",
 	Short: "Add generated kubernetes configmap.yml to project",
-	Long: `Gofra is a framework using gRPC/gin as the communication layer. 
+	Long: `Gofra is a framework using gRPC as the communication layer. 
 kube configmap command will help to generate kubernetes configmap shell script.
 configmap.sh offers 'create', 'update', 'delete' and 'get' commands to help manage the configmap`,
 	Run: func(cmd *cobra.Command, args []string) {

@@ -27,7 +27,7 @@ import (
 var initCmd = &cobra.Command{
 	Use:   "init",
 	Short: "Initialize gofra application using templates.json",
-	Long:  `Gofra is a framework using gRPC/gin as the communication layer.\r\ninit command will create basic framework structure.`,
+	Long:  `Gofra is a framework using gRPC as the communication layer.\r\ninit command will create basic framework structure.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		log.Info("====== gofra init ======")
 
@@ -71,10 +71,10 @@ func init() {
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	initCmd.PersistentFlags().StringVar(&outputPath, "output-path", filepath.Join("."), "output path, default is './'")
+	initCmd.PersistentFlags().StringVar(&outputPath, "output-path", filepath.Join("."), "output path, default is '.'")
 	initCmd.PersistentFlags().BoolVar(&override, "override", false, "If override when file exists")
 	initCmd.PersistentFlags().StringVar(&protocPath, "protoc-path", "protoc", "protoc binary path, in case user has multi versions of protoc")
-	initCmd.PersistentFlags().StringArrayVar(&protoFileIncludePath, "proto_include_path", []string{}, "proto files include path used by protoc's command '--proto_path'")
+	initCmd.PersistentFlags().StringArrayVar(&protoFileIncludePath, "proto-include-path", []string{}, "proto files include path used by protoc's command '--proto_path'")
 	initCmd.PersistentFlags().StringVar(&goModule, "go-module", "", "go module name, default is empty, e.g.:github.com/foo/bar")
 	initCmd.PersistentFlags().StringVar(&goVersion, "go-version", "1.16", "go version, default is '1.16'")
 

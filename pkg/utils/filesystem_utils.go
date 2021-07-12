@@ -21,7 +21,7 @@ func CopyFile(src, dest string) error {
 
 // CheckPathExists checks if the path is exist or not
 func CheckPathExists(path string) (bool, error) {
-	if _, err := os.Stat(path); err != nil {
+	if _, err := os.Stat(path); err == nil {
 		return true, nil
 	} else {
 		if os.IsNotExist(err) {
@@ -31,43 +31,33 @@ func CheckPathExists(path string) (bool, error) {
 	}
 }
 
-// create dir using path
+// CreatePath creates path directory and if override is specified the directory will be removed first
 func CreatePath(path string, override bool) error {
 	isExist, err := CheckPathExists(path)
-
 	if err != nil {
 		return err
 	}
 
 	if isExist && override {
-		err = os.RemoveAll(path)
-
-		if err != nil {
+		if err = os.RemoveAll(path); err != nil {
 			return err
 		}
 	}
 
-	err = os.MkdirAll(path, os.ModeDir)
-
-	if err != nil {
+	if err := os.MkdirAll(path, os.ModeDir); err != nil {
 		return err
 	}
 
-	err = os.Chmod(path, os.ModePerm)
-
-	if err != nil {
+	if err := os.Chmod(path, os.ModePerm); err != nil {
 		return err
 	}
-
 	return nil
 }
 
-// create dirs using paths
+// CreatePaths creates a batch of directories
 func CreatePaths(override bool, paths ...string) error {
 	for _, path := range paths {
-		err := CreatePath(path, override)
-
-		if err != nil {
+		if err := CreatePath(path, override); err != nil {
 			return err
 		}
 	}
@@ -75,7 +65,7 @@ func CreatePaths(override bool, paths ...string) error {
 	return nil
 }
 
-// get GOPATH
+// GetGOPATH returns the environment variable GOPATH
 func GetGOPATH() (string, error) {
 	goPath := os.Getenv("GOPATH")
 

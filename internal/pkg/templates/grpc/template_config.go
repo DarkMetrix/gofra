@@ -119,14 +119,13 @@ func (config *Config) Init (path string) error {
 // ConfigYAMLInfo represents Config YAML information
 type ConfigYAMLInfo struct {
 	Opts *option.Options
-	Addr string
 }
 
 // NewConfigYAMLInfo returns a new ConfigYAMLInfo pointer
 func NewConfigYAMLInfo(opts ...option.Option) *ConfigYAMLInfo {
 	// init options
 	newOpts := option.NewOptions(opts...)
-	return &ConfigYAMLInfo{Addr: newOpts.Addr, Opts: newOpts}
+	return &ConfigYAMLInfo{Opts: newOpts}
 }
 
 // RenderFile render template and output to file
@@ -147,7 +146,7 @@ var ConfigYAMLTemplate string = `# Server configuration
 #		127.0.0.1:58888
 #		eth0:58888
 server:
-  addr: "{{.Addr}}"
+  addr: "localhost:58888"
 
 # Observability configuration
 observability:

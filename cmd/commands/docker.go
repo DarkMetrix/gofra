@@ -25,10 +25,10 @@ import (
 var dockerCmd = &cobra.Command{
 	Use:   "docker",
 	Short: "docker operations [generate]",
-	Long: `Gofra is a framework using gRPC/gin as the communication layer. 
+	Long: `Gofra is a framework using gRPC as the communication layer. 
 docker command will help to generate docker file.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
+		_ = cmd.Help()
 	},
 }
 
@@ -36,7 +36,7 @@ docker command will help to generate docker file.`,
 var generateDockerCmd = &cobra.Command{
 	Use:   "generate",
 	Short: "Add generated docker file to project",
-	Long: `Gofra is a framework using gRPC/gin as the communication layer. 
+	Long: `Gofra is a framework using gRPC as the communication layer. 
 docker generate command will help to generate docker file.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		generateDocker(override)
