@@ -33,7 +33,7 @@ var serviceCmd = &cobra.Command{
 	Long: `Gofra is a framework using gRPC as the communication layer.
 service command will help to manipulate .proto file to generate service frame & handler.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
+		_ = cmd.Help()
 	},
 }
 
@@ -118,7 +118,6 @@ service update command will help to manipulate .proto file to update service fra
 
 var (
 	protoFilePath string
-	update        bool
 )
 
 func init() {
@@ -131,22 +130,27 @@ func init() {
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
 	// serviceCmd.PersistentFlags().String("foo", "", "A help for foo")
-	addServiceCmd.PersistentFlags().StringVar(&outputPath, "output-path", filepath.Join("."), "output path, "+
-		"default is '.'")
-	addServiceCmd.PersistentFlags().StringVar(&protoFilePath, "path", "", "A .proto file to generate codes")
-	addServiceCmd.PersistentFlags().StringVar(&protocPath, "protoc-path", "protoc", "protoc binary path, "+
-		"in case user has multi versions of protoc")
-	addServiceCmd.PersistentFlags().StringArrayVar(&protoFileIncludePath, "proto-include-path", []string{},
-		"proto files include path used by protoc's command '--proto_path'")
+	addServiceCmd.PersistentFlags().StringVar(&outputPath,
+		"output-path", filepath.Join("."), "output path, default is '.'")
+	addServiceCmd.PersistentFlags().BoolVar(&override,
+		"override", false, "If override when file exists")
+	addServiceCmd.PersistentFlags().StringVar(&protoFilePath,
+		"path", "", "A .proto file to generate codes")
+	addServiceCmd.PersistentFlags().StringVar(&protocPath,
+		"protoc-path", "protoc", "protoc binary path, in case user has multi versions of protoc")
+	addServiceCmd.PersistentFlags().StringArrayVar(&protoFileIncludePath,
+		"proto-include-path", []string{}, "proto files include path used by protoc's command '--proto_path'")
 
-	updateServiceCmd.PersistentFlags().StringVar(&outputPath, "output-path", filepath.Join("."), "output path, "+
-		"default is '.'")
-	updateServiceCmd.PersistentFlags().StringVar(&protoFilePath, "path", "", "A .proto file to generate codes")
-	updateServiceCmd.PersistentFlags().StringVar(&protocPath, "protoc-path", "protoc", "protoc binary path, "+
-		"in case user has multi versions of protoc")
-	updateServiceCmd.PersistentFlags().StringArrayVar(&protoFileIncludePath, "proto-include-path", []string{},
-		"proto files path include used by protoc's command '--proto_path'")
-	updateServiceCmd.PersistentFlags().BoolVar(&override, "override", false, "If override when file exists")
+	updateServiceCmd.PersistentFlags().StringVar(&outputPath,
+		"output-path", filepath.Join("."), "output path, default is '.'")
+	updateServiceCmd.PersistentFlags().BoolVar(&override,
+		"override", false, "If override when file exists")
+	updateServiceCmd.PersistentFlags().StringVar(&protoFilePath,
+		"path", "", "A .proto file to generate codes")
+	updateServiceCmd.PersistentFlags().StringVar(&protocPath,
+		"protoc-path", "protoc", "protoc binary path, in case user has multi versions of protoc")
+	updateServiceCmd.PersistentFlags().StringArrayVar(&protoFileIncludePath,
+		"proto-include-path", []string{}, "proto files path include used by protoc's command '--proto_path'")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:

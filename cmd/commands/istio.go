@@ -28,7 +28,7 @@ var istioCmd = &cobra.Command{
 	Long: `Gofra is a framework using gRPC as the communication layer. 
 istio command will help to generate istio virtual service and destination rule yaml file.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
+		_ = cmd.Help()
 	},
 }
 

@@ -1,6 +1,8 @@
 package docker
 
 import (
+	"strings"
+
 	"github.com/DarkMetrix/gofra/internal/pkg/option"
 	"github.com/DarkMetrix/gofra/internal/pkg/templates"
 	"golang.org/x/xerrors"
@@ -9,8 +11,8 @@ import (
 // DockerFileInfo represents docker file information
 type DockerFileInfo struct {
 	Opts    *option.Options
-	Author  string
 	Project string
+	Labels  string
 }
 
 // NewDockerFileInfo returns a new DockerFileInfo pointer
@@ -19,8 +21,8 @@ func NewDockerFileInfo(opts ...option.Option) *DockerFileInfo {
 	newOpts := option.NewOptions(opts...)
 	return &DockerFileInfo{
 		Opts:    newOpts,
-		Author:  newOpts.Author,
 		Project: newOpts.Project,
+		Labels:  strings.Join(newOpts.Labels, " "),
 	}
 }
 
@@ -35,7 +37,7 @@ func (info *DockerFileInfo) RenderFile(outputPath string) error {
 
 var DockerFileTemplate string = `
 FROM centos:latest
-MAINTAINER {{.Author}}
+LABEL {{.Labels}}
 
 COPY ./build /application/bin
 COPY ./configs /application/configs

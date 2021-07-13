@@ -33,12 +33,13 @@ type Options struct {
 	// config package path
 	ConfigPackagePath string
 
-	// istio & kubernetes
+	// docker & istio & kubernetes
 	Namespace  string
 	Version    string
 	Port       string
 	TargetPort string
 	ImagePath  string
+	Labels     []string
 }
 
 // NewOptions returns a new Options pointer
@@ -210,5 +211,12 @@ func WithTargetPort(port string) Option {
 func WithImagePath(path string) Option {
 	return func(options *Options) {
 		options.ImagePath = path
+	}
+}
+
+// WithLabels set the labels
+func WithLabels(labels []string) Option {
+	return func(options *Options) {
+		options.Labels = labels
 	}
 }

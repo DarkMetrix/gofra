@@ -28,7 +28,7 @@ var kubeCmd = &cobra.Command{
 	Long: `Gofra is a framework using gRPC as the communication layer. 
 kube command will help to generate kubernetes deployment, service yaml file and configmap command shell script.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
+		_ = cmd.Help()
 	},
 }
 

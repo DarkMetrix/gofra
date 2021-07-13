@@ -17,8 +17,17 @@ package commands
 import (
 	"fmt"
 	"os"
+	"path"
+	"path/filepath"
+	"strings"
 
+	"github.com/DarkMetrix/gofra/internal/pkg/directory"
+	"github.com/DarkMetrix/gofra/internal/pkg/generate"
+	"github.com/DarkMetrix/gofra/internal/pkg/option"
+	"github.com/DarkMetrix/gofra/internal/pkg/utils/gomod"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
+	"golang.org/x/xerrors"
 )
 
 // dockerCmd represents the docker command
@@ -39,9 +48,53 @@ var generateDockerCmd = &cobra.Command{
 	Long: `Gofra is a framework using gRPC as the communication layer. 
 docker generate command will help to generate docker file.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		generateDocker(override)
+		log.Info("====== gofra docker generate ======")
+
+		// validate format of labels
+		if err := checkLabels(labels); err != nil {
+			log.Fatalf("checkLabels failed! error:%+v", err)
+		}
+
+		// get project name
+		if project == "" {
+			// get project name from go.mod
+			goModule, err := gomod.GetGoModule(filepath.Join(outputPath, "go.mod"))
+			if err != nil {
+				log.Fatalf("utils.GetGoModule failed! error:%v", err)
+			}
+			project = path.Base(goModule)
+		}
+
+		opts := []option.Option{
+			option.WithOutputPath(outputPath),
+			option.WithOverride(override),
+			option.WithProject(project),
+			option.WithLabels(labels),
+		}
+
+		// init docker file
+		layout := directory.NewGRPCLayout(opts...)
+		if err := generate.InitDockerFile(layout, opts...); err != nil {
+			log.Fatalf("generate.InitDockerFile failed: %+v", err)
+		}
 	},
 }
+
+// checkLabels checks if label format is valid
+func checkLabels(labels []string) error {
+	for _, label := range labels {
+		kv := strings.Split(label, "=")
+		if len(kv) != 2 || kv[0] == "" || kv[1] == "" {
+			return xerrors.Errorf("label not invalid! label:%v", label)
+		}
+	}
+	return nil
+}
+
+var (
+	project string
+	labels  []string
+)
 
 func init() {
 	rootCmd.AddCommand(dockerCmd)
@@ -51,7 +104,15 @@ func init() {
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
-	generateDockerCmd.PersistentFlags().BoolVar(&override, "override", false, "If override when file exists")
+	generateDockerCmd.PersistentFlags().StringVar(&outputPath,
+		"output-path", filepath.Join("."), "output path, default is '.'")
+	generateDockerCmd.PersistentFlags().StringVar(&project,
+		"project", "", "project name, it will used as the ENTRYPOINT, e.g.: ENTRYPOINT ./application/bin/xxx"+
+			"if project is not specified, will try to look up from go.mod from output path.")
+	generateDockerCmd.PersistentFlags().BoolVar(&override,
+		"override", false, "If override when file exists")
+	generateDockerCmd.PersistentFlags().StringSliceVar(&labels,
+		"labels", []string{}, "Labels set to docker file, e.g.:labels=app=bar")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
