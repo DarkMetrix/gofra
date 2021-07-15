@@ -18,7 +18,28 @@ gRPC layout follows the rules of https://github.com/golang-standards/project-lay
 The layout looks like below
 
 .
-
+├── api
+│     └── protobuf_spec
+│         └── health_check
+│             ├── health_check.pb.go
+│             └── health_check.proto
+├── build
+├── cmd
+│     └── main.go
+├── configs
+│     └── gofra.yaml
+├── deploy
+├── go.mod
+├── go.sum
+├── gofra
+└── internal
+      ├── config
+      │     └── config.go
+      └── service
+          └── grpc
+              └── health_check
+                  ├── health_check.go
+                  └── implementation.go
  *********************************************************************************/
 
 // GRPCServiceLayout defines the layout interface of a gRPC service without

@@ -17,6 +17,7 @@ package commands
 import (
 	"path/filepath"
 
+	"github.com/DarkMetrix/gofra/internal/pkg/directory"
 	"github.com/DarkMetrix/gofra/internal/pkg/generate"
 	"github.com/DarkMetrix/gofra/internal/pkg/option"
 	log "github.com/sirupsen/logrus"
@@ -41,16 +42,10 @@ var initCmd = &cobra.Command{
 		}
 
 		// init directory structure
-		log.Info("Initializing directory structure......")
-		layout, err := generate.InitGRPCDirectoryStructure(opts...)
-		if err != nil {
-			log.Fatalf("generate.InitGRPCDirectoryStructure failed! error:%+v", err)
-		}
-
-		// init gRPC service
 		log.Info("Initializing gRPC service......")
-		if err := generate.InitGRPCService(layout, opts...); err != nil {
-			log.Fatalf("generate.InitGRPCService failed! error:%+v", err)
+		layout := directory.NewGRPCLayout(opts...)
+		if err := generate.NewGRPCServiceGenerator().Init(layout, opts...); err != nil {
+			log.Fatalf("generate.Init failed! error:%+v", err)
 		}
 	},
 }

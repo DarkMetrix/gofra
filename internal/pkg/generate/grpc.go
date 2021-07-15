@@ -18,19 +18,28 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// InitGRPCDirectoryStructure initializes the gRPC service directory to output path
-func InitGRPCDirectoryStructure(opts ...option.Option) (directory.GRPCServiceLayout, error) {
-	layout := directory.NewGRPCLayout(opts...)
-
-	// save directory structure
-	if err := layout.Save(); err != nil {
-		return nil, xerrors.Errorf("layout.Save failed! error:%w", err)
-	}
-	return layout, nil
+// ProtobufServiceGenerator interface
+type ProtobufServiceGenerator interface {
+	Init(layout directory.GRPCServiceLayout, opts ...option.Option) error
+	Add(protoPath string, layout directory.GRPCServiceLayout, opts ...option.Option) error
+	Update(protoPath string, layout directory.GRPCServiceLayout, opts ...option.Option) error
 }
 
-// InitGRPCService initializes all the files needed for a basic gRPC service
-func InitGRPCService(layout directory.GRPCServiceLayout, opts ...option.Option) error {
+// GRPCServiceGenerator definition
+type GRPCServiceGenerator struct{}
+
+// NewGRPCServiceGenerator returns a GRPCServiceGenerator pointer
+func NewGRPCServiceGenerator() *GRPCServiceGenerator {
+	return &GRPCServiceGenerator{}
+}
+
+// Init initializes all the files needed for a basic gRPC service with health check service
+func (gen *GRPCServiceGenerator) Init(layout directory.GRPCServiceLayout, opts ...option.Option) error {
+	// initialize directory structure
+	if err := layout.Save(); err != nil {
+		return xerrors.Errorf("layout.Save failed! error:%w", err)
+	}
+
 	// create go module file
 	if err := general.NewGoModuleInfo(opts...).RenderFile(layout.GetGoModuleFilePath()); err != nil {
 		return xerrors.Errorf("create go module file failed! error:%w", err)
@@ -63,20 +72,22 @@ func InitGRPCService(layout directory.GRPCServiceLayout, opts ...option.Option) 
 	}
 
 	// add service health check
-	if err := AddGRPCService(healthCheckProtoPath, layout, opts...); err != nil {
+	if err := gen.Add(healthCheckProtoPath, layout, opts...); err != nil {
 		return xerrors.Errorf("add gRPC service failed! error:%w", err)
 	}
 	return nil
 }
 
-// AddGRPCService adds a gRPC service according to proto file
-func AddGRPCService(protoPath string, layout directory.GRPCServiceLayout, opts ...option.Option) error {
+// Add adds a gRPC service according to proto file
+func (gen *GRPCServiceGenerator) Add(
+	protoPath string, layout directory.GRPCServiceLayout, opts ...option.Option) error {
 	opts = append(opts, option.WithIgnoreExist(false))
 	return generateGRPCService(protoPath, layout, opts...)
 }
 
-// UpdateGRPCService updates a gRPC service according to proto file
-func UpdateGRPCService(protoPath string, layout directory.GRPCServiceLayout, opts ...option.Option) error {
+// Update updates a gRPC service according to proto file
+func (gen *GRPCServiceGenerator) Update(
+	protoPath string, layout directory.GRPCServiceLayout, opts ...option.Option) error {
 	opts = append(opts, option.WithIgnoreExist(true))
 	return generateGRPCService(protoPath, layout, opts...)
 }

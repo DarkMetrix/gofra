@@ -1,4 +1,4 @@
-package kubenetes
+package kubernetes
 
 import (
 	"github.com/DarkMetrix/gofra/internal/pkg/option"
@@ -49,9 +49,7 @@ kind: Deployment
 # metadata of the deployment
 metadata:
   name: {{.Project}}
-  {{if ne .Namespace ""}}
   namespace: {{.Namespace}}
-  {{end}}
   labels:
     app: {{.Project}}
     version: {{.Version}}
@@ -60,19 +58,17 @@ metadata:
 spec:
   # replica number to run
   replicas: 1
-
   selector:
     matchLabels:
       app: {{.Project}}
       version: {{.Version}}
 
-  # using this templates to create pod
-  templates:
+  # using this template to create pod
+  template:
     metadata:
       labels:
         app: {{.Project}}
         version: {{.Version}}
-
     spec:
       restartPolicy: Always
       containers:
@@ -86,7 +82,6 @@ spec:
       # below configuration could mount config files to /app/{{.Project}}/configs directory
       # config map YAML file could be generated using 'gofra kube configmap' command
       ##########################################
-
       #    volumeMounts:
       #      - name: configs
       #        mountPath: /app/{{.Project}}/configs/config.toml
@@ -98,7 +93,6 @@ spec:
       #   - name: configs
       #     configMap:
       #       name: {{.Project}}
-
 
   ##########################################
   # More features and details, please visit 
@@ -150,20 +144,16 @@ kind: Service
 # metadata of the service
 metadata:
   name: {{.Project}} 
-  {{if ne .Namespace ""}}
   namespace: {{.Namespace}}
-  {{end}}
 
 # specification
 spec:
   type: ClusterIP
-
   ports:
     - name: {{.Type}}
       port: {{.Port}}
       protocol: TCP
       targetPort: {{.TargetPort}}
-
   selector:
     app: {{.Project}}
 
@@ -172,65 +162,4 @@ spec:
   #     'https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.17/'
   # to get more information, this URL is for kubernetes v1.17 only
   ##########################################
-`
-
-// KubeConfigmapInfo represents kubernetes config map information
-type KubeConfigmapInfo struct {
-	Opts      *option.Options
-	Namespace string
-	Project   string
-}
-
-// NewKubeConfigmapInfo returns a new KubeConfigmapInfo pointer
-func NewKubeConfigmapInfo(opts ...option.Option) *KubeConfigmapInfo {
-	// init options
-	newOpts := option.NewOptions(opts...)
-	return &KubeConfigmapInfo{
-		Opts:      newOpts,
-		Project:   newOpts.Project,
-		Namespace: newOpts.Namespace,
-	}
-}
-
-// RenderFile render template and output to file
-func (info *KubeConfigmapInfo) RenderFile(outputPath string) error {
-	if err := templates.RenderToFile(outputPath, info.Opts.Override, info.Opts.IgnoreExist,
-		"template-k8s-config-map", KubeConfigmapTemplate, info); err != nil {
-		return xerrors.Errorf("RenderToFile failed! error:%w", err)
-	}
-	return nil
-}
-
-var KubeConfigmapTemplate string = `#!/bin/bash
-
-case $1 in
-
-"create")
-  echo "configmap '{{.Project}}' creating..."
-  kubectl create configmap {{.Project}} --namespace='{{.Namespace}}' --from-file=../configs
-  ;;
-
-"update")
-  echo "configmap '{{.Project}}' deleting..."
-  kubectl delete configmap {{.Project}} --namespace='{{.Namespace}}'
-
-  echo "configmap '{{.Project}}' creating..."
-  kubectl create configmap {{.Project}} --namespace='{{.Namespace}}' --from-file=../configs
-  ;;
-
-"delete")
-  echo "configmap '{{.Project}}' deleting..."
-  kubectl delete configmap {{.Project}} --namespace='{{.Namespace}}'
-  ;;
-
-"get")
-  echo "configmap '{{.Project}}' getting..."
-  kubectl describe configmap {{.Project}} --namespace='{{.Namespace}}'
-  ;;
-
-"")
-  echo "no command found! command list [create, update, delete, get]"
-  ;;
-
-esac
 `

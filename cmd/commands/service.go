@@ -70,8 +70,9 @@ service add command will help to manipulate .proto file to add service frame & h
 		}
 
 		// add service
-		if err := generate.AddGRPCService(layout.GetAPIProtobufFilePath(protoFilePath), layout, opts...); err != nil {
-			log.Fatalf("generate.AddGRPCService failed! error:%+v", err)
+		if err := generate.NewGRPCServiceGenerator().Add(
+			layout.GetAPIProtobufFilePath(protoFilePath), layout, opts...); err != nil {
+			log.Fatalf("generate.Add failed! error:%+v", err)
 		}
 	},
 }
@@ -109,9 +110,9 @@ service update command will help to manipulate .proto file to update service fra
 		}
 
 		// update service
-		if err := generate.UpdateGRPCService(
+		if err := generate.NewGRPCServiceGenerator().Update(
 			layout.GetAPIProtobufFilePath(protoFilePath), layout, opts...); err != nil {
-			log.Fatalf("generate.AddGRPCService failed! error:%+v", err)
+			log.Fatalf("generate.Update failed! error:%+v", err)
 		}
 	},
 }

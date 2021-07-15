@@ -15,8 +15,6 @@
 package commands
 
 import (
-	"fmt"
-	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -118,21 +116,4 @@ func init() {
 	// is called directly, e.g.:
 	// serviceCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-}
-
-func generateDocker(override bool) error {
-	fmt.Println("====== Gofra docker generate ======")
-
-	// check path
-	fmt.Printf("\r\nChecking Path ......")
-	workingPath, err := os.Getwd()
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
-	}
-
-	return nil
 }
