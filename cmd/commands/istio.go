@@ -15,9 +15,14 @@
 package commands
 
 import (
-	"fmt"
-	"os"
+	"path"
+	"path/filepath"
 
+	"github.com/DarkMetrix/gofra/internal/pkg/directory"
+	"github.com/DarkMetrix/gofra/internal/pkg/generate"
+	"github.com/DarkMetrix/gofra/internal/pkg/option"
+	"github.com/DarkMetrix/gofra/internal/pkg/utils/gomod"
+	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
 )
 
@@ -39,7 +44,32 @@ var virtualServiceCmd = &cobra.Command{
 	Long: `Gofra is a framework using gRPC as the communication layer. 
 istio virtual-service command will help to generate istio virtual service yaml file.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		virtualServiceIstio(namespace, override)
+		log.Info("====== gofra istio virtual-service ======")
+
+		// get project name
+		if project == "" {
+			// get project name from go.mod
+			goModule, err := gomod.GetGoModule(filepath.Join(outputPath, "go.mod"))
+			if err != nil {
+				log.Fatalf("utils.GetGoModule failed! error:%v", err)
+			}
+			project = path.Base(goModule)
+		}
+
+		opts := []option.Option{
+			option.WithOutputPath(outputPath),
+			option.WithOverride(override),
+			option.WithProject(project),
+			option.WithNamespace(namespace),
+			option.WithVersion(version),
+			option.WithPort(port),
+		}
+
+		// init istio virtual_service.yaml
+		layout := directory.NewGRPCLayout(opts...)
+		if err := generate.InitIstioVirtualService(layout, opts...); err != nil {
+			log.Fatalf("generate.InitIstioVirtualService failed: %+v", err)
+		}
 	},
 }
 
@@ -50,7 +80,31 @@ var destinationRuleCmd = &cobra.Command{
 	Long: `Gofra is a framework using gRPC as the communication layer. 
 istio destination-rule command will help to generate istio destination rule yaml file.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		destinationRuleIstio(namespace, override)
+		log.Info("====== gofra istio destination-rule ======")
+
+		// get project name
+		if project == "" {
+			// get project name from go.mod
+			goModule, err := gomod.GetGoModule(filepath.Join(outputPath, "go.mod"))
+			if err != nil {
+				log.Fatalf("utils.GetGoModule failed! error:%v", err)
+			}
+			project = path.Base(goModule)
+		}
+
+		opts := []option.Option{
+			option.WithOutputPath(outputPath),
+			option.WithOverride(override),
+			option.WithProject(project),
+			option.WithNamespace(namespace),
+			option.WithVersion(version),
+		}
+
+		// init istio destination_rule.yaml
+		layout := directory.NewGRPCLayout(opts...)
+		if err := generate.InitIstioDestinationRule(layout, opts...); err != nil {
+			log.Fatalf("generate.InitIstioDestinationRule failed: %+v", err)
+		}
 	},
 }
 
@@ -63,48 +117,31 @@ func init() {
 
 	// Cobra supports Persistent Flags which will work for this command
 	// and all subcommands, e.g.:
+	virtualServiceCmd.PersistentFlags().StringVar(&outputPath,
+		"output-path", filepath.Join("."), "output path, default is '.'")
+	virtualServiceCmd.PersistentFlags().StringVar(&project,
+		"project", "", "project name it will be used as the metadata.name in deployment, "+
+			"if project is not specified, will try to look up from go.mod from output path.")
 	virtualServiceCmd.PersistentFlags().BoolVar(&override, "override", false, "If override when file exists")
-	virtualServiceCmd.PersistentFlags().StringVar(&namespace, "namespace", "", "Kubernetes namespace, default is ''")
+	virtualServiceCmd.PersistentFlags().StringVar(&namespace,
+		"namespace", "default", "Kubernetes namespace, default is 'default'")
+	virtualServiceCmd.PersistentFlags().StringVar(&version,
+		"version", "v1", "Kubernetes version, default is 'v1'")
+	virtualServiceCmd.PersistentFlags().StringVar(&port, "port", "6666", "Kubernetes namespace, default is '6666'")
 
+	destinationRuleCmd.PersistentFlags().StringVar(&outputPath,
+		"output-path", filepath.Join("."), "output path, default is '.'")
+	destinationRuleCmd.PersistentFlags().StringVar(&project,
+		"project", "", "project name it will be used as the metadata.name in deployment, "+
+			"if project is not specified, will try to look up from go.mod from output path.")
 	destinationRuleCmd.PersistentFlags().BoolVar(&override, "override", false, "If override when file exists")
-	destinationRuleCmd.PersistentFlags().StringVar(&namespace, "namespace", "", "Kubernetes namespace, default is ''")
+	destinationRuleCmd.PersistentFlags().StringVar(&namespace,
+		"namespace", "default", "Kubernetes namespace, default is 'default'")
+	destinationRuleCmd.PersistentFlags().StringVar(&version,
+		"version", "v1", "Kubernetes version, default is 'v1'")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:
 	// serviceCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
-}
-
-func virtualServiceIstio(namespace string, override bool) error {
-	fmt.Println("====== Gofra istio virtual-service ======")
-
-	// check path
-	fmt.Printf("\r\nChecking Path ......")
-	workingPath, err := os.Getwd()
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
-	}
-
-	return nil
-}
-
-func destinationRuleIstio(namespace string, override bool) error {
-	fmt.Println("====== Gofra istio destination-rule ======")
-
-	// check path
-	fmt.Printf("\r\nChecking Path ......")
-	workingPath, err := os.Getwd()
-
-	if err != nil {
-		fmt.Printf(" failed! \r\nerror:%v\r\n", err.Error())
-		return err
-	} else {
-		fmt.Printf(" success! \r\nWorking path:%v\r\n", workingPath)
-	}
-
-	return nil
 }

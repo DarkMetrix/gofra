@@ -105,7 +105,7 @@ func init() {
 	generateDockerCmd.PersistentFlags().StringVar(&outputPath,
 		"output-path", filepath.Join("."), "output path, default is '.'")
 	generateDockerCmd.PersistentFlags().StringVar(&project,
-		"project", "", "project name, it will used as the ENTRYPOINT, e.g.: ENTRYPOINT ./application/bin/xxx"+
+		"project", "", "project name, it will be used as the ENTRYPOINT, e.g.: ENTRYPOINT ./application/bin/xxx"+
 			"if project is not specified, will try to look up from go.mod from output path.")
 	generateDockerCmd.PersistentFlags().BoolVar(&override,
 		"override", false, "If override when file exists")

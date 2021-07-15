@@ -37,15 +37,18 @@ func (info *IstioVirtaulServiceInfo) RenderFile(outputPath string) error {
 	return nil
 }
 
-var IstioVirtualServiceTemplate string = `
+var IstioVirtualServiceTemplate string = `# API version
 apiVersion: networking.istio.io/v1alpha3
+
+# resource type
 kind: VirtualService
+
+# metadata
 metadata:
   name: {{.Project}}
-  {{if ne .Namespace ""}}
   namespace: {{.Namespace}}
-  {{end}}
 
+# specification
 spec:
   hosts:
     - {{.Project}}            # hosts will be interpreted as ${hosts}.${k8s-namespace}.svc.cluster.local in k8s environment
@@ -116,15 +119,18 @@ func (info *IstioDestinationRuleInfo) RenderFile(outputPath string) error {
 	return nil
 }
 
-var IstioDestinationRuleTemplate string = `
+var IstioDestinationRuleTemplate string = `# API version
 apiVersion: networking.istio.io/v1alpha3
+
+# resource type
 kind: DestinationRule
+
+# metadata
 metadata:
   name: {{.Project}}
-  {{if ne .Namespace ""}}
   namespace: {{.Namespace}}
-  {{end}}
 
+# specification
 spec:
   host: {{.Project}} # host will be interpreted as ${hosts}.${k8s-namespace}.svc.cluster.local in k8s environment
 

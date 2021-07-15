@@ -66,7 +66,7 @@ kube deployment command will help to generate kubernetes deployment file.`,
 			option.WithPort(port),
 		}
 
-		// init docker file
+		// init kubernetes deployment.yaml
 		layout := directory.NewGRPCLayout(opts...)
 		if err := generate.InitKubeDeployment(layout, opts...); err != nil {
 			log.Fatalf("generate.InitDockerFile failed: %+v", err)
@@ -102,7 +102,7 @@ kube service command will help to generate kubernetes service yaml file.`,
 			option.WithTargetPort(port),
 		}
 
-		// init docker file
+		// init kubernetes service.yaml
 		layout := directory.NewGRPCLayout(opts...)
 		if err := generate.InitKubeService(layout, opts...); err != nil {
 			log.Fatalf("generate.InitDockerFile failed: %+v", err)
@@ -141,24 +141,25 @@ func init() {
 	deploymentKubeCmd.PersistentFlags().StringVar(&outputPath,
 		"output-path", filepath.Join("."), "output path, default is '.'")
 	deploymentKubeCmd.PersistentFlags().StringVar(&project,
-		"project", "", "project name, it will used as the ENTRYPOINT, e.g.: ENTRYPOINT ./application/bin/xxx"+
+		"project", "", "project name it will be used as the metadata.name in deployment, "+
 			"if project is not specified, will try to look up from go.mod from output path.")
 	deploymentKubeCmd.PersistentFlags().BoolVar(&override, "override", false, "If override when file exists")
 	deploymentKubeCmd.PersistentFlags().StringVar(&namespace,
 		"namespace", "default", "Kubernetes namespace, default is 'default'")
 	deploymentKubeCmd.PersistentFlags().StringVar(&version,
-		"version", "v0.0.1", "Kubernetes version, default is 'v0.1.1'")
+		"version", "v1", "Kubernetes version, default is 'v1'")
 	deploymentKubeCmd.PersistentFlags().StringVar(&image, "image", "", "Kubernetes namespace, default is ''")
-	deploymentKubeCmd.PersistentFlags().StringVar(&port, "port", "6666", "Kubernetes namespace, default is '6666'")
+	deploymentKubeCmd.PersistentFlags().StringVar(&port, "port", "6666", "container port, default is '6666'")
 
 	serviceKubeCmd.PersistentFlags().StringVar(&outputPath,
 		"output-path", filepath.Join("."), "output path, default is '.'")
 	serviceKubeCmd.PersistentFlags().StringVar(&project,
-		"project", "", "project name, it will used as the ENTRYPOINT, e.g.: ENTRYPOINT ./application/bin/xxx"+
+		"project", "", "project name, it will be used as the metadata.name in service, "+
 			"if project is not specified, will try to look up from go.mod from output path.")
 	serviceKubeCmd.PersistentFlags().BoolVar(&override, "override", false, "If override when file exists")
 	serviceKubeCmd.PersistentFlags().StringVar(&namespace,
 		"namespace", "default", "Kubernetes namespace, default is 'default'")
+	serviceKubeCmd.PersistentFlags().StringVar(&port, "port", "6666", "port and target port, default is '6666'")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:

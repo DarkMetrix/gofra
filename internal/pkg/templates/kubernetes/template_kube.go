@@ -39,8 +39,7 @@ func (info *KubeDeploymentInfo) RenderFile(outputPath string) error {
 	return nil
 }
 
-var KubeDeploymentTemplate string = `
-# API version
+var KubeDeploymentTemplate string = `# API version
 apiVersion: apps/v1
 
 # resource type
@@ -134,8 +133,7 @@ func (info *KubeServiceInfo) RenderFile(outputPath string) error {
 	return nil
 }
 
-var KubeServiceTemplate string = `
-# API version
+var KubeServiceTemplate string = `# API version
 apiVersion: v1
 
 # resource type
@@ -150,7 +148,7 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-    - name: {{.Type}}
+    - name: {{.Type}}-{{.Project}}
       port: {{.Port}}
       protocol: TCP
       targetPort: {{.TargetPort}}
