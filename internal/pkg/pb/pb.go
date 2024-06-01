@@ -15,7 +15,7 @@ func CompileGRPC(protocPath, protoFilePath string, protoFileIncludePath []string
 		arg := fmt.Sprintf("--proto_path=%v", path)
 		args = append(args, arg)
 	}
-	args = append(args, "--go_out=plugins=grpc:.")
+	args = append(args, "--go_out=.", "--go_opt=paths=source_relative", "--go-grpc_out=.", "--go-grpc_opt=paths=source_relative")
 	args = append(args, protoFilePath)
 
 	// execute protoc to generate .pb.go file

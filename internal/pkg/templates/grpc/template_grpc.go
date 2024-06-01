@@ -10,8 +10,9 @@ import (
 
 // ServiceInfo represents the gRPC service information
 type ServiceInfo struct {
-	Opts        *option.Options
-	ServiceName string
+	Opts                *option.Options
+	ServiceName         string
+	ImportedPackageName string
 }
 
 // NewServiceInfo returns a new ServiceInfo pointer
@@ -19,8 +20,9 @@ func NewServiceInfo(opts ...option.Option) *ServiceInfo {
 	// init options
 	newOpts := option.NewOptions(opts...)
 	return &ServiceInfo{
-		Opts:        newOpts,
-		ServiceName: newOpts.ServiceName,
+		Opts:                newOpts,
+		ServiceName:         newOpts.ServiceName,
+		ImportedPackageName: newOpts.ImportedPackageName,
 	}
 }
 
@@ -36,7 +38,14 @@ func (service *ServiceInfo) RenderFile(outputPath string) error {
 var ServiceTemplate string = `package {{.ServiceName}}
 
 // Implementation implements {{.ServiceName}} interface
-type Implementation struct{}
+
+import (
+	pb "{{.ImportedPackageName}}"
+)
+
+type Implementation struct{
+	pb.Unimplemented{{.ServiceName}}Server
+}
 `
 
 // RPCInfo represents the gRPC RPC information

@@ -77,7 +77,7 @@ func init() {
 	initCmd.PersistentFlags().StringVar(&goModule,
 		"go-module", "", "go module name, default is empty, e.g.:github.com/foo/bar")
 	initCmd.PersistentFlags().StringVar(&goVersion,
-		"go-version", "1.16", "go version, default is '1.16'")
+		"go-version", "1.22", "go version, default is '1.22'")
 
 	// Cobra supports local flags which will only run when this command
 	// is called directly, e.g.:

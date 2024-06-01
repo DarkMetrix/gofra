@@ -151,16 +151,16 @@ func generateServiceFiles(protoPath string, update bool, serviceDesc *desc.Servi
 	}
 
 	// create implementation file
-	if err := grpc.NewServiceInfo(opts...).RenderFile(layout.GetGRPCServiceFilePath(serviceDesc.GetName())); err != nil {
-		return xerrors.Errorf("create service implementation file failed! error:%w", err)
-	}
-
-	// create RPC file
 	opts = append(opts,
 		option.WithPackageName(serviceDesc.GetName()),
 		option.WithImportedPackageName(layout.GetProtoPackagePath(options.GoModule, protoPath)),
 	)
 
+	if err := grpc.NewServiceInfo(opts...).RenderFile(layout.GetGRPCServiceFilePath(serviceDesc.GetName())); err != nil {
+		return xerrors.Errorf("create service implementation file failed! error:%w", err)
+	}
+
+	// create RPC file
 	for _, rpcDesc := range serviceDesc.GetMethods() {
 		if err := generateRPCFiles(update, serviceDesc, rpcDesc, layout, opts...); err != nil {
 			return xerrors.Errorf("generateRPCFiles failed! error:%w", err)

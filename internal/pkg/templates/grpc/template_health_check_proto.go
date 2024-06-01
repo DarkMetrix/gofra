@@ -32,6 +32,8 @@ var HealthCheckProtoTemplate string = `syntax = "proto3";
 
 package common.health.check;
 
+option go_package = "./health_check";
+
 // the health check service definition.
 service HealthCheck {
     // sends a health check request
